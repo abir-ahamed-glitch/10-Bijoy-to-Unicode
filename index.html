@@ -818,6 +818,7 @@ kbd {
 <body>
 
   <!-- Classic Shaheed Minar & Red Sun Background Watermark -->
+  <canvas id="floating-letters-canvas"></canvas>
   <div class="minar-watermark-wrapper" aria-hidden="true">
     <svg viewBox="0 0 900 650" class="shaheed-minar-bg" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -902,7 +903,7 @@ kbd {
   </div>
 
   <!-- Floating Bengali Vowels & Consonants Watermark (অ আ ই ঈ ক খ গ ঘ) -->
-  <div class="bn-floating-watermarks" aria-hidden="true">
+  <div class="bn-floating-watermarks hidden" aria-hidden="true">
     <span class="bn-char float-1" style="top: 12%; left: 5%;">অ</span>
     <span class="bn-char float-2" style="top: 28%; left: 14%;">আ</span>
     <span class="bn-char float-3" style="top: 48%; left: 6%;">ই</span>
@@ -979,6 +980,9 @@ kbd {
         </div>
         <span style="font-size:11px;color:var(--text-muted)">Drop .txt files here</span>
       </div>
+      <div class="panel-resize-handle" id="input-resize-handle" title="Drag up/down to adjust input box height">
+        <div class="grip-line"></div>
+      </div>
     </article>
 
     <!-- Swap -->
@@ -1004,6 +1008,9 @@ kbd {
           <button id="download-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+D" aria-label="Download output">⬇️ Download</button>
         </div>
         <span style="font-size:11px;color:var(--text-muted)">Editable box</span>
+      </div>
+      <div class="panel-resize-handle" id="output-resize-handle" title="Drag up/down to adjust output box height">
+        <div class="grip-line"></div>
       </div>
     </article>
 
@@ -1358,7 +1365,7 @@ const BIJOY_BLACKLIST = new Set([
   'avi', 'gb', 'ib', 'me', 'be', 'mv', 'dv', 'in', 'am', 'an',
   'is', 'as', 'us', 'or', 'so', 'to', 'do', 'go', 'no', 'vi',
   'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj',
-  'i', 'I'
+  'gkk', 'dj', 'gk', 'pk', 'kgb', 'i', 'I'
 ]);
 
 /**
@@ -2100,6 +2107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupKeys();
 
   updateStats();
+  initLetterPhysics();
+  setupCustomResizers();
 });
 </script>
 </body>

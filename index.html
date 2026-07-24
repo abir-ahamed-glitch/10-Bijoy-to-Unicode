@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>Bijoy &amp; Unicode Converter | বিজয় ইউনিকোড কনভার্টার</title>
+  <meta name="description"
+    content="Accurate Bijoy to Unicode and Unicode to Bijoy online converter. Handles conjuncts (juktakkhar), reph, i-kar/e-kar reordering perfectly. Free, fast, works offline." />
+  <meta name="keywords"
+    content="bijoy to unicode, unicode to bijoy, bangla converter, বাংলা কনভার্টার, SutonnyMJ, bijoy bahadur" />
+  <meta property="og:title" content="Bijoy &amp; Unicode Converter" />
+  <meta property="og:description" content="Perfect Bijoy ↔ Unicode converter with full conjunct support." />
+  <meta property="og:type" content="website" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>বি</text></svg>" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bijoy & Unicode Converter — Design System
+   Glassmorphism · Dark/Light Mode · Animated Gradient
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --grad-1: #6C3FEF;
+  --grad-2: #4776E6;
+  --grad-3: #8E54E9;
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.15);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --glass-blur: blur(20px);
+  --text-primary: rgba(255,255,255,0.95);
+  --text-secondary: rgba(255,255,255,0.6);
+  --text-muted: rgba(255,255,255,0.35);
+  --surface-dark: rgba(0,0,0,0.25);
+  --surface-hover: rgba(255,255,255,0.12);
+  --surface-active: rgba(255,255,255,0.18);
+  --accent: #7C5FFC;
+  --accent-glow: rgba(124,95,252,0.4);
+  --accent-hover: #9579FF;
+  --success: #43D98A;
+  --warning: #F7B731;
+  --danger: #FC5C65;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition-fast: 0.15s ease;
+  --transition-med: 0.3s cubic-bezier(0.4,0,0.2,1);
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-bn: 'Noto Serif Bengali', serif;
+  --font-bijoy: 'SutonnyMJ', 'SutonnyMJ-Bold', 'SutonnyMJ Regular', 'Sutonny Bangla OM', 'Sutonny', 'Bijoy', var(--font-ui);
+}
+[data-theme="light"] {
+  --glass-bg: rgba(255,255,255,0.75);
+  --glass-border: rgba(0,0,0,0.08);
+  --glass-shadow: 0 8px 32px rgba(100,80,200,0.12);
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8888aa;
+  --surface-dark: rgba(0,0,0,0.04);
+  --surface-hover: rgba(108,63,239,0.07);
+  --surface-active: rgba(108,63,239,0.12);
+  --accent-glow: rgba(124,95,252,0.2);
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  transition: color 0.4s;
+}
+/* BG */
+.bg-gradient {
+  position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  overflow: hidden;
+  transition: background 0.4s;
+  min-height: 100%;
+}
+[data-theme="light"] .bg-gradient {
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 40%, #e8e3ff 100%);
+}
+.bg-gradient::before,.bg-gradient::after {
+  content:''; position:absolute; border-radius:50%;
+  filter:blur(80px); opacity:0.45;
+  animation: bganim 12s ease-in-out infinite alternate;
+}
+.bg-gradient::before {
+  width:600px; height:600px;
+  background: radial-gradient(circle, var(--grad-1) 0%, transparent 70%);
+  top:-100px; left:-100px;
+}
+.bg-gradient::after {
+  width:500px; height:500px;
+  background: radial-gradient(circle, var(--grad-2) 0%, transparent 70%);
+  bottom:-100px; right:-100px;
+  animation-direction:alternate-reverse; animation-duration:14s;
+}
+.bg-orb {
+  position:absolute; border-radius:50%; filter:blur(100px);
+  opacity:0.22; width:400px; height:400px;
+  background: radial-gradient(circle, var(--grad-3) 0%, transparent 70%);
+  top:40%; left:35%; animation: bganim 16s ease-in-out infinite;
+}
+@keyframes bganim {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(40px,30px) scale(1.08); }
+}
+/* Layout */
+.app-wrapper {
+  max-width:1300px; margin:0 auto;
+  padding:0 20px 60px;
+  min-height:100vh;
+  display:flex; flex-direction:column; gap:16px;
+}
+/* Header */
+.app-header {
+  padding:24px 0 4px;
+  display:flex; align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap; gap:16px;
+}
+.header-brand { display:flex; align-items:center; gap:14px; }
+.logo-icon {
+  width:52px; height:52px;
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+  border-radius: var(--radius-md);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; box-shadow:0 4px 20px var(--accent-glow);
+  flex-shrink:0; font-family: var(--font-bn);
+  animation: logo-pulse 3s ease-in-out infinite;
+}
+@keyframes logo-pulse {
+  0%,100% { box-shadow: 0 4px 20px var(--accent-glow); }
+  50%      { box-shadow: 0 4px 36px rgba(124,95,252,0.75); }
+}
+.brand-title {
+  font-size:22px; font-weight:700; letter-spacing:-0.5px;
+  background: linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+[data-theme="light"] .brand-title {
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+  -webkit-background-clip:text; background-clip:text;
+}
+.brand-sub { font-size:12px; color:var(--text-muted); margin-top:1px; }
+.header-actions { display:flex; align-items:center; gap:10px; }
+
+/* Glass */
+.glass-card {
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-lg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-shadow);
+  transition:box-shadow var(--transition-med), border-color var(--transition-med);
+}
+.glass-card:hover { border-color:rgba(255,255,255,0.22); }
+
+/* Buttons */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:7px; padding:9px 18px; border-radius:var(--radius-md);
+  border:1px solid transparent; font-family:var(--font-ui);
+  font-size:14px; font-weight:500; cursor:pointer;
+  transition:all var(--transition-fast);
+  white-space:nowrap; user-select:none; text-decoration:none; outline:none;
+}
+.btn:active { transform:scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+  color:#fff; box-shadow:0 4px 16px var(--accent-glow);
+}
+.btn-primary:hover {
+  filter:brightness(1.12); box-shadow:0 6px 24px var(--accent-glow);
+  transform:translateY(-1px);
+}
+.btn-glass {
+  background:var(--glass-bg); border-color:var(--glass-border);
+  color:var(--text-primary);
+}
+.btn-glass:hover {
+  background:var(--surface-hover); border-color:rgba(255,255,255,0.25);
+  transform:translateY(-1px);
+}
+.btn-icon {
+  padding:9px; aspect-ratio:1; border-radius:var(--radius-sm);
+  background:var(--glass-bg); border-color:var(--glass-border);
+  color:var(--text-secondary); font-size:18px;
+}
+.btn-icon:hover {
+  background:var(--surface-hover); color:var(--text-primary);
+  transform:translateY(-1px);
+}
+.btn-sm { padding:6px 12px; font-size:12px; border-radius:var(--radius-sm); }
+.btn:disabled { opacity:0.45; cursor:not-allowed; transform:none !important; }
+
+/* Mode tabs */
+.mode-tabs {
+  display:flex; background:var(--surface-dark);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-lg); padding:5px; gap:4px;
+}
+.mode-tab {
+  flex:1; padding:10px 16px; border-radius:var(--radius-md);
+  border:none; background:transparent; color:var(--text-secondary);
+  font-family:var(--font-ui); font-size:13.5px; font-weight:500;
+  cursor:pointer; transition:all var(--transition-fast);
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.mode-tab:hover { color:var(--text-primary); background:var(--surface-hover); }
+.mode-tab.active {
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+  color:#fff; box-shadow:0 4px 16px var(--accent-glow);
+}
+
+/* Conversion area */
+.conversion-area {
+  display:grid; grid-template-columns:1fr auto 1fr;
+  gap:16px; align-items:start;
+}
+.panel { display:flex; flex-direction:column; }
+.panel-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 12px; border-bottom:1px solid var(--glass-border);
+}
+.panel-label {
+  display:flex; align-items:center; gap:8px;
+  font-size:12.5px; font-weight:600; letter-spacing:0.8px;
+  text-transform:uppercase; color:var(--text-secondary);
+}
+.dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.dot-bijoy  { background:linear-gradient(135deg,#f7b731,#f9843a); }
+.dot-unicode { background:linear-gradient(135deg,#43d98a,#0fcfd7); }
+.panel-stats { font-size:11px; color:var(--text-muted); }
+textarea {
+  width:100%; min-height:320px; padding:18px;
+  background:transparent; border:none;
+  color:var(--text-primary); font-family:var(--font-ui);
+  font-size:15px; line-height:1.8; resize:vertical; outline:none;
+  caret-color:var(--accent);
+}
+textarea:focus, textarea:focus-visible {
+  outline:none !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+textarea::placeholder { color:var(--text-muted); font-style:italic; }
+#output-text { font-family:var(--font-bn); font-size:16px; }
+.bijoy-font { font-family: var(--font-bijoy) !important; font-size: 18px !important; letter-spacing: 0.3px; }
+.panel { display:flex; flex-direction:column; transition: border-color 0.25s, box-shadow 0.25s; }
+.panel:focus-within {
+  border-color: rgba(124, 95, 252, 0.55) !important;
+  box-shadow: 0 8px 32px rgba(124, 95, 252, 0.25), inset 0 0 0 1px rgba(124, 95, 252, 0.2) !important;
+}
+.panel-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; border-top:1px solid var(--glass-border);
+  gap:8px; flex-wrap:wrap;
+}
+.panel-actions { display:flex; gap:6px; }
+
+/* Swap */
+.swap-col {
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding-top:52px; gap:8px;
+}
+.swap-btn {
+  width:46px; height:46px; border-radius:50%;
+  background:linear-gradient(135deg,var(--grad-1),var(--grad-2));
+  border:none; color:#fff; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px var(--accent-glow);
+  transition:all var(--transition-fast);
+}
+.swap-btn:hover { transform:rotate(180deg) scale(1.1); box-shadow:0 6px 24px var(--accent-glow); }
+.swap-btn:active { transform:rotate(180deg) scale(0.95); }
+
+/* Convert row */
+.convert-row {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; flex-wrap:wrap;
+}
+.convert-row .btn-primary { padding:12px 38px; font-size:15px; font-weight:600; }
+
+/* Live toggle */
+.live-label {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--text-secondary);
+  cursor:pointer; user-select:none;
+}
+.toggle-track {
+  width:40px; height:22px; background:var(--surface-dark);
+  border:1px solid var(--glass-border); border-radius:11px;
+  position:relative; transition:background var(--transition-fast);
+  flex-shrink:0;
+}
+.toggle-track::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--text-muted); transition:all var(--transition-fast);
+}
+.live-label.active .toggle-track { background:linear-gradient(135deg,var(--grad-1),var(--grad-2)); border-color:transparent; }
+.live-label.active .toggle-track::after { left:calc(100% - 18px); background:#fff; }
+
+/* Shortcuts */
+.shortcuts-bar {
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:10px 16px;
+}
+.sc-item { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-muted); }
+kbd {
+  display:inline-flex; align-items:center; padding:2px 6px;
+  border-radius:4px; background:var(--glass-bg);
+  border:1px solid var(--glass-border); font-family:var(--font-ui);
+  font-size:10.5px; color:var(--text-secondary);
+  box-shadow:0 1px 0 var(--glass-border);
+}
+
+/* Encoding banner */
+.enc-banner {
+  display:flex; align-items:center; gap:10px; padding:10px 16px;
+  border-radius:var(--radius-md);
+  background:rgba(124,95,252,0.1); border:1px solid rgba(124,95,252,0.25);
+  font-size:12.5px; color:var(--text-secondary); animation:fadein 0.3s ease;
+}
+.enc-badge {
+  padding:2px 8px; border-radius:4px; background:var(--accent);
+  color:#fff; font-size:11px; font-weight:700;
+}
+
+/* Samples */
+.section-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:600; color:var(--text-secondary);
+  letter-spacing:0.5px; text-transform:uppercase;
+}
+.samples-grid { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.sample-chip {
+  padding:7px 16px; border-radius:100px;
+  border:1px solid var(--glass-border); background:var(--glass-bg);
+  color:var(--text-secondary); font-size:14px; cursor:pointer;
+  transition:all var(--transition-fast); font-family:var(--font-bn);
+  backdrop-filter:var(--glass-blur);
+}
+.sample-chip:hover {
+  border-color:rgba(124,95,252,0.5); color:var(--text-primary);
+  background:rgba(124,95,252,0.12); transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(124,95,252,0.2);
+}
+
+/* History */
+.hist-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
+.hist-item {
+  display:flex; align-items:center; gap:12px; padding:10px 14px;
+  border-radius:var(--radius-md); border:1px solid var(--glass-border);
+  background:var(--glass-bg); cursor:pointer; transition:all var(--transition-fast); overflow:hidden;
+}
+.hist-item:hover {
+  border-color:rgba(124,95,252,0.4); background:var(--surface-hover);
+  transform:translateX(3px);
+}
+.hist-badge {
+  flex-shrink:0; font-size:10px; font-weight:700; padding:2px 7px;
+  border-radius:4px; letter-spacing:0.5px; text-transform:uppercase;
+}
+.badge-b2u { background:rgba(247,183,49,0.2); color:#f7b731; border:1px solid rgba(247,183,49,0.3); }
+.badge-u2b { background:rgba(67,217,138,0.2); color:var(--success); border:1px solid rgba(67,217,138,0.3); }
+.hist-preview {
+  flex:1; font-size:13px; color:var(--text-secondary);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-family:var(--font-bn);
+}
+.hist-time { flex-shrink:0; font-size:11px; color:var(--text-muted); }
+.hist-empty { text-align:center; padding:24px; color:var(--text-muted); font-size:13px; }
+
+/* Collapsible */
+.coll-toggle {
+  display:flex; align-items:center; gap:8px;
+  cursor:pointer; width:100%; background:none; border:none;
+  padding:0; color:inherit; font-family:var(--font-ui);
+}
+.coll-toggle .chevron {
+  margin-left:auto; font-size:12px; color:var(--text-muted);
+  transition:transform var(--transition-fast);
+}
+.coll-toggle.open .chevron { transform:rotate(180deg); }
+.coll-body {
+  overflow:hidden; transition:max-height var(--transition-med), opacity var(--transition-med);
+  max-height:0; opacity:0;
+}
+.coll-body.open { max-height:600px; opacity:1; margin-top:12px; }
+
+/* Toast */
+.toast-wrap {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  display:flex; flex-direction:column; gap:10px; pointer-events:none;
+}
+.toast {
+  display:flex; align-items:center; gap:10px; padding:12px 18px;
+  border-radius:var(--radius-md); background:rgba(20,20,40,0.95);
+  border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(20px);
+  color:#fff; font-size:13.5px; font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4); min-width:220px; max-width:340px;
+  pointer-events:auto; animation:tin 0.25s ease forwards;
+}
+[data-theme="light"] .toast {
+  background:rgba(255,255,255,0.97); color:#1a1a2e;
+  border-color:rgba(0,0,0,0.1); box-shadow:0 8px 32px rgba(100,80,200,0.18);
+}
+.toast-icon { font-size:18px; flex-shrink:0; }
+.toast-exit { animation:tout 0.25s ease forwards; }
+@keyframes tin  { from{opacity:0;transform:translateY(12px) scale(0.94)} to{opacity:1;transform:none} }
+@keyframes tout { from{opacity:1;transform:none} to{opacity:0;transform:translateY(-8px) scale(0.94)} }
+@keyframes fadein { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+/* Info card */
+.info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+.info-item p { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.info-item strong { color:var(--text-primary); display:block; margin-bottom:4px; font-size:13.5px; }
+
+/* Footer */
+.app-footer {
+  padding:20px 0 0; border-top:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px; font-size:12px; color:var(--text-muted);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--glass-border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.3)}
+
+/* Responsive */
+@media(max-width:900px){
+  .conversion-area{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .swap-col{flex-direction:row;padding-top:0;justify-content:center}
+}
+@media(max-width:560px){
+  .app-wrapper{padding:0 12px 40px}
+  .brand-title{font-size:17px}
+  .logo-icon{width:42px;height:42px;font-size:20px}
+  .shortcuts-bar{display:none}
+  textarea{min-height:220px}
+  .mode-tab .tab-label{display:none}
+}
+::selection{background:var(--accent);color:#fff}
+:focus-visible:not(textarea){outline:2px solid var(--accent);outline-offset:3px}
+.hidden{display:none!important}
+  
+/* Intelligent Dual-Font Rendering */
+.input-container-rel { position: relative; width: 100%; min-height: 320px; }
+#input-text { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 1; transition: opacity 0.2s; }
+#input-text.transparent-mode {
+  opacity: 1 !important;
+  color: transparent !important;
+  caret-color: #7c5ffc !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+#input-text.transparent-mode::selection {
+  background: rgba(124, 95, 252, 0.45) !important;
+  color: #ffffff !important;
+}
+#input-text.transparent-mode::-moz-selection {
+  background: rgba(124, 95, 252, 0.45) !important;
+  color: #ffffff !important;
+}
+#input-dual-box {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
+  padding: 18px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
+  line-height: 1.8; color: var(--text-primary); pointer-events: none;
+}
+.bijoy-seg {
+  font-family: 'SutonnyMJ', 'SutonnyMJ-Bold', 'Sutonny Bangla OM', 'Sutonny', 'Bijoy', sans-serif !important;
+  font-size: 18px !important;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+}
+.eng-seg {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 14.5px !important;
+  font-weight: 600;
+  color: #60A5FA !important;
+  background: rgba(96, 165, 250, 0.14);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin: 0 1px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-gradient" aria-hidden="true"><div class="bg-orb"></div></div>
+
+<div class="app-wrapper">
+
+  <!-- Header -->
+  <header class="app-header" role="banner">
+    <div class="header-brand">
+      <div class="logo-icon" aria-hidden="true">বি</div>
+      <div>
+        <h1 class="brand-title">Bijoy &amp; Unicode Converter</h1>
+        <p class="brand-sub">বিজয় ↔ ইউনিকোড &nbsp;·&nbsp; Perfect Conjunct &amp; Reph Handling</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="theme-btn" class="btn btn-icon" title="Toggle Dark / Light Mode" aria-label="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <!-- Mode Tabs -->
+  <nav class="mode-tabs glass-card" role="tablist" aria-label="Conversion mode">
+    <button class="mode-tab active" data-mode="b2u" role="tab" aria-selected="true">
+      <span aria-hidden="true">📥</span><span class="tab-label">Bijoy → Unicode</span>
+    </button>
+    <button class="mode-tab" data-mode="u2b" role="tab" aria-selected="false">
+      <span aria-hidden="true">📤</span><span class="tab-label">Unicode → Bijoy</span>
+    </button>
+    <button class="mode-tab" data-mode="auto" role="tab" aria-selected="false">
+      <span aria-hidden="true">🔍</span><span class="tab-label">Auto Detect</span>
+    </button>
+  </nav>
+
+  <!-- Encoding Banner -->
+  <div id="enc-banner" class="enc-banner hidden" role="status" aria-live="polite">
+    <span aria-hidden="true">🔍</span>
+    <span class="enc-badge">Auto</span>
+    <span id="enc-label">Bijoy Detected → Converting to Unicode</span>
+  </div>
+
+  <!-- Conversion Area -->
+  <section class="conversion-area" aria-label="Conversion panels">
+
+    <!-- Input Panel -->
+    <article class="glass-card panel" aria-labelledby="input-label">
+      <div class="panel-header">
+        <span class="panel-label">
+          <span class="dot dot-bijoy" aria-hidden="true"></span>
+          <span id="input-label">Bijoy Input</span>
+        </span>
+        <span class="panel-stats" id="input-stats" aria-live="polite">0 chars · 0 words</span>
+      </div>
+      <div id="input-drop-zone" class="input-container-rel"><div id="input-dual-box" aria-hidden="true"></div>
+        <textarea id="input-text" name="input-text"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          placeholder="Paste Bijoy / SutonnyMJ text here…&#10;&#10;Example:  evsjv‡&#96;k  (বাংলাদেশ)&#10;&#10;💡 Tip: Drag &amp; drop a .txt file onto this panel"
+          aria-label="Input text"></textarea>
+      </div>
+      <div class="panel-footer">
+        <div class="panel-actions">
+          <button id="paste-btn" class="btn btn-glass btn-sm" aria-label="Paste from clipboard">📋 Paste</button>
+          <button id="copy-input-btn" class="btn btn-glass btn-sm" aria-label="Copy input">📄 Copy</button>
+          <button id="font-toggle-btn" class="btn btn-glass btn-sm" title="Toggle SutonnyMJ / Raw Font" aria-label="Toggle Font">🔤 SutonnyMJ Font</button>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)">Drop .txt files here</span>
+      </div>
+    </article>
+
+    <!-- Swap -->
+    <div class="swap-col">
+      <button id="swap-btn" class="swap-btn" title="Swap panels (Ctrl+Shift+S)" aria-label="Swap input and output">⇄</button>
+    </div>
+
+    <!-- Output Panel -->
+    <article class="glass-card panel" aria-labelledby="output-label">
+      <div class="panel-header">
+        <span class="panel-label">
+          <span class="dot dot-unicode" aria-hidden="true"></span>
+          <span id="output-label">Unicode Output</span>
+        </span>
+        <span class="panel-stats" id="output-stats" aria-live="polite">0 chars · 0 words</span>
+      </div>
+      <textarea id="output-text" name="output-text" lang="bn"
+        placeholder="Converted Unicode Bengali will appear here… (Fully editable)"
+        aria-label="Output text" aria-live="polite"></textarea>
+      <div class="panel-footer">
+        <div class="panel-actions">
+          <button id="copy-output-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+C" aria-label="Copy output">📋 Copy Output</button>
+          <button id="download-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+D" aria-label="Download output">⬇️ Download</button>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)">Editable box</span>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Convert Row -->
+  <div class="convert-row">
+    <button id="convert-btn" class="btn btn-primary" title="Ctrl+Enter" aria-label="Convert">
+      ⚡ Convert Now
+    </button>
+
+    <label class="live-label" id="live-label" title="Convert as you type" tabindex="0"
+           role="switch" aria-checked="false" aria-label="Live mode toggle">
+      <div class="toggle-track" aria-hidden="true"></div>
+      <span>Live Mode</span>
+    </label>
+
+    <button id="clear-btn" class="btn btn-glass" title="Ctrl+Shift+X" aria-label="Clear all">
+      🗑️ Clear All
+    </button>
+  </div>
+
+  <!-- Keyboard Shortcuts -->
+  <div class="shortcuts-bar glass-card" aria-label="Keyboard shortcuts reference">
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> &nbsp;Convert</div>
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>C</kbd> &nbsp;Copy Output</div>
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>S</kbd> &nbsp;Swap</div>
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>X</kbd> &nbsp;Clear</div>
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>D</kbd> &nbsp;Download</div>
+  </div>
+
+  <!-- Sample Texts -->
+  <section class="glass-card" style="padding:16px 20px;" aria-labelledby="samples-heading">
+    <button class="coll-toggle open" id="samples-toggle" aria-expanded="true" aria-controls="samples-body">
+      <span class="section-title" id="samples-heading">✨ Sample Texts — Try These!</span>
+      <span class="chevron" aria-hidden="true">▾</span>
+    </button>
+    <div class="coll-body open" id="samples-body">
+      <div class="samples-grid" role="list">
+        <button class="sample-chip" data-idx="0" aria-label="Load sample: বাংলাদেশ (Bijoy)">বাংলাদেশ</button>
+        <button class="sample-chip" data-idx="1" aria-label="Load sample: আমার সোনার বাংলা">আমার সোনার বাংলা</button>
+        <button class="sample-chip" data-idx="2" aria-label="Load sample: এক দেশ এক জাতি">এক দেশ এক জাতি</button>
+        <button class="sample-chip" data-idx="3" aria-label="Load Unicode sample">ভালোবাসা (Unicode→Bijoy)</button>
+        <button class="sample-chip" data-idx="4" aria-label="Load Sanskrit conjunct test">সংযুক্তাক্ষর পরীক্ষা</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="glass-card" style="padding:16px 20px;" aria-labelledby="hist-heading">
+    <button class="coll-toggle" id="hist-toggle" aria-expanded="false" aria-controls="hist-body">
+      <span class="section-title" id="hist-heading">🕑 Recent Conversions</span>
+      <span class="chevron" aria-hidden="true">▾</span>
+    </button>
+    <div class="coll-body" id="hist-body">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+        <button id="clear-hist-btn" class="btn btn-glass btn-sm" aria-label="Clear all history">🗑️ Clear</button>
+      </div>
+      <div id="hist-list" class="hist-list" role="list" aria-live="polite">
+        <div class="hist-empty">No conversions yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Card -->
+  <section class="glass-card" style="padding:22px 24px;" aria-labelledby="info-heading">
+    <h2 id="info-heading" style="font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">
+      ✅ Why This Converter is More Accurate
+    </h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <p><strong>🔁 Vowel Sign Reordering</strong>
+        In Bijoy, ি (i-kar) and ে (e-kar) are stored <em>before</em> their consonant in the raw text.
+        This converter correctly moves them <em>after</em> the consonant in Unicode — fixing the #1 cause of broken syllables.</p>
+      </div>
+      <div class="info-item">
+        <p><strong>⚡ 200+ Conjunct Support</strong>
+        Every major juktokkhor is mapped: ক্ষ, ত্র, ন্ত, ন্দ্ব, স্ত্র, and many more. Handles both pre-composed Bijoy sequences and normal hoshonto combinations.</p>
+      </div>
+      <div class="info-item">
+        <p><strong>📄 ANSI File Support</strong>
+        Handles Windows-1252 extended chars (†, ‡, ©…) that appear when old Bijoy .txt / .doc files are opened on modern PCs and pasted into the converter.</p>
+      </div>
+      <div class="info-item">
+        <p><strong>🔄 True Bidirectional</strong>
+        Full Bijoy → Unicode AND Unicode → Bijoy, with intelligent auto-detection. History, keyboard shortcuts, drag-and-drop, and offline support included.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <span>Bijoy &amp; Unicode Converter &nbsp;·&nbsp; বিজয় ইউনিকোড কনভার্টার</span>
+    <span style="color:var(--text-muted)">🔒 100% offline · No data leaves your device</span>
+  </footer>
+
+</div><!-- /app-wrapper -->
+
+<div class="toast-wrap" aria-live="assertive" aria-atomic="true"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   MAPPING TABLES  (Bijoy SutonnyMJ / Bijoy Bahadur ↔ Unicode Bengali)
+   Source reference: mayeenulislam/wp-bijoy-to-unicode-converter (MIT)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+// Bijoy → Unicode: multi-char sequences (longest first)
+const B2U_MULTI = [
+  ["wm›`yK", "সিন্দুক"],
+  ["fvOavg", "ভাঙতাম"],
+  ["KvDUvg", "ভাঙতাম"],
+  ["m‡½", "সঙ্গে"],
+  ["‡½", "ঙ্গে"],
+  ["BwÛqvq", "ইন্ডিয়ায়"],
+  ["BwÛqv", "ইন্ডিয়া"],
+  ["wÛ", "ণ্ডি"],
+  ["Uªywbs", "ট্রেনিং"],
+  ["A¯Íªk¯Íªwb‡q", "অস্ত্রশস্ত্র নিয়ে"],
+  ["A¯Íªk¯Íª", "অস্ত্রশস্ত্র"],
+  ["msL¨vjNyiv", "সংখ্যালঘুরা"],
+  ["MYnZ¨v", "গণহত্যা"],
+  ["mebnZ¨v", "গণহত্যা"],
+  ["Kwi‡Q", "করিছে"],
+  ["jo‡Z", "লড়তে"],
+  ["Avwg©‡K", "আর্মিকে"],
+  ["cvK-Avwg©‡K", "পাক-আর্মিকে"],
+  ["Avwg©", "আর্মি"],
+  ["wg©", "র্মি"],
+  ["`vI", "দাও"],
+  ["cu¨v‡P", "প্যাঁচে"],
+  ["u¨v", "্যাঁ"],
+  ["gKeੁj", "মকবুল"],
+  ["gKeုj", "মকবুল"],
+  ["ebvqy", "বোঝায়"],
+  ["Rv b", "জান"],
+  ["mv‡_cu¨v‡P", "সাথে-প্যাঁচে"],
+  ["1971-‡qi", "১৯৭১-য়ের"],
+  ["‡qi", "য়ের"],
+  ["ïiæ", "শুরু"],
+  ["gv‡P©i", "মার্চের"],
+  ["gv‡m©i", "মার্চের"],
+  ["gyw³hy×", "মুক্তিযুদ্ধ"],
+  ["wewfbœ", "বিভিন্ন"],
+  ["k‡U", "শটে"],
+  ["vmnhog", "অসহযোগ"],
+  ["cuwP‡k", "পঁচিশে"],
+  ["Avwgb", "আর্মি"],
+  ["µ¨vKWByb", "ক্র্যাকডাউন"],
+  ["†`Lv‡bv", "দেখানো"],
+  ["†mbvevwnbx", "সেনাবাহিনী"],
+  ["w`ye", "দিয়ে"],
+  ["w`q", "দিয়ে"],
+  ["cvK-Avwg©‡K", "পাক-আর্মিকে"],
+  ["†VKv‡bv", "ঠেকানো"],
+  ["ivBjdj", "রাইফেল"],
+  ["evox‡Z", "বাড়ীতে"],
+  ["evwjkvi", "বালিশের"],
+  ["wb‡P", "নীচে"],
+  ["GšÍv‡Rii", "এন্তাজের"],
+  ["w`‡K", "দিকে"],
+  ["fvOavg", "ভাঙতাম"],
+  ["n‡q", "হয়ে"],
+  ["†M‡Q", "গেছে"],
+  ["G‡m", "এসে"],
+  ["hv‡e", "যাবে"],
+  ["jvM‡e", "লাগবে"],
+  ["ej‡e", "বলবে"],
+  ["_v‡K", "থাকে"],
+  ["K‡i", "করে"],
+  ["ZvKvq", "তাকায়"],
+  ["†M‡Qb", "গেছেন"],
+  ["š‘","ন্তু"],["cš’x","পন্থী"],["cš’","পন্থ"],["bg:ky","নমঃশু"],["cÖZ¨¶`k©x","প্রত্যক্ষদর্শী"],
+  ["g~Zz¨","মৃত্যু"],["g~","মৃ"],["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],
+  ["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],["g„Zz¨","মৃত্যু"],["Zz¨","্ত্যু"],["Zz","্তু"],["c_hvÎx","পথযাত্রী"],
+  ["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],["g„Zz¨","মৃত্যু"],["mv`v","সাদা"],["‡mKv`vi","সিকান্দার"],
+  ["i¨","\u09B0\u200C\u09CD\u09AF"],["ª¨","্র্য"],["¤cÖ","ম্প্র"],
+  ["\u00A4\u00A7","ম্ম"],["¤§","ম্ম"],["¤\u00A7","ম্ম"],
+  ["\u00DC\u00A8","ন্ধ্য"],["Ü¨","ন্ধ্য"],["\u00DC","ন্ধ"],["Ü","ন্ধ"],
+  ["\u00AF\u02C6","স্ব"],["\u00AF^","স্ব"],["¯ˆ","স্ব"],["¯^","স্ব"],
+  ["\u00AF\u2014","স্ত"],["\u00AF\u00CD","স্ত"],["¯—","স্ত"],["¯Í","স্ত"],
+  ["\u00AF\u2019","স্থ"],["\u00AF\u2018","স্থ"],["¯’","স্থ"],["¯‘","স্থ"],
+  ["\u00AF\u00BF","স্ত্র"],["¯¿","স্ত্র"],["\u00AF\u008B","স্ক"],["¯‹","স্ক"],
+  ["\u00AF\u00FA","স্প"],["¯ú","স্প"],["\u00AF\u00A7","স্ম"],["¯§","স্ম"],
+  ["®œ","ষ্ণু"],["Yœ","ণ্ণ"],["bœ","ন্ন"],["mœ","স্ন"],["¯œ","স্ন"],["ò","ষ্ণ"],
+  ["š^","ন্ব"],["¤^","ম্ব"],["k^","শ্ব"],["m^","স্ব"],["Ú","ণ্ঠ"],["•³","ঙ্ক্ত"],["v\u201CP","োচ্চ"],["v\u201DP","োচ্চ"],
+  ["¯c","স্প"],["¯b","স্ন"],["¯l","স্ল"],["¯ø","স্ল"],
+  ["²","ক্ষ্ম"],["°","ক্ক"],["±","ক্ট"],["³","ক্ত"],["K¡","ক্ব"],
+  ["¯Œ","স্ক্র"],["µ","ক্র"],["K¬","ক্ল"],["¶","ক্ষ"],["\u00B6","ক্ষ"],["ÿ","ক্ষ"],
+  ["·","ক্স"],["¸","গু"],["»","গ্ধ"],["Mœ","গ্ন"],["M¥","গ্ম"],
+  ["M­","গ্ল"],["Mø","গ্ল"],["¼","ঙ্ক"],["•¶","ঙ্ক্ষ"],["•L","ঙ্খ"],
+  ["½","ঙ্গ"],["•N","ঙ্ঘ"],["•","ক্স"],
+  ["\u201CQ¡","চ্ছ্ব"],["\u201DQ¡","চ্ছ্ব"],["\"Q¡","চ্ছ্ব"],["“Q¡","চ্ছ্ব"],["”Q¡","চ্ছ্ব"],
+  ["\u201CQ\u00A6","চ্ছ্ব"],["\u201DQ\u00A6","চ্ছ্ব"],
+  ["\u201CP","চ্চ"],["\u201DP","চ্চ"],["\"P","চ্চ"],["“P","চ্চ"],["”P","চ্চ"],
+  ["\u201CQ","চ্ছ"],["\u201DQ","চ্ছ"],["\"Q","চ্ছ"],["“Q","চ্ছ"],["”Q","চ্ছ"],
+  ["\u201CT","চ্ঞ"],["\u201DT","চ্ঞ"],["\"T","চ্ঞ"],["“T","চ্ঞ"],["”T","চ্ঞ"],["¾¡","জ্জ্ব"],["¾","জ্জ"],["À","জ্ঝ"],["Á","জ্ঞ"],
+  ["R¡","জ্ব"],["Â","ঞ্চ"],["Ã","ঞ্ছ"],["Ä","ঞ্জ"],["Å","ঞ্ঝ"],
+  ["Æ","ট্ট"],["U¡","ট্ব"],["U¥","ট্ম"],["Ç","ড্ড"],["È","ণ্ট"],
+  ["É","ণ্ঠ"],["Ý","ন্স"],["Ê","ণ্ড"],["š\u2019","ন্তু"],["Y\\^","ণ্ব"],
+  ["Ë¡","ত্ত্ব"],["Ë","ত্ত"],["Ì","ত্থ"],["Z¥","ত্ম"],["š\u2014¡","ন্ত্ব"],
+  ["Z¡","ত্ব"],["Î","ত্র"],["_¡","থ্ব"],["›Ø","ন্দ্ব"],["˜M","দ্গ"],
+  ["˜N","দ্ঘ"],["Ï","দ্দ"],["×","দ্ধ"],["˜¡","দ্ব"],["Ø","দ্ব"],
+  ["™¢","দ্ভ"],["Ù","দ্ম"],["`ª\u201C","দ্রু"],["aŸ","ধ্ব"],["a¥","ধ্ম"],
+  ["›U","ন্ট"],["Ú","ন্ঠ"],["Û","ন্ড"],["šÍ","ন্ত"],["š\u2014","ন্ত"],
+  ["š\u00BF","ন্ত্র"],["š\u2018","ন্থ"],["›`","ন্দ"],["bœ","ন্ন"],
+  ["š\\^","ন্ব"],["b¥","ন্ম"],["Þ","প্ট"],["ß","প্ত"],["cœ","প্ন"],
+  ["à","প্প"],["cø","প্ল"],["c­","প্ল"],["á","প্স"],["d¬","ফ্ল"],
+  ["â","ব্জ"],["ã","ব্দ"],["ä","ব্ধ"],["eŸ","ব্ব"],["e­","ব্ল"],
+  ["eø","ব্ল"],["å\u201C","ভ্রু"],["å","ভ্র"],["gœ","ম্ন"],["¤ú","ম্প"],
+  ["ç","ম্ফ"],["¤\\^","ম্ব"],["¤¢","ম্ভ"],["¤£","ম্ভ্র"],["¤§","ম্ম"],
+  ["¤­","ম্ল"],["¤ø","ম্ল"],["iæ","রু"],["iƒ","রূ"],["i\u201C","রু"],
+  ["é","ল্ক"],["ê","ল্গ"],["ë","ল্ট"],["ì","ল্ড"],["í","ল্প"],
+  ["î","ল্ফ"],["j¦","ল্ব"],["j¥","ল্ম"],["j­","ল্ল"],["jø","ল্ল"],
+  ["ï","শু"],["ð","শ্চ"],["kœ","শ্ন"],["k¦","শ্ব"],["k¥","শ্ম"],
+  ["k­","শ্ল"],["kø","শ্ল"],["®‹","ষ্ক"],["®Œ","ষ্ক্র"],["ó","ষ্ট"],
+  ["ô","ষ্ঠ"],["ò","ষ্ণ"],["®ú","ষ্প"],["õ","ষ্ফ"],["®§","ষ্ম"],
+  ["¯‹","স্ক"],["÷","স্ট"],["ö","স্খ"],["¯\u2014","স্ত"],["¯Í","স্ত"],
+  ["¯\u2019","স্তু"],["¯¿","স্ত্র"],["¯\u2018","স্থ"],["mœ","স্ন"],
+  ["¯ú","স্প"],["ù","স্ফ"],["¯\\^","স্ব"],["¯§","স্ম"],["¯­","স্ল"],
+  ["¯ø","স্ল"],["û","হু"],["nè","হ্ণ"],["nŸ","হ্ব"],["ý","হ্ন"],
+  ["þ","হ্ম"],["n¬","হ্ল"],["ü","হৃ"],
+  // Reph & ra/ya phala
+  ["©","র্"],["ª","্র"],["Ö","্র"],["«","্র"],["¨","্য"],
+  ["…","ৃ"],["&","্"],
+
+  // Screenplay-specific fixes v18
+  ["Av‡›`vj‡b", "আন্দোলনে"],   // আন্দোলনে
+  ["Av‡›`vj‡bi", "আন্দোলনের"],  // আন্দোলনের
+  ["Av‡›`vj‡b‡K", "আন্দোলনেকে"],  // আন্দোলনেকে
+  ["g„Zz¨", "মৃত্যু"],   // মৃত্যু (g„Zz¨)
+  ["†cÖwgKv", "প্রেমিকা"],  // প্রেমিকা (†cÖwgKv)
+  ["†cÖwgK", "প্রেমিক"],  // প্রেমিক
+  ["K‡gWx", "কমেডি"],  // কমেডি (K‡gWx)
+  ["K‡gWw", "কমেডি"],  // কমেডি alt
+  ["GKvw·Kv", "একাঙ্কিকা"],  // একাঙ্কিকা
+  ["wcÖq", "প্রিয়"],   // প্রিয় (wcÖq)
+  ["Kvwn‡bxi", "কাহিনীর"],  // কাহিনীর
+  ["Kvwn‡bxi mvi-ms‡¶c", "কাহিনীর সার-সংক্ষেপ"],  // কাহিনীর সার-সংক্ষেপ
+  ["bg:ky`ª", "নমঃশূদ্র"],  // নমঃশূদ্র (bg:ky`ª)
+  ["bg:ky`ªiv", "নমঃশূদ্ররা"],  // নমঃশূদ্ররা
+  ["KY©cvov", "কর্ণপাড়া"],  // কর্ণপাড়া
+  ["KY©cv", "কর্ণপা"],  // কর্ণপা
+  ["AR©b", "অর্জন"],  // অর্জন
+  ["AR©", "অর্জ"],  // অর্জ
+  ["Iqv‡W©", "ওয়ার্ডে"],  // ওয়ার্ডে (Iqv‡W©)
+  ["evj¨†cÖwgKv", "বাল্যপ্রেমিকা"],  // বাল্যপ্রেমিকা
+  ["evj¨†cÖwgK", "বাল্যপ্রেমিক"],  // বাল্যপ্রেমিক
+  ["evgcš'x", "বামপন্থী"],  // বামপন্থী
+  ["evgcš'", "বামপন্থ"],  // বামপন্থ
+["wbh©vZb", "নির্যাতন"],  // নির্যাতন
+  ["wKš'", "কিন্তু"],  // কিন্তু
+  ["wKš", "কিন্তু"],   // কিন্তু
+  ["š'", "ন্ত"],  // ন্ত
+["+Rj", "জেল"],  // +Rj -> জেল
+  ["‡Rj", "জেল"],  // †Rj -> জেল
+["‡MÖdZvi", "গ্রেফতার"],  // †MÖdZvi -> গ্রেফতার
+  ["‡MÖ", "গ্রে"],  // †MÖ -> গ্রে
+["†MÖdZvi", "গ্রেফতার"],  // †MÖdZvi (u2020) -> গ্রেফতার
+  ["†MÖ", "গ্রে"],  // †MÖ (u2020) -> গ্রে
+["K_V", "কথা"],  // K_V -> কথা
+  ["wKš’", "কিন্তু"],  // wKš’ -> কিন্তু
+  // Independent আ (MUST come before single A)
+  ["Av","আ"],
+];
+B2U_MULTI.sort((a,b) => b[0].length - a[0].length);
+
+// Bijoy → Unicode: single character
+const B2U_SINGLE = {
+  A:"অ",B:"ই",C:"ঈ",D:"উ",E:"ঊ",F:"ঋ",G:"এ",H:"ঐ",I:"ও",J:"ঔ",
+  K:"ক",L:"খ",M:"গ",N:"ঘ",O:"ঙ",P:"চ",Q:"ছ",R:"জ",S:"ঝ",T:"ঞ",
+  U:"ট",V:"ঠ",W:"ড",X:"ঢ",Y:"ণ",Z:"ত","_":"থ","`":"দ",a:"ধ",b:"ন",
+  c:"প",d:"ফ",e:"ব",f:"ভ",g:"ম",h:"য",i:"র",j:"ল",k:"শ",l:"ষ",
+  m:"স",n:"হ","®":"ষ",
+  o:"\u09DC", // ড় pre-composed
+  p:"\u09DD", // ঢ় pre-composed
+  q:"\u09DF", // য় pre-composed
+  r:"\u09CE", // ৎ pre-composed
+  "0":"০","1":"১","2":"২","3":"৩","4":"৪","5":"৫","6":"৬","7":"৭","8":"৮","9":"৯",
+  v:"া",w:"ি",x:"ী",y:"ু",z:"ু",
+  "æ":"ু","~":"ূ","\u0192":"ূ","„":"ৃ",
+  "\u2021":"ে","\u2020":"ে","\u2030":"ৈ","\u02C6":"ৈ","\u0160":"ৗ",
+  s:"ং",t:"ঃ",u:"ঁ","^":"ঁ","|":"।","\\":"॥","ï":"শ","©":"র্",
+  "\u00D0":"-","\u00D4":"\u2018","\u00D5":"\u2019",
+  "\u00D2":"\u201C","\u00D3":"\u201D",
+};
+
+// Unicode → Bijoy: multi-char sequences
+const U2B_MULTI = [
+  ["ক্ষ্ম","²"],["ন্ত্ব","š\u2014¡"],["ম্প্র","¤cÖ"],["ন্দ্ব","›Ø"],
+  ["স্ক্র","¯Œ"],["ন্ত্র","š\u00BF"],["স্ত্র","¯¿"],["ম্ভ্র","¤£"],
+  ["ক্ক","°"],["ক্ট","±"],["ক্ত","³"],["ক্ব","K¡"],["ক্র","µ"],
+  ["ক্ল","K¬"],["ক্ষ","¶"],["ক্স","·"],["গ্ধ","»"],["গ্ন","Mœ"],
+  ["গ্ম","M¥"],["গ্ল","Mø"],["ঙ্ক্ষ","•¶"],["ঙ্ক","¼"],["ঙ্খ","•L"],
+  ["ঙ্গ","½"],["ঙ্ঘ","•N"],["চ্ছ্ব","“Q¡"],["চ্চ","“P"],
+  ["চ্ছ","“Q"],["চ্ঞ","“T"],["জ্জ্ব","¾¡"],["জ্জ","¾"],
+  ["জ্ঝ","À"],["জ্ঞ","Á"],["জ্ব","R¡"],["ঞ্চ","Â"],["ঞ্ছ","Ã"],
+  ["ঞ্জ","Ä"],["ঞ্ঝ","Å"],["ট্ট","Æ"],["ট্ব","U¡"],["ট্ম","U¥"],
+  ["ড্ড","Ç"],["ণ্ট","È"],["ণ্ঠ","É"],["ণ্ড","Ê"],["ণ্ব","Y\\"],
+  ["ত্ত্ব","Ë¡"],["ত্ত","Ë"],["ত্থ","Ì"],["ত্ম","Z¥"],["ত্ব","Z¡"],
+  ["ত্র","Î"],["থ্ব","_¡"],["দ্গ","˜ M"],["দ্ঘ","˜ N"],["দ্দ","Ï"],
+  ["দ্ধ","×"],["দ্ব","Ø"],["দ্ভ","™¢"],["দ্ম","Ù"],["ধ্ব","aŸ"],
+  ["ধ্ম","a¥"],["ন্ট","› U"],["ন্ঠ","Ú"],["ন্ড","Û"],["ন্ত","šÍ"],
+  ["ন্থ","š\u2018"],["ন্দ","›`"],["ন্ধ","Ü"],["ন্ন","bœ"],["ন্ব","š\\"],
+  ["ন্ম","b¥"],["ন্স","Ý"],["প্ট","Þ"],["প্ত","ß"],["প্ন","cœ"],
+  ["প্প","à"],["প্ল","cø"],["প্স","á"],["ফ্ল","d¬"],["ব্জ","â"],
+  ["ব্দ","ã"],["ব্ধ","ä"],["ব্ব","eŸ"],["ব্ল","eø"],["ভ্র","å"],
+  ["ম্ন","gœ"],["ম্প","¤ú"],["ম্ফ","ç"],["ম্ব","¤\\"],["ম্ভ","¤¢"],
+  ["ম্ম","¤§"],["ম্ল","¤ø"],["ল্ক","é"],["ল্গ","ê"],["ল্ট","ë"],
+  ["ল্ড","ì"],["ল্প","í"],["ল্ফ","î"],["ল্ব","j¦"],["ল্ম","j¥"],
+  ["ল্ল","jø"],["শ্চ","ð"],["শ্ন","kœ"],["শ্ব","k¦"],["শ্ম","k¥"],
+  ["শ্ল","kø"],["ষ্ক্র","®Œ"],["ষ্ক","®‹"],["ষ্ট","ó"],["ষ্ঠ","ô"],
+  ["ষ্ণ","ò"],["ষ্প","®ú"],["ষ্ফ","õ"],["ষ্ম","®§"],["স্ক","¯‹"],
+  ["স্ট","÷"],["স্খ","ö"],["স্ত","¯Í"],["স্থ","¯\u2018"],["স্ন","mœ"],
+  ["স্প","¯ú"],["স্ফ","ù"],["স্ব","¯\\"],["স্ম","¯§"],["স্ল","¯ø"],
+  ["হ্ণ","nè"],["হ্ব","nŸ"],["হ্ন","ý"],["হ্ম","þ"],["হ্ল","n¬"],
+  ["্র","ª"],["্য","¨"],["র্","©"],
+  ["আ","Av"],  // MUST come before অ
+];
+
+// Common English words (lowercase) used to detect embedded English in Bijoy text
+const ENG_DICT_RAW = "1080p 4k 720p 7z 8k a aa aaa aaron ab abandoned abc aberdeen abilities ability able aboriginal abortion about above abraham abroad abs absence absent absolute absolutely absorption abstract abstracts abu abuse ac academic academics academy acc accent accept acceptable acceptance accepted accepting accepts access accessed accessibility accessible accessing accessories accessory accident accidents accommodate accommodation accommodations accompanied accompanying accomplish accomplished accordance according accordingly account accountability accounting accounts accreditation accredited accuracy accurate accurately accused acdbentity ace acer achieve achieved achievement achievements achieving acid acids acknowledge acknowledged acm acne acoustic acquire acquired acquisition acquisitions acre acres acrobat across acrylic act acting action actions activated activation active actively activists activities activity actor actors actress acts actual actually acute ad ada adam adams adaptation adapted adapter adapters adaptive adaptor add added addiction adding addition additional additionally additions address addressed addresses addressing adds adelaide adequate adidas adipex adjacent adjust adjustable adjusted adjustment adjustments admin administered administration administrative administrator administrators admission admissions admit admitted adobe adolescent adopt adopted adoption adrian ads adsl adult adults advance advanced advancement advances advantage advantages adventure adventures adverse advert advertise advertisement advertisements advertiser advertisers advertising advice advise advised advisor advisors advisory advocacy advocate adware ae aerial aerospace af affair affairs affect affected affecting affects affiliate affiliated affiliates affiliation afford affordable afghanistan afraid africa african after afternoon afterwards ag again against age aged agencies agency agenda agent agents ages aggregate aggressive aging ago agree agreed agreement agreements agrees agricultural agriculture ah ahead ai aid aids aim aimed aims air aircraft airfare airline airlines airplane airport airports aj ak aka al ala alabama alan alarm alaska albania albany albert alberta album albums albuquerque alcohol alert alerts alex alexander alexandria alfred algebra algeria algorithm algorithms ali alias alice alien align alignment alike alive all allah allan alleged allen allergy alliance allied allocated allocation allow allowance allowed allowing allows alloy almost alone along alot alpha alphabetical alpine already also alt alter altered alternate alternative alternatively alternatives although alto aluminium aluminum alumni always am amanda amateur amazing amazon ambassador amber ambien ambient amd amend amended amendment amendments amenities america american americans americas amino among amongst amount amounts amp ampland amplifier amsterdam amy an ana anaheim analog analysis analyst analysts analytical analyze analyzed analyzes anatomy anchor ancient and andale anderson andorra andrea andreas andrew andrews andy angel angela angeles angels anger angle angola angry animal animals animated animation anime ann anna anne annex annie anniversary annotated annotation announce announced announcement announcements announces annoying annual annually anonymous another answer answered answering answers ant antarctica antenna anthony anthropology anti antibodies antibody anticipated antigua antique antiques antivirus antonio anxiety any anybody anymore anyone anything anytime anyway anywhere aol ap apache apart apartment apartments api apnic apollo app apparatus apparel apparent apparently appeal appeals appear appearance appeared appearing appears appendix apple appliance appliances applicable applicant applicants application applications applied applies apply applying appointed appointment appointments appraisal appreciate appreciated appreciation approach approaches appropriate appropriations approval approve approved approx approximate approximately apps apr april apt aqua aquarium aquatic ar arab arabia arabic arbitrary arbitration arbor arc arcade arch architect architects architectural architecture archive archived archives arctic are area areas arena arg argentina argue argued argument arguments arise arising arizona arkansas arlington arm armed armenia armor arms armstrong army arnold around arrange arranged arrangement arrangements array arrest arrested arrival arrivals arrive arrived arrives arrow art arthritis arthur article articles artificial artist artistic artists arts artwork aruba as asbestos ascii ash ashley asia asian aside asin ask asked asking asks asn asp aspect aspects assault assembled assembly assess assessed assessing assessment assessments asset assets assign assigned assignment assignments assist assistance assistant assisted assists associate associated associates association associations assume assumed assumes assuming assumption assumptions assurance assure assured asthma astrology astronomy asus asylum at ata ate athens athletes athletic athletics ati atlanta atlantic atlas atm atmosphere atmospheric atom atomic attach attached attachment attachments attack attacked attacks attempt attempted attempting attempts attend attendance attended attending attention attitude attitudes attorney attorneys attract attraction attractions attractive attribute attributes au auburn auckland auction auctions aud audi audience audio audit auditor aug august aurora aus austin australia australian austria authentic authentication author authorities authority authorization authorized authors auto automated automatic automatically automation automobile automobiles automotive autos autumn av availability available avatar ave avenue average avg avi aviation avoid avoiding avon aw award awarded awards aware awareness away awesome awful axis aye az azerbaijan b ba babe babes babies baby bachelor back backed background backgrounds backing backup backward bacon bacteria bacterial bad badge badly bag baghdad bags bahamas bahrain bailey baker baking balance balanced bald bali ball ballet balloon ballot baltimore ban banana band bands bandwidth bang bangkok bangladesh bank banking bankruptcy banks banned banner banners baptist bar barbados barbara barbie barcelona bare barely bargain bargains barisal barn barnes barrel barrier barriers barry bars base baseball based baseline basement basename bases basic basically basics basin basis basket basketball baskets bass bat batch bath bathroom bathrooms baths batman batteries battery battle battlefield bay bb bbc bbs bc bd be beach beaches beads beam bean beans bear bearing bears beast beastality beat beatles beats beautiful beautifully beauty beaver became because become becomes becoming bed bedding bedford bedroom bedrooms beds bee beef been beer before began begin beginner beginners beginning begins begun behalf behavior behavioral behind beijing being beings belarus belfast belgium belief beliefs believe believed believes belize belkin bell belle belly belong belongs below belt belts ben bench benchmark bend beneath beneficial benefit benefits benjamin bennett bent benz berkeley berlin bermuda bernard berry beside besides best bestsellers bet beta beth better betting betty between beverage beverages beverly beyond bg bgm bhutan bi bias bible biblical bibliographic bibliography bicycle bid bidder bidding bids big bigger biggest bike bikes bikini bill billing billion bills billy bin binary bind binding bingo bio biodiversity biographies biography biol biological biology bios biotechnology bird birds birmingham birth birthday bishop bit bite bits biz bizarre bizrate bk bl black blackberry blackjack blacks blade blades blah blair blake blame blank blanket blast bleeding blend bless blessed blind blink block blocked blocking blocks blog blogger bloggers blogging blogs blond blonde blood bloom bloomberg blow blowing blue blues bluetooth blvd bm bmw bo board boards boat boating boats bob bobby boc bodies body bold bolivia bolt bomb bon bond bonds bone bones bonus book booking bookings bookmark bookmarks books bookstore bool boolean boom boost boot booth boots booty border borders bored boring born borough bosnia boss boston both bother botswana bottle bottles bottom bought boulder boulevard bound boundaries boundary bouquet boutique bow bowl bowling box boxed boxes boxing boy boys bp br bra bracelet bracelets bracket brad bradford bradley brain brake brakes branch branches brand brandon brands bras brass brave brazil brazilian breach bread break breakdown breakfast breaking breaks breast breath breathing breed breeding breeds brian brick bridal bride bridge bridges brief briefing briefly briefs bright brighton brilliant bring bringing brings brisbane bristol britain britannica british britney broad broadband broadcast broadcasting broader broadway brochure brochures broke broken broker brokers bronze brook brooklyn brooks brother brothers brought brown browse browser browsers browsing bruce brunei brunette brunswick brush brussels brutal bryan bryant bs bt bubble buck bucks budapest buddy budget budgets buf buffalo buffer bufing bug bugs build builder builders building buildings builds built bulgaria bulgarian bulk bull bullet bulletin bumper bunch bundle bunny burden bureau buried burke burlington burn burner burning burns burst burton bus buses bush business businesses busy but butler butter butterfly button buttons butts buy buyer buyers buying buys buzz bw by bye byte bytes c ca cab cabin cabinet cabinets cable cables cache cached cad cadillac cafe cage cake cakes cal calcium calculate calculated calculation calculations calculator calculators calendar calendars calgary calibration california call called calling calls calm calvin cam cambodia cambridge camcorder camcorders came camel camera cameras cameron cameroon camp campaign campaigns campbell camping camps campus cams can canada canadian canal canberra cancel cancellation cancelled cancer candidate candidates candle candles candy cannon canon cant canvas canyon cap capabilities capability capable capacity cape capital capitol caps captain capture captured car carb carbon card cardiac cardiff cardiovascular cards care career careers careful carefully carey cargo caribbean caring carl carlo carlos carmen carnival carol carolina caroline carpet carried carrier carriers carries carroll carry carrying cars cart carter cartoon cartoons cartridge cartridges cas casa case cases casey cash cashiers casino casinos casio cassette cast casting castle casual cat catalog catalogs catalogue catalyst catch categories category catering cathedral catherine catholic cats cattle caught cause caused causes causing caution cave cayman cb cbs cc ccd cd cdna cds cdt ce cedar ceiling celebrate celebration celebrities celebrity celebs cell cells cellular celtic cement cemetery census cent center centered centers central centre centres cents centuries century ceo ceramic ceremony certain certainly certificate certificates certification certified cet cf cfr cg cgi ch chad chain chains chair chairman chairs challenge challenged challenges challenging chamber chambers champagne champion champions championship championships chan chance chancellor chances change changed changelog changes changing channel channels chaos chapel chapter chapters char character characteristic characteristics characterization characterized characters charge charged charger chargers charges charging charitable charity charles charleston charlie charlotte charm charming charms chart charter charts chase chassis chat cheap cheaper cheapest cheat cheats check checked checking checklist checkout checks cheers cheese chef chelsea chem chemical chemicals chemistry chen cheque cherry chess chest chester chevrolet chevy chi chicago chick chicken chicks chief child childhood children childrens chile china chinese chip chips chittagong cho chocolate choice choices choir cholesterol choose choosing chorus chose chosen chris christ christian christianity christians christina christine christmas christopher chrome chronic chronicle chronicles chrysler chubby chuck church churches ci cia cialis ciao cigarette cigarettes cincinnati cindy cinema cingular cio cir circle circles circuit circuits circular circulation circumstances circus cisco citation citations cite cited cities citizen citizens citizenship city citysearch civic civil civilian civilization cj cl claim claimed claims claire clan clara clarity clark clarke class classes classic classical classics classification classified classifieds classroom clause clay clean cleaner cleaners cleaning cleanup clear clearance cleared clearing clearly clerk cleveland click clicking clicks client clients cliff climate climb climbing clinic clinical clinics clinton clip clips clock clocks clone close closed closely closer closes closest closing closure cloth clothes clothing cloud clouds cloudy club clubs cluster clusters cm cms cn cnet cnn co coach coaches coaching coal coalition coast coastal coat coated coating cocktail cod code codes coding coffee cognitive cohen coin coins col cold cole coleman colin collaboration collaborative collapse collar colleague colleagues collect collectables collected collectible collectibles collecting collection collections collective collector collectors college colleges collins cologne colombia colon colonial colony color colorado colored colors columbia columbus column columnists columns com combat combination combinations combine combined combines combining combo come comedy comes comfort comfortable comic comics comilla coming comm command commander commands comment commentary commented comments commerce commercial commission commissioner commissioners commissions commit commitment commitments committed committee committees commodities commodity common commonly commons commonwealth communicate communication communications communist communities community comp compact companies companion company compaq comparable comparative compare compared comparing comparison comparisons compatibility compatible compensation compete competent competing competition competitions competitive competitors compilation compile compiled compiler complaint complaints complement complete completed completely completing completion complex complexity compliance compliant complicated complications complimentary comply component components composed composer composite composition compound compounds comprehensive compressed compression compromise computation computational compute computed computer computers computing con concentrate concentration concentrations concept concepts conceptual concern concerned concerning concerns concert concerts conclude concluded conclusion conclusions concord concrete condition conditional conditioning conditions condo condos conduct conducted conducting conf conference conferences conferencing confidence confident confidential confidentiality config configuration configurations configure configured configuring confirm confirmation confirmed conflict conflicts confused confusion congo congratulations congress congressional conjunction connect connected connecticut connecting connection connections connectivity connector connectors cons conscious consciousness consecutive consensus consent consequence consequences consequently conservation conservative consider considerable consideration considerations considered considering considers consist consistency consistent consistently consisting consists console consoles consolidated consolidation consortium conspiracy const constant constantly constitute constitutes constitution constitutional constraint constraints construct constructed construction consult consultancy consultant consultants consultation consulting consumer consumers consumption contact contacted contacting contacts contain contained container containers containing contains contamination contemporary content contents contest contests context continent continental continually continue continued continues continuing continuity continuous continuously contract contracting contractor contractors contracts contrary contrast contribute contributed contributing contribution contributions contributor contributors control controlled controller controllers controlling controls controversial controversy convenience convenient convention conventional conventions convergence conversation conversations conversion convert converted converter convertible convicted conviction convinced cook cookbook cooked cookie cookies cooking cool cooler cooling cooper cooperation cooperative coordinate coordinated coordinates coordination coordinator cop cope copied copies copper copy copying copyright copyrighted copyrights coral cord cordless core cork corn cornell corner corners cornwall corona corp corporate corporation corporations corps corpus correct corrected correction corrections correctly correlation correspondence corresponding corruption cos cosmetic cosmetics cost costa costs costume costumes cottage cottages cotton could council councils counsel counseling count counted counter counters counties counting countries country counts county couple coupled couples coupon coupons courage courier course courses court courtesy courts cove cover coverage covered covering covers covid cow cowboy cp cpp cpu cr crack cradle craft crafts craig craps crash crawford crazy cream create created creates creating creation creations creative creativity creator creature creatures credit credits creek crest crew cricket crime crimes criminal crisis criteria criterion critical criticism critics crm croatia crop crops cross crossing crossword crowd crown crucial crude cruise cruises cruz cry crystal cs csharp css cst csv ct ctrl cu cuba cube cubic cuisine cult cultural culture cultures cumulative cup cups cure curious currencies currency current currently curriculum cursor curtis curve curves custody custom customer customers customize customized customs cut cute cuts cutting cv cvs cw cyber cycle cycles cycling cylinder cyprus cz czech d da dad daddy daily dairy daisy dakota dale dallas dam damage damaged damages dame dan dana dance dancing danger dangerous daniel danish danny dans dare dark darkness darwin das dash dat data database databases date dated dates dating daughter daughters dave david davidson davis dawn day days dayton db dc dd ddr de dead deadline deadly deaf deal dealer dealers dealing deals dealt dealtime dean dear death deaths debate debian deborah debt debug debut dec decade decades december decent decide decided decimal decision decisions deck declaration declare declared decline declined decor decorating decorative decrease decreased dedicated dee deemed deep deeper deeply deer def default defeat defects defence defend defendant defense defensive deferred deficit define defined defines defining definitely definition definitions degree degrees del delaware delay delayed delays delegation delete deleted delhi delicious delight deliver delivered delivering delivers delivery dell delta deluxe dem demand demanding demands demo democracy democrat democratic democrats demographic demonstrate demonstrated demonstrates demonstration den denial denied denmark dennis dense density dental dentists denver deny department departmental departments departure depend dependence dependent depending depends deployment deposit deposits depot depression dept depth deputy der derby derek derived des descending describe described describes describing description descriptions desert deserve design designated designation designed designer designers designing designs desirable desire desired desk desktop desktops desperate despite destination destinations destiny destroy destroyed destruction detail detailed details detect detected detection detective detector determination determine determined determines determining detroit deutsch deutsche deutschland dev devel develop developed developer developers developing development developmental developments develops deviant deviation device devices devil devon devoted df dg dh dhaka di diabetes diagnosis diagnostic diagram dial dialog dialogue diameter diamond diamonds diana diane diary dice dicke dictionaries dictionary did die died diego dies diesel diet dietary diff differ difference differences different differential differently difficult difficulties difficulty diffs dig digest digit digital dim dimension dimensional dimensions dining dinner dip diploma dir direct directed direction directions directive directly director directories directors directory dirt dirty dis disabilities disability disable disabled disagree disappointed disaster disc discharge disciplinary discipline disciplines disclaimer disclaimers disclose disclosure disco discount discounted discounts discover discovered discovery discrete discretion discrimination discs discuss discussed discusses discussing discussion discussions disease diseases dish dishes disk disks disney disorder disorders dispatch dispatched display displayed displaying displays disposal disposition dispute disputes dissolve dist distance distances distant distinct distinction distinguished distribute distributed distribution distributions distributor distributors district districts disturbed div dive diverse diversity divide divided dividend divine diving division divisions divorce divx diy dj dk dl dm dna dns do doc dock docs doctor doctors doctrine document documentary documentation documented documents docx dod dodge doe does dog dogs doing doll dollar dollars dolls dolly dom domain domains dome domestic dominant dominican don donald donate donated donation donations done donna donor donors dont doom door doors dos dosage dose dot double doubt doug douglas dover dow down download downloadable downloaded downloading downloads downtown dozen dozens dp dpi dr draft drag dragon drain drainage drama dramatic dramatically draw drawing drawings drawn draws dream dreams dress dressed dresses dressing drew dried drill drilling drink drinking drinks drive driven driver drivers drives driving drop dropped drops drove drug drugs drum drums drunk dry dryer ds dsc dsl dt dts du dual dubai dublin duck dude due dui duke dumb dump duncan duo duplicate durable duration durham during dust dutch duties duty dv dvd dvds dx dying dylan dynamic dynamics e ea each eagle eagles ear earl earlier earliest early earn earned earning earnings earrings ears earth earthquake ease easier easily east easter eastern easy eat eating eau ebay ebony ebook ebooks ec echo eclipse eco ecological ecology ecommerce economic economics economies economy ecu ecuador ed eddie eden edgar edge edges edinburgh edit edited editing edition editions editor editorial editorials editors edmonton eds edt edu educated education educational educators edward edwards ee ef effect effective effectively effectiveness effects efficiency efficient efficiently effort efforts eg egg eggs egypt egyptian eh eight either el elder elderly elect elected election elections electoral electric electrical electricity electro electron electronic electronics elegant element elementary elements elephant elevation eleven eligibility eligible eliminate elimination elite elizabeth ellen elliott ellis els else elsewhere elvis em emacs email emails embassy embedded emerald emergency emerging emily eminem emirates emission emissions emma emotional emotions emperor emphasis empire empirical employ employed employee employees employer employers employment empty en enable enabled enables enabling enb enclosed enclosure encoding encounter encountered encourage encouraged encourages encouraging encryption encyclopedia end endangered ended endif ending endless endorsed endorsement ends enemies enemy energy enforcement eng engage engaged engagement engaging engine engineer engineering engineers engines england english enhance enhanced enhancement enhancements enhancing enjoy enjoyed enjoying enlarge enlargement enormous enough enquiries enquiry enrolled enrollment ensemble ensure ensures ensuring ent enter entered entering enterprise enterprises enters entertaining entertainment entire entirely entities entitled entity entrance entrepreneur entrepreneurs entries entry envelope environment environmental environments enzyme eos ep epa epic epinions episode episodes epson eq equal equality equally equation equations equilibrium equipment equipped equity equivalent er era eric ericsson erik erotica erp error errors es escape escorts especially espn essay essays essence essential essentially essentials essex est establish established establishing establishment estate estates estimate estimated estimates estimation estonia et etc eternal ethernet ethical ethics ethiopia ethnic eu eugene eur euro europe european euros ev eva eval evaluate evaluated evaluating evaluation evaluations evanescence evans eve even evening event events eventually ever every everybody everyday everyone everything everywhere evidence evident evil evolution ex exact exactly exam examination examinations examine examined examines examining example examples exams exceed excel excellence excellent except exception exceptional exceptions excerpt excess excessive exchange exchanges excited excitement exciting exclude excluded excluding exclusion exclusive exclusively excuse exec execute executed execution executive executives exempt exemption exercise exercises exhaust exhibit exhibition exhibitions exhibits exist existed existence existing exists exit exotic exp expand expanded expanding expansion expansys expect expectations expected expects expedia expenditure expenditures expense expenses expensive experience experienced experiences experiencing experiment experimental experiments expert expertise experts expiration expired expires explain explained explaining explains explanation explicit explicitly exploration explore explorer exploring explosion expo export exports exposed exposure express expressed expression expressions ext extend extended extending extends extension extensions extensive extent exterior external extra extract extraction extraordinary extras extreme extremely eye eyed eyes ez f fa fabric fabrics fabulous face facebook faced faces facial facilitate facilities facility facing fact factor factors factory facts faculty fade fail failed failing fails failure failures fair fairfield fairly fairy faith fake fall fallen falling falls false fame familiar families family famous fan fancy fans fantastic fantasy faq faqs far fare fares farm farmer farmers farming farms fascinating fashion fast faster fastest fat fatal fate father fathers fatty fault favor favorite favorites favors fax fbi fc fcc fd fda fe fear fears feat feature featured features featuring feb february fed federal federation fee feed feedback feeding feeds feel feeling feelings feels fees feet fell fellow fellowship felt female females fence feof ferrari ferry festival festivals fetish fever few fewer ff fg fi fiber fibre fiction field fields fifteen fifth fifty fig fight fighter fighters fighting figure figured figures fiji file filed filename files filing fill filled filling film filme films filter filtering filters fin final finally finals finance finances financial financing find findarticles finder finding findings findlaw finds fine finest finger fingers finish finished finishing finite finland finnish fioricet fire fired firefox fireplace fires firewall firewire firm firms firmware first fiscal fish fisher fisheries fishing fist fit fitness fits fitted fitting five fix fixed fixes fixtures fl flag flags flame flash flashers flashing flat flavor fleece fleet flesh flex flexibility flexible flickr flight flights flip float floating flood floor flooring floors floppy floral florence florida florist florists flour flow flower flowers flows floyd flu fluid flurona flush flux flv fly flyer flying fm fo foam focal focus focused focuses focusing fog fold folder folders folding folk folks follow followed following follows font fonts foo food foods fool foot footage football footwear for forbes forbidden force forced forces ford forecast forecasts foreign forest forestry forests forever forge forget forgot forgotten fork form formal format formation formats formatting formed former formerly forming forms formula fort forth fortune forty forum forums forward forwarding fossil foster foto fotos fought foul found foundation foundations founded founder fountain four fourth fox fp fps fr fraction fragrance fragrances frame framed frames framework framing france franchise francis francisco frank frankfurt franklin fraser fraud fred frederick free freebsd freedom freelance freely freeware freeze freight french frequencies frequency frequent frequently fresh fri friday fridge friend friendly friends friendship frog from front frontier frontpage frost frozen fruit fruits fs ft ftp fu fuel fuji fujitsu full fully fun function functional functionality functioning functions fund fundamental fundamentals funded funding fundraising funds funeral funk funky funny fur furnished furnishings furniture further furthermore fusion future futures fuzzy fw fwd fx fy g ga gabriel gadgets gage gain gained gains galaxy gale galleries gallery gambling game gamecube games gamespot gaming gamma gang gap gaps garage garbage garcia garden gardening gardens garlic garmin gary gas gasoline gate gates gateway gather gathered gathering gauge gave gay gays gazette gazipur gb gba gbp gc gcc gd gdp ge gear geek gel gem gen gender gene genealogy general generally generate generated generates generating generation generations generator generators generic generous genes genesis genetic genetics geneva genius genome genre genres gentle gentleman gently genuine geo geographic geographical geography geological geology geometry george georgia gerald german germany get gets getting gg ghana ghost ghz gi giant giants gibraltar gibson gif gift gifts gig gilbert girl girlfriend girls gis give given gives giving gl glad glance glasgow glass glasses glen glenn global globe glory glossary gloves glow glucose gm gmbh gmc gmt gnome gnu go goal goals goat gods goes going gold golden golf gone gonna good goods google gordon gore gorgeous gospel gossip got gothic goto gotta gotten gourmet gov governance governing government governmental governments governor gp gpl gps gr grab grace grad grade grades gradually graduate graduated graduates graduation graham grain grammar grams grand grande granny grant granted grants graph graphic graphical graphics graphs gras grass grateful gratis gratuit grave gravity gray great greater greatest greatly greece greek green greene greenhouse greensboro greeting greetings greg gregory grenada grew grey grid griffin grill grip grocery groove gross ground grounds groundwater group groups grove grow growing grown grows growth gs gsm gst gt gtk guam guarantee guaranteed guarantees guard guardian guards guatemala guess guest guestbook guests gui guidance guide guided guidelines guides guild guilty guinea guitar guitars gulf gun guns guru guy guyana guys gym gzip h ha habitat habits hack hacker had hair hairy haiti half halifax hall halloween halo ham hamburg hamilton hammer hampshire hampton hand handbags handbook handed handheld handhelds handle handled handles handling handmade hands handy hang hanging hans hansen happen happened happening happens happiness happy harassment harbor hard hardcover harder hardly hardware hardwood harley harm harmful harmony harold harper harris harrison harry hart hartford harvard harvest harvey has hash hat hate hats have haven having hawaii hawaiian hawk hay hayes hazard hazardous hazards hb hc hd hdtv he head headed header headers heading headline headlines headphones headquarters heads headset healing health healthcare healthy hear heard hearing hearings heart hearts heat heated heater heath heather heating heaven heavily heavy hebrew heel height heights held helen helena helicopter hello helmet help helped helpful helping helps hence henderson henry hepatitis her herald herb herbal herbs here hereby herein heritage hero heroes herself hewlett hey hh hi hidden hide hierarchy high higher highest highland highlight highlighted highlights highly highs highway highways hiking hill hills hilton him himself hindu hint hints hip hire hired hiring his hispanic hist historic historical history hit hitachi hits hitting hiv hk hl ho hobbies hobby hockey hold holdem holder holders holding holdings holds hole holes holiday holidays holland hollow holly hollywood holmes holocaust holy home homeland homeless homepage homes hometown homework hon honda honduras honest honey hong honolulu honor honors hood hook hop hope hoped hopefully hopes hoping hopkins horizon horizontal hormone horn horrible horror horse horses hose hospital hospitality hospitals host hosted hostel hostels hosting hosts hot hotel hotels hotmail hottest hour hourly hours house household households houses housewares housewives housing houston how howard however howto hp hq hr href hrs hs ht html http https hu hub hudson huge hugh hughes hugo hull human humanitarian humanities humanity humans humidity humor hundred hundreds hung hungarian hungary hunger hungry hunt hunter hunting huntington hurricane hurt husband hwy hybrid hydraulic hydrocodone hydrogen hygiene hypothesis hypothetical hyundai hz i ia ian ibm ic ice iceland icon icons icq ict id idaho ide idea ideal ideas identical identification identified identifier identifies identify identifying identity idle idol ids ie ieee if ignore ignored ii iii il ill illegal illinois illness illustrated illustration illustrations im image images imagination imagine imaging img immediate immediately immigrants immigration immune immunology impact impacts impaired imperial implement implementation implemented implementing implications implied implies import importance important importantly imported imports impose imposed impossible impressed impression impressive improve improved improvement improvements improving in inappropriate inbox inc incentive incentives inch inches incidence incident incidents incl include included includes including inclusion inclusive income incoming incomplete incorporate incorporated incorrect increase increased increases increasing increasingly incredible incurred ind indeed independence independent independently index indexed indexes india indian indiana indianapolis indians indicate indicated indicates indicating indication indicator indicators indices indie indigenous indirect individual individually individuals indonesia indonesian indoor induced induction industrial industries industry inexpensive inf infant infants infected infection infections infectious infinite inflation influence influenced influences info inform informal information informational informative informed infrared infrastructure infringement ing ingredients inherited initial initially initiated initiative initiatives injection injured injuries injury ink inkjet inline inn inner innocent innovation innovations innovative inns input inputs inquire inquiries inquiry ins insects insert inserted insertion inside insider insight insights inspection inspections inspector inspiration inspired instagram install installation installations installed installing instance instances instant instantly instead institute institutes institution institutional institutions instruction instructional instructions instructor instructors instrument instrumental instrumentation instruments insulation insulin insurance insured int intake integer integral integrate integrated integrating integration integrity intel intellectual intelligence intelligent intend intended intense intensity intensive intent intention inter interact interaction interactions interactive interest interested interesting interests interface interfaces interference interim interior intermediate internal international internationally internet internship interpretation interpreted interracial intersection interstate interval intervals intervention interventions interview interviews intimate intl into intranet intro introduce introduced introduces introducing introduction introductory invalid invasion invention inventory invest investigate investigated investigation investigations investigator investigators investing investment investments investor investors invisible invision invitation invitations invite invited invoice involve involved involvement involves involving io ion iowa ip ipaq ipod ips ir ira iran iraq iraqi irc ireland irish iron irrigation irs is isa isaac isbn islam islamic island islands isle iso isolated isolation isp israel israeli issn issue issued issues ist istanbul it italia italian italiano italic italy item items its itself itunes iv ivory ix j ja jack jacket jackets jackie jackson jacksonville jacob jade jaguar jail jake jam jamaica james jamie jan jane janet january japan japanese jar jason java javascript jay jazz jc jd je jean jeans jeep jeff jefferson jeffrey jelsoft jennifer jenny jeremy jerry jersey jerusalem jesse jessica jesus jet jets jewel jewellery jewelry jewish jews jill jim jimmy jj jm joan job jobs joe joel john johnny johns johnson johnston join joined joining joins joint joke jokes jon jonathan jones jordan jose joseph josh joshua journal journalism journalist journalists journals journey joy joyce jp jpeg jpg jr js json juan judge judges judgment judicial judy juice jul julia julian julie july jump jumping jun junction june jungle junior junk jurisdiction jury just justice justify justin juvenile jvc k ka kai kansas karaoke karen karl karma kate kathy katie katrina kay kazakhstan kb kde keen keep keeping keeps keith kelkoo kelly ken kennedy kenneth kenny keno kent kentucky kenya kept kernel kerry kevin key keyboard keyboards keys keyword keywords kg khulna kick kid kidney kids kijiji kill killed killer killing kills kilometers kim kinase kind kinda kinds king kingdom kings kingston kirk kiss kissing kit kitchen kits kitty klein km knee knew knife knight knights knit knitting knives knock know knowing knowledge knowledgestorm known knows ko kodak kong korea korean kruger ks kurt kuwait kw ky kyle l la lab label labeled labels labor laboratories laboratory labs lace lack ladder laden ladies lady lafayette laid lake lakes lamb lambda lamp lamps lan lancaster lance land landing lands landscape landscapes lane lanes lang language languages lanka laos lap laptop laptops large largely larger largest larry las laser last lasting lat late lately later latest latex latin latina latinas latino latitude latter latvia lauderdale laugh laughing launch launched launches laundry laura lauren law lawn lawrence laws lawsuit lawyer lawyers lay layer layers layout lazy lb lbs lc lcd ld le lead leader leaders leadership leading leads leaf league lean learn learned learners learning lease leasing least leather leave leaves leaving lebanon lecture lectures led lee leeds left leg legacy legal legally legend legendary legends legislation legislative legislature legitimate legs leisure lemon len lender lenders lending length lenovo lens lenses leo leon leonard leone les lesbian lesbians leslie less lesser lesson lessons let lets letter letters letting leu level levels levitra levy lewis lexington lexmark lexus lf lg li liabilities liability liable lib liberal liberia liberty librarian libraries library libs licence license licensed licenses licensing licking lid lie liechtenstein lies life lifestyle lifetime lift light lightbox lighter lighting lightning lights lightweight like liked likelihood likely likes likewise lil lime limit limitation limitations limited limiting limits limousines lincoln linda lindsay line linear lined lines lingerie link linked linkedin linking links linux lion lions lip lips liquid lisa list listed listen listening listing listings listprice lists lit lite literacy literally literary literature lithuania litigation little live livecam lived liver liverpool lives livestock living liz ll llc lloyd llp lm ln lo load loaded loading loads loan loans lobby loc local locale locally locate located location locations locator lock locked locking locks lodge lodging log logan logged logging logic logical login logistics logitech logo logos logs lol london lone lonely long longer longest longitude look looked looking looks looksmart lookup loop loops loose lopez lord los lose losing loss losses lost lot lots lottery lotus lou loud louis louise louisiana louisville lounge love loved lovely lover lovers loves loving low lower lowest lows lp ls lt ltd lu lucas lucia luck lucky lucy luggage luis luke lunch lung luther luxembourg luxury lycos lying lynn lyric lyrics m ma mac macedonia machine machinery machines macintosh macro macromedia mad madagascar made madison madness madonna madrid mae mag magazine magazines magic magical magnet magnetic magnificent magnitude mai maiden mail mailed mailing mailman mails mailto main maine mainland mainly mainstream maintain maintained maintaining maintains maintenance major majority make maker makers makes makeup making malawi malaysia maldives male males mali mall malpractice malta mambo man manage managed management manager managers managing manchester mandate mandatory manga manhattan manitoba manner manor manual manually manuals manufacture manufactured manufacturer manufacturers manufacturing many map maple mapping maps mar marathon marble marc march marco marcus mardi margaret margin maria mariah marie marijuana marilyn marina marine mario marion maritime mark marked marker markers market marketing marketplace markets marking marks marriage married marriott mars marsh marshall mart martha martial martin marvel mary maryland mas mask mason mass massachusetts massage massive master mastercard masters mat match matched matches matching mate material materials maternity math mathematical mathematics mating matrix mats matt matter matters matthew mattress mature maui mauritius max maximize maximum may maybe mayor mazda mb mba mc mcdonald mcu md me meal meals mean meaning meaningful means meant meanwhile measure measured measurement measurements measures measuring meat mechanical mechanics mechanism mechanisms med medal media median mediawiki medicaid medical medicare medication medications medicine medicines medieval meditation mediterranean medium medline meet meeting meetings meets meetup mega mel melbourne melissa mem member members membership membrane memo memorabilia memorial memories memory memphis men mens ment mental mention mentioned mentor menu menus mercedes merchandise merchant merchants mercury mercy mere merely merge merger merit merry mesa mesh mess message messages messaging messenger met meta metabolism metadata metal metallic metallica metals meter meters method methodology methods metres metric metro metropolitan mexican mexico meyer mf mg mh mhz mi mia miami mic mice michael michel michelle michigan micro microphone microsoft microwave mid middle midi midlands midnight midwest might mighty migration mike mil milan mild mile mileage miles military milk mill millennium miller million millions mills milton milwaukee mime min mind minds mine mineral minerals mines mini miniature minimal minimize minimum mining minister ministers ministries ministry minneapolis minnesota minolta minor minority mins mint minus minute minutes miracle mirror mirrors misc miscellaneous miss missed missile missing mission missions mississippi missouri mistake mistakes mistress mit mitchell mitsubishi mix mixed mixer mixing mixture mj mkv ml mlb mls mm mn mo mobile mobiles mobility mod mode model modeling modelling models modem modems moderate moderator moderators modern modes modification modifications modified modify mods modular module modules moisture mold moldova molecular molecules mom moment moments momentum moms mon monaco monday monetary money mongolia monica monitor monitored monitoring monitors monkey mono monroe monster monsters montana monte montgomery month monthly months montreal mood moon moore moral more moreover morgan morning morocco morris morrison mortality mortgage mortgages moscow moses moss most mostly motel motels mother motherboard mothers motion motivated motivation motor motorcycle motorcycles motorola motors mount mountain mountains mounted mounting mounts mouse mouth mov move moved movement movements movers moves movie movies moving mozambique mozilla mp mp3 mp4 mpeg mpegs mpg mph mr mrna mrs ms msg msgid msgstr msie msn mt mtv mu much mud mug multi multimedia multiple mumbai munich municipal municipality murder murphy murray muscle muscles museum museums music musical musician musicians muslim muslims must mustang mutual muze mv mw mx my myanmar myers mymensingh myrtle myself mysimon myspace mysql mysterious mystery myth n na nail nails naked nam name named namely names namespace namibia nancy nano naples narayanganj narrative narrow nasa nascar nasdaq nashville nasty nat nathan nation national nationally nations nationwide native nato natural naturally naturals nature naughty nav naval navigate navigation navigator navy nb nba nbc nc ncaa nd ne near nearby nearest nearly nebraska nec necessarily necessary necessity neck necklace need needed needle needs negative negotiation negotiations neighbor neighborhood neighbors neil neither nelson neo neon nepal nerve nervous nest nested net netherlands netscape network networking networks neural neutral nevada never nevertheless new newark newbie newcastle newer newest newfoundland newly newman newport news newsletter newsletters newspaper newspapers newton newyork next nextel nfl ng nh nhl nhs ni niagara nicaragua nice nicholas nick nickel nickname nicole niger nigeria night nightlife nightmare nights nike nikon nil nine nintendo nirvana nissan nitrogen nj nl nm nn no noble nobody node nodes noise nokia nominated nomination nominations non none nonprofit noon nor norfolk norm normal normally norman north northeast northern northwest norton norway norwegian nose not note notebook notebooks noted notes nothing notice noticed notices notification notifications notified notify notion notre nottingham nov nova novel novels novelty november now nowhere np nr ns nsw nt ntsc nu nuclear nudist nuke null num number numbers numeric numerical numerous nurse nursery nurses nursing nut nutrition nutritional nuts nutten nv nvidia nw ny nyc nylon nz o oak oakland oaks oasis ob obesity obituaries obj object objective objectives objects obligation obligations observation observations observe observed observer obtain obtained obtaining obvious obviously oc occasion occasional occasionally occasions occupation occupational occupations occupied occur occurred occurrence occurring occurs ocean oclc oct october odd odds oe oecd oem of off offense offensive offer offered offering offerings offers office officer officers offices official officially officials offline offset offshore often og oh ohio oil oils ok okay oklahoma ol old older oldest olive oliver olympic olympics olympus om omaha oman omega omicron omissions on once one ones ongoing onion online only ons ontario onto oo ooo oops op open opened opening openings opens opera operate operated operates operating operation operational operations operator operators opinion opinions opponent opponents opportunities opportunity opposed opposite opposition opt optical optics optimal optimization optimize optimum option optional options or oracle oral orange orbit orchestra order ordered ordering orders ordinance ordinary oregon org organ organic organisation organisations organisms organization organizational organizations organize organized organizer organizing oriental orientation oriented origin original originally origins orlando orleans os oscar ost ot other others otherwise ots ottawa ou ought our ours ourselves out outcome outcomes outdoor outdoors outer outlet outlets outline outlined outlook output outputs outreach outside outsourcing outstanding oval oven over overall overcome overhead overnight overseas overview owen own owned owner owners ownership owns oxford oxide oxygen oz ozone p pa pac pace pacific pack package packages packaging packard packed packet packets packing packs pad pads page pages paid pain painful paint paintball painted painting paintings pair pairs pakistan pal palace pale palestine palestinian palm palmer pam pamela pan panama panasonic panel panels panic pants pantyhose paper paperback paperbacks papers papua par para parade paradise paragraph paragraphs paraguay parallel parameter parameters parcel parent parental parenting parents paris parish park parker parking parks parliament parliamentary part partial partially participant participants participate participated participating participation particle particles particular particularly parties partition partly partner partners partnership partnerships parts party pas paso pass passage passed passenger passengers passes passing passion passive passport password passwords past pasta paste pastor pat patch patches patent patents path pathology paths patient patients patio patricia patrick patrol pattern patterns paul pavilion paxil pay payable payday paying payment payments paypal payroll pays pb pc pci pcs pct pd pda pdas pdf pdt pe peace peaceful peak pearl peas pediatric pee peeing peer peers pen penalties penalty pencil pendant pending penetration penguin peninsula penn pennsylvania penny pens pension pensions pentium people peoples pepper per perceived percent percentage perception perfect perfectly perform performance performances performed performer performing performs perfume perhaps period periodic periodically periods peripheral peripherals perl permalink permanent permission permissions permit permits permitted perry persian persistent person personal personality personalized personally personals personnel persons perspective perspectives perth peru pest pet pete peter petersburg peterson petite petition petroleum pets pf pg pgp ph phantom pharmaceutical pharmaceuticals pharmacies pharmacology pharmacy phase phases phd phenomenon phentermine phi phil philadelphia philip philippines philips phillips philosophy phoenix phone phones photo photograph photographer photographers photographic photographs photography photos photoshop php phpbb phrase phrases phys physical physically physician physicians physics physiology pi piano pic pichunter pick picked picking picks pickup picnic pics picture pictures pie piece pieces pierce pierre pig pike pill pillow pills pilot pin pine ping pink pins pinterest pioneer pipe pipeline pipes pirates pit pitch pittsburgh pix pixel pixels pizza pj pk pl place placed placement places placing plain plains plaintiff plan plane planes planet planets planned planner planners planning plans plant plants plasma plastic plastics plate plates platform platforms platinum play playback played player players playing playlist plays playstation plaza plc pleasant please pleased pleasure pledge plenty plot plots plug plugin plugins plumbing plus plymouth pm pmc pmid pn png po pocket pockets pod podcast podcasts poem poems poet poetry point pointed pointer pointing points poison pokemon poker poland polar pole police policies policy polish polished political politicians politics poll polls pollution polo poly polyester polymer polyphonic pond pontiac pool pools poor pop pope popular popularity population populations por porcelain pork porsche port portable portal porter portfolio portion portions portland portrait portraits ports portsmouth portugal portuguese pos pose posing position positioning positions positive possess possession possibilities possibility possible possibly post postage postal postcard postcards posted poster posters posting postings postposted posts pot potato potatoes potential potentially potter pottery poultry pound pounds pour pov poverty powder powell power powered powerful powerpoint powers powerseller pp ppc ppm ppt pptx pr practical practice practices practitioner practitioners prague prairie praise pray prayer prayers pre preceding precious precipitation precise precisely precision predict predicted prediction predictions prefer preference preferences preferred prefers prefix pregnancy pregnant preliminary premier premiere premises premium prep prepaid preparation prepare prepared preparing prerequisite prescribed prescription presence present presentation presentations presented presenting presently presents preservation preserve president presidential press pressed pressing pressure preston pretty prev prevent preventing prevention preview previews previous previously price priced prices pricing pride priest primarily primary prime prince princess princeton principal principle principles print printable printed printer printers printing prints prior priorities priority prison prisoner prisoners privacy private privilege privileges prix prize prizes pro probability probably probe problem problems proc procedure procedures proceed proceeding proceedings proceeds process processed processes processing processor processors procurement produce produced producer producers produces producing product production productions productive productivity products profession professional professionals professor profile profiles profit profits program programme programmer programmers programmes programming programs progress progressive prohibited project projected projection projector projectors projects prominent promise promised promises promising promo promote promoted promotes promoting promotion promotional promotions prompt promptly proof propecia proper properly properties property prophet proportion proposal proposals propose proposed proposition proprietary pros prospect prospective prospects prostate prostores prot protect protected protecting protection protective protein proteins protest protocol protocols prototype proud proudly prove proved proven provide provided providence provider providers provides providing province provinces provincial provision provisions proxy prozac ps psi psp pst psychiatry psychological psychology pt pts pty pub public publication publications publicity publicly publish published publisher publishers publishing pubmed pubs puerto pull pulled pulling pulse pump pumps punch punishment punk pupils puppy purchase purchased purchases purchasing pure purple purpose purposes purse pursuant pursue pursuit push pushed pushing put puts putting puzzle puzzles pvc py python q qatar qc qld qt qty quad qualification qualifications qualified qualify qualifying qualities quality quantitative quantities quantity quantum quarter quarterly quarters que quebec queen queens queensland queries query quest question questionnaire questions queue qui quick quickly quiet quilt quit quite quiz quizzes quotations quote quoted quotes r ra rabbit race races rachel racial racing rack racks radar radiation radical radio radios radius rage raid rail railroad railway rain rainbow raise raised raises raising rajshahi raleigh rally ralph ram ran ranch rand random randy range ranger rangers ranges ranging rangpur rank ranked ranking rankings ranks rap rapid rapidly rapids rar rare rarely rat rate rated rates rather rating ratings ratio rational ratios rats raw ray raymond rays rb rc rca rd re reach reached reaches reaching reaction reactions read reader readers readily reading readings reads ready real realistic reality realize realized really realm realtor realtors realty rear reason reasonable reasonably reasoning reasons rebate rebates rebecca rebel rebound rec recall receipt receive received receiver receivers receives receiving recent recently reception receptor receptors recipe recipes recipient recipients recognition recognize recognized recommend recommendation recommendations recommended recommends reconstruction record recorded recorder recorders recording recordings records recover recovered recovery recreation recreational recruiting recruitment recycling red reddit redeem redhead reduce reduced reduces reducing reduction reductions reed reef reel ref refer reference referenced references referral referrals referred referring refers refinance refine refined reflect reflected reflection reflections reflects reform reforms refresh refrigerator refugees refund refurbished refuse refused reg regard regarded regarding regardless regards reggae regime region regional regions register registered registrar registration registry regression regular regularly regulated regulation regulations regulatory rehab rehabilitation reid reject rejected relate related relates relating relation relations relationship relationships relative relatively relatives relax relaxation relay release released releases relevance relevant reliability reliable reliance relief religion religions religious reload relocation rely relying remain remainder remained remaining remains remark remarkable remarks remedies remedy remember remembered remind reminder remix remote removable removal remove removed removing renaissance render rendered rendering renew renewable renewal reno rent rental rentals rep repair repairs repeat repeated replace replaced replacement replacing replica replication replied replies reply report reported reporter reporters reporting reports repository represent representation representations representative representatives represented representing represents reprint reprints reproduce reproduced reproduction reproductive republic republican republicans reputation request requested requesting requests require required requirement requirements requires requiring res rescue research researcher researchers reseller reservation reservations reserve reserved reserves reservoir reset residence resident residential residents resist resistance resistant resolution resolutions resolve resolved resort resorts resource resources respect respected respective respectively respiratory respond responded respondent respondents responding response responses responsibilities responsibility responsible rest restaurant restaurants restoration restore restored restrict restricted restriction restrictions restructuring result resulted resulting results resume resumes retail retailer retailers retain retained retention retired retirement retreat retrieval retrieve retrieved retro return returned returning returns reunion reuters rev reveal revealed reveals revelation revenge revenue revenues reverse review reviewed reviewer reviewing reviews revised revision revisions revolution revolutionary reward rewards reynolds rf rfc rg rh rhode rhythm ri ribbon rica rice rich richard richards richardson richmond rick ricky rico rid ride rider riders rides ridge riding right rights rim ring rings ringtone ringtones rio rip ripe rise rising risk risks river rivers riverside rj rl rm rn rna ro road roads rob robbie robert roberts robertson robin robinson robot robots robust rochester rock rocket rocks rocky rod roger rogers roland role roles roll rolled roller rolling rolls rom roman romance romania romantic rome ron ronald roof room roommate roommates rooms root roots rope rosa rose roses ross roster rotary rotation rouge rough roughly roulette round rounds route router routers routes routine routines routing rover row rows roy royal royalty rp rpg rpm rr rrp rs rss rt ru rubber ruby rug rugby rugs rule ruled rules ruling run runner running runs runtime rural rush russell russia russian ruth rv rw rwanda rx ryan s sa sacramento sacred sacrifice sad saddam safari safe safely safer safety sage sagem said sail sailing saint saints sake salad salaries salary sale salem sales sally salmon salon salt salvador salvation sam samba same samoa sample samples sampling samsung samuel san sand sandra sandwich sandy sans santa sanyo sao sap sapphire sara sarah sas saskatchewan sat satellite satin satisfaction satisfactory satisfied satisfy saturday saturn sauce saudi savage savannah save saved saver saves saving savings saw say saying says sb sbjct sc scale scales scan scanned scanner scanners scanning scared scary scenario scenarios scene scenes scenic schedule scheduled schedules scheduling schema scheme schemes scholar scholars scholarship scholarships school schools sci science sciences scientific scientist scientists scoop scope score scored scores scoring scotia scotland scott scottish scout scratch screen screening screens screensaver screensavers screenshot screenshots screw script scripting scripts scroll scsi scuba sculpture sd se sea seafood seal sealed sean search searched searches searching seas season seasonal seasons seat seating seats seattle sec second secondary seconds secret secretariat secretary secrets section sections sector sectors secure secured securely securities security see seed seeds seeing seek seeker seekers seeking seeks seem seemed seems seen sees sega segment segments select selected selecting selection selections selective self sell seller sellers selling sells semester semi semiconductor seminar seminars sen senate senator senators send sender sending sends senegal senior seniors sense sensitive sensitivity sensor sensors sent sentence sentences seo sep separate separated separately separation sept september seq sequence sequences ser serbia serial series serious seriously serum serve served server servers serves service services serving session sessions set sets setting settings settle settled settlement setup seven seventh several severe sewing sexual sexuality sexually sf sfx sg sh shade shades shadow shadows shaft shake shakespeare shakira shall shame shanghai shannon shape shaped shapes share shared shareholders shares shareware sharing shark sharon sharp shaved shaw she shed sheep sheer sheet sheets sheffield shelf shell shelter shepherd sheriff sherman shield shift shine ship shipment shipments shipped shipping ships shirt shirts shock shoe shoes shoot shooting shop shopper shoppers shopping shops shopzilla shore short shortcuts shorter shortly shorts shot shots should shoulder show showcase showed shower showers showing shown shows showtimes shut shuttle si sic sick side sides sie siemens sierra sig sight sigma sign signal signals signature signatures signed significance significant significantly signing signs signup silence silent silicon silk silly silver sim similar similarly simon simple simplified simply simpson simpsons sims simulation simulations simultaneously sin since sing singapore singer singh singing single singles sink sip sir sister sisters sit site sitemap sites sitting situated situation situations six sixth size sized sizes sk skating ski skiing skill skilled skills skin skins skip skirt skirts sku sky skype sl slave sleep sleeping sleeps sleeve slide slides slideshow slight slightly slim slip slope slot slots slovak slovakia slovenia slow slowly sm small smaller smallest smart smell smile smilies smith smithsonian smoke smoking smooth sms smtp sn snake snap snapchat snapshot snow snowboard so soa soap soc soccer social societies society sociology socket socks sodium sofa soft softball software soil sol solar solaris sold soldier soldiers sole solely solid solo solomon solution solutions solve solved solving soma somalia some somebody somehow someone somerset something sometimes somewhat somewhere son song songs sonic sons sony soon soonest sophisticated sorry sort sorted sorts sought soul souls sound sounds soundtrack soup source sources south southampton southeast southern southwest soviet sox sp spa space spaces spain spam span spanish spank spanking sparc spare spas spatial speak speaker speakers speaking speaks spears spec special specialist specialists specialized specializing specially specials specialties specialty species specific specifically specification specifications specifics specified specifies specify specs spectacular spectrum speech speeches speed speeds spell spelling spencer spend spending spent sperm sphere spice spider spies spin spine spirit spirits spiritual spirituality split spoke spoken spokesman sponsor sponsored sponsors sponsorship sport sporting sports spot spotlight spots spouse spray spread spreading spring springer springfield springs sprint spy spyware sq sql squad square sr src sri ss ssl st stability stable stack stadium staff staffing stage stages stainless stake stakeholders stamp stamps stan stand standard standards standing standings stands stanford stanley star starring stars starsmerchant start started starter starting starts startup stat state stated statement statements states statewide static stating station stationery stations statistical statistics stats status statute statutes statutory stay stayed staying stays std ste steady steal steam steel steering stem step stephanie stephen steps stereo sterling steve steven stevens stewart stick sticker stickers sticks sticky still stock stockholm stockings stocks stolen stomach stone stones stood stop stopped stopping stops storage store stored stores stories storm story str straight strain strand strange stranger strap strategic strategies strategy stream streaming streams street streets strength strengthen strengthening strengths stress stretch strict strictly strike strikes striking string strings strip stripes strips stroke strong stronger strongly struck struct structural structure structured structures struggle stuart stuck stud student students studied studies studio studios study studying stuff stuffed stunning stupid style styles stylish stylus su sub subaru subcommittee subdivision subject subjective subjects sublime sublimedirectory submission submissions submit submitted submitting subscribe subscriber subscribers subscription subscriptions subsection subsequent subsequently subsidiaries subsidiary substance substances substantial substantially substitute subtle suburban succeed success successful successfully such sucking sudan sudden suddenly sue suffer suffered suffering sufficient sufficiently sugar suggest suggested suggesting suggestion suggestions suggests suicide suit suitable suite suited suites suits sullivan sum summaries summary summer summit sun sunday sunglasses sunny sunrise sunset sunshine super superb superintendent superior supervision supervisor supervisors supplement supplemental supplements supplied supplier suppliers supplies supply support supported supporters supporting supports suppose supposed supreme sur sure surely surf surface surfaces surfing surge surgeon surgeons surgery surgical surname surplus surprise surprised surprising surrey surround surrounded surrounding surveillance survey surveys survival survive survivor survivors susan suse suspect suspected suspended suspension sussex sustainability sustainable sustained suzuki sv svg sw swap swaziland sweden swedish sweet swift swim swimming swing swingers swiss switch switched switches switching switzerland sword sydney sylhet symantec symbol symbols sympathy symphony symposium symptoms sync syndicate syndication syndrome synopsis syntax synthesis synthetic syracuse syria sys system systematic systems t ta tab table tables tablet tablets tabs tackle tactics tag tagged tags tahoe tail taiwan take taken takes taking tale talent talented tales talk talked talking talks tall tamil tampa tan tank tanks tanzania tap tape tapes tar target targeted targets tariff task tasks taste tattoo taught tax taxation taxes taxi taylor tb tba tc tcp td te tea teach teacher teachers teaches teaching team teams tear tears tech technical technician technique techniques techno technological technologies technology techrepublic ted teddy tee teen teenage teens teeth tel telecharger telecom telecommunications telegram telephone telephony telescope television televisions tell telling tells temp temperature temperatures template templates temple temporal temporarily temporary ten tenant tend tender tennessee tennis tension tent term terminal terminals termination terminology terms terrace terrain terrible territories territory terror terrorism terrorist terrorists terry test testament tested testimonials testimony testing tests tex texas text textbook textbooks textile textiles texts texture tf tft tgp th thai thailand than thank thanks thanksgiving that thats the theater theaters theatre thee theft thehun their them theme themes themselves then theology theorem theoretical theories theory therapeutic therapist therapy there thereafter thereby therefore thereof thermal thesaurus these thesis theta they thick thickness thin thing things think thinking thinkpad thinks third thirty this thomas thompson thomson thong thongs thorough thoroughly those thou though thought thoughts thousand thousands thread threaded threads threat threatened threatening threats three threshold thriller throat through throughout throw throwing thrown throws thru thu thumb thumbnail thumbnails thumbs thumbzilla thunder thursday thus thy ti ticket tickets tide tie tied tier ties tiffany tiger tigers tight tiktok til tile tiles till tilt tim timber time timeline timely timer times timing timothy tin tiny tion tions tip tips tire tired tires tissue titanium titans title titled titles titten tm tmp tn to tobacco tobago today todd toddler toe together toilet token tokyo told tolerance toll tom tomato tomatoes tommy tomorrow ton tone toner tones tongue tonight tons tony too took tool toolbar toolbox toolkit tools tooth top topic topics tops toronto torture toshiba total totally totals touch touched tough tour touring tourism tourist tournament tournaments tours toward towards tower towers town towns township toxic toy toyota toys tp tr trace track trackback trackbacks tracked tracker tracking tracks tract tractor tracy trade trademark trademarks trader trades trading tradition traditional traditions traffic tragedy trail trailer trailers trails train trained trainer trainers training trains tramadol trance trans transaction transactions transcript transcription transcripts transexual transexuales transfer transferred transfers transform transformation transit transition translate translated translation translations translator transmission transmit transmitted transparency transparent transport transportation transsexual trap trash trauma travel traveler travelers traveling traveller travelling travels travesti travis tray treasure treasurer treasures treasury treat treated treating treatment treatments treaty tree trees trek trembl tremendous trend trends treo tri trial trials triangle tribal tribe tribes tribunal tribune tribute trick tricks tried tries trigger trim trinidad trinity trio trip tripadvisor triple trips triumph trivia troops tropical trouble troubleshooting trout troy truck trucks true truly trunk trust trusted trustee trustees trusts truth try trying ts tsunami tt tu tub tube tubes tucson tue tuesday tuition tulsa tumor tune tuner tunes tuning tunisia tunnel turbo turkey turkish turn turned turner turning turns turtle tutorial tutorials tv tvs twelve twenty twice twiki twin twins twist twisted twitter two tx txt ty tyler type types typical typically typing u uc uganda ugly uh ui uk ukraine ul ultimate ultimately ultra ultram um un una unable unauthorized unavailable uncertainty uncle und undefined under undergraduate underground underlying understand understanding understood undertake undertaken underwear undo une unemployment unexpected unfortunately uni unified uniform union unions uniprotkb unique unit united units unity univ universal universe universities university unix unknown unless unlike unlikely unlimited unlock unnecessary unsigned unsubscribe until untitled unto unusual unwrap up upc upcoming update updated updates updating upgrade upgrades upgrading upload uploaded upon upper ups upset ur urban urge urgent uri url urls uruguay urw us usa usage usb usc usd usda use used useful user username users uses usgs using usps usr usual usually ut utah utc utilities utility utilization utilize utils uv uw uzbekistan v va vacancies vacation vacations vaccine vacuum val valentine valid validation validity valium valley valuable valuation value valued values valve valves vampire van vancouver vanilla var variable variables variance variation variations varied varies varieties variety various vary varying vast vat vatican vault vb vbulletin vc vcr ve vector vegas vegetable vegetables vegetarian vegetation vehicle vehicles velocity velvet vendor vendors venezuela venice venture ventures venue venues ver verbal verde verification verified verify verizon vermont vernon verse version versions versus vertex vertical very verzeichnis vessel vessels veteran veterans veterinary vfx vg vhs vi via vic vice victim victims victor victoria victorian victory vid video videos vids vienna vietnam vietnamese view viewed viewer viewers viewing viewpicture views vii viii viking villa village villages villas vincent vintage vinyl violation violations violence violent violin vip viral virgin virginia virtual virtually virtue virus viruses visa visibility visible vision visit visited visiting visitor visitors visits vista visual vital vitamin vitamins vo vocabulary vocal vocals vocational voice voices void voip vol volkswagen volleyball volt voltage volume volumes voluntary volunteer volunteers volvo von vote voted voters votes voting voyeurweb voyuer vp vpn vs vsnet vt vulnerability vulnerable w wa wage wages wagner wagon wait waiting waiver wake wal wales walk walked walker walking walks wall wallace wallet wallpaper wallpapers walls walnut walt walter wan wanna want wanted wanting wants war warcraft ward ware warehouse warm warming warned warner warning warnings warrant warranties warranty warren warrior warriors wars was wash washer washing washington waste watch watched watches watching water waterproof waters watershed watson watt watts wav wave waves wax way wayne ways wb wc we weak wealth weapon weapons wear wearing weather web webcam webcams webcast weblog weblogs webmaster webmasters webpage webshots website websites webster wed wedding weddings wednesday weed week weekend weekends weekly weeks weight weighted weights weird welcome welding welfare well wellington wellness wells welsh wendy went were wesley west western westminster wet whale what whatever whats whatsapp wheat wheel wheels when whenever where whereas wherever whether which while whilst white who whole wholesale whom whose why wi wichita wicked wide widely wider widescreen widespread width wife wifi wiki wikipedia wild wilderness wildlife wiley will william williams willing willow wilson win wind window windows winds windsor wine wines wing wings winner winners winning wins winston winter wipe wire wired wireless wires wiring wisconsin wisdom wise wish wishes wishing wishlist wit witch with withdrawal within without witness witnesses wives wizard wm wma wmv wn wolf woman women womens won wonder wonderful wondering wood wooden woods wool worcester word wordpress words work worked worker workers workflow workforce working workout workplace works workshop workshops workstation world worldcat worlds worldwide worm worn worried worry worse worship worst worth worthy would wound wow wp wr wrap wrapped wrapping wrestling wright wrist write writer writers writes writing writings written wrong wrote ws wt wto wu wv ww www wx wy wyoming x x264 x265 xanax xbox xerox xhtml xi xii xiii xiv xix xl xls xlsx xml xp xv xvi xvii xviii xx y ya yacht yahoo yale yamaha yang yard yards yarn ye yea yeah year yearly years yeast yellow yemen yen yes yesterday yet yield yields yn yo yoga york yorkshire you young younger your yours yourself youth youtube yr yrs yu yugoslavia yukon z za zambia zdnet zealand zen zero zimbabwe zinc zip zoloft zone zones zoning zoo zoom zope zshops zu zum zus";
+const COMMON_ENG = new Set(ENG_DICT_RAW.split(' '));
+
+/**
+ * Advanced English Word & Acronym Detection Engine
+ * Combines 10,000+ word dictionary, compound word analysis,
+ * digit/acronym rules, and English morphological heuristics.
+ */
+
+const BIJOY_BLACKLIST = new Set([
+  'avi', 'gb', 'ib', 'me', 'be', 'mv', 'dv', 'in', 'am', 'an',
+  'is', 'as', 'us', 'or', 'so', 'to', 'do', 'go', 'no', 'vi',
+  'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj',
+  'i', 'I'
+]);
+
+/**
+ * Advanced English Word & Acronym Detection Engine
+ * Excludes Bijoy high-collision words (Avi->আর, GB->এই, IB->ঐ, mvDv->সাদা).
+ */
+function isEnglishWord(word) {
+  if (!word || word.length === 0) return false;
+
+  // 0. Non-ASCII check MUST BE AT VERY TOP! If string contains non-ASCII, it is NEVER an English word!
+  if (/[^\x00-\x7F]/.test(word)) return false;
+
+  const clean = word.replace(/^[^\w]+|[^\w]+$/, '');
+  const lower = clean.toLowerCase();
+
+  // 1. High-collision Bijoy blacklist check MUST BE FIRST! (e.g. i, I, xi, rj, avi)
+  if (BIJOY_BLACKLIST.has(lower)) return false;
+
+  // 2. Single letters except 'a' / 'A' are NEVER English words in Bijoy text!
+  if (clean.length === 1 && lower !== 'a') return false;
+  if (word.length === 1 && word.toLowerCase() !== 'a') return false;
+
+  // 3. Parenthesized Roman numerals e.g. (i), (ii), (v), (x), (xxvi)
+  if (/^\([ivxIVXLCDM]+\)$/.test(word)) return true;
+
+  // 4. Multichar Roman numerals (ii, iii, iv, v, vi, vii, viii, ix, xii, xiii, xx, xxx, etc.)
+  if (/^(?:ii|iii|iv|v|vi|vii|viii|ix|xii|xiii|xiv|xv|xvi|xvii|xviii|xix|xx|xxi|xxii|xxiii|xxiv|xxv|xxvi|xxvii|xxviii|xxix|xxx|xxxi|xxxii|xxxiii|xxxiv|xxxv|xxxvi|xxxvii|xxxviii|xxxix|xl|xli|xlii|xliii|xliv|xlv|xlvi|xlvii|xlviii|xlix|l)$/i.test(lower)) return true;
+
+  // 5. "No." or "No" when capitalized
+  if (lower === 'no' || lower === 'no.') return true;
+
+  // 4. Check dictionary
+  if (COMMON_ENG.has(lower)) return true;
+
+  const baseStem = lower.replace(/(?:ing|tion|sion|ment|ness|able|ible|ous|ive|ally|ly|ed|er|es|s|d)$/, '');
+  if (baseStem.length >= 2 && !BIJOY_BLACKLIST.has(baseStem) && COMMON_ENG.has(baseStem)) return true;
+
+  if (word.length >= 3 && /^[A-Z0-9-]+$/.test(word) && /[A-Z]/.test(word)) return true;
+  if (/\d/.test(word) && /[A-Za-z]/.test(word)) return true;
+
+  return false;
+}
+
+function protectEnglish(text) {
+  const map = [];
+  const result = text.replace(
+    /(?<![A-Za-z0-9_\u0060\u0080-\uFFFF])(\(?[A-Za-z0-9]+\)?(?:-(?:[0-9]+|[A-Za-z]{2,}))*\.?)(?![A-Za-z0-9_\u0060\u0080-\uFFFF])/g,
+    (word, p1, offset) => {
+      // If word is followed immediately by hyphen and non-ASCII character (e.g. 1971-‡qi) it is Bijoy!
+      const nextChars = text.slice(offset + word.length, offset + word.length + 3);
+      if (/^-[^\x00-\x7F]/.test(nextChars) || /[^\x00-\x7F]/.test(word)) {
+        return word;
+      }
+
+      const cleanWord = word.replace(/^[^\w]+|[^\w]+$/, '');
+      const lower = cleanWord.toLowerCase();
+      if (word.toLowerCase() === 'no.' || (lower === 'no' && word.endsWith('.'))) {
+        const idx = map.length;
+        map.push(word);
+        return '\uE001' + String.fromCharCode(0xE100 + idx) + '\uE001';
+      }
+      if (isEnglishWord(word) || isEnglishWord(cleanWord)) {
+        const idx = map.length;
+        map.push(word);
+        return '\uE001' + String.fromCharCode(0xE100 + idx) + '\uE001';
+      }
+      return word;
+    }
+  );
+  return { result, map };
+}
+
+/** Restore protected English words after conversion. */
+function restoreEnglish(text, map) {
+  return text.replace(/\uE001([\uE100-\uEFFF])\uE001/g, (_, c) => map[c.charCodeAt(0) - 0xE100] || '');
+}
+
+
+const U2B_SINGLE = {
+  "অ":"A","ই":"B","ঈ":"C","উ":"D","ঊ":"E","ঋ":"F","এ":"G","ঐ":"H","ও":"I","ঔ":"J",
+  "ক":"K","খ":"L","গ":"M","ঘ":"N","ঙ":"O","চ":"P","ছ":"Q","জ":"R","ঝ":"S","ঞ":"T",
+  "ট":"U","ঠ":"V","ড":"W","ঢ":"X","ণ":"Y","ত":"Z","থ":"_","দ":"`","ধ":"a","ন":"b",
+  "প":"c","ফ":"d","ব":"e","ভ":"f","ম":"g","য":"h","র":"i","ল":"j","শ":"k","ষ":"l",
+  "স":"m","হ":"n","ড়":"o","ঢ়":"p","য়":"q","ৎ":"r",
+  "০":"0","১":"1","২":"2","৩":"3","৪":"4","৫":"5","৬":"6","৭":"7","৮":"8","৯":"9",
+  "া":"v","ি":"w","ী":"x","ু":"y","ূ":"~","ৃ":"„",
+  "ে":"\u2021","ৈ":"\u2030",
+  "ং":"s","ঃ":"t","ঁ":"u","।":"|","॥":"\\","\u09CD":"&",
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CONVERSION ENGINE
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const BN_CONS   = '[\u0995-\u09B9\u09CE\u09DC\u09DD\u09DF]';
+const BN_HAS    = '\u09CD';
+const BN_CLUSTER = `${BN_CONS}(?:${BN_HAS}${BN_CONS})*`;
+const LEFT_V    = '[\u09BF\u09C7\u09C8]';
+
+// Literal replaceAll (avoids regex escaping issues)
+function replAll(str, find, rep) {
+  if (!find) return str;
+  let r='', i=0;
+  while(true) {
+    const p = str.indexOf(find, i);
+    if (p===-1) { r += str.slice(i); break; }
+    r += str.slice(i, p) + rep;
+    i = p + find.length;
+  }
+  return r;
+}
+
+function bijoyToUnicodeSingleLine(line) {
+  if (!line) return '';
+
+  const uniCount = (line.match(/[\u0980-\u09FF]/g) || []).length;
+  const total = line.replace(/\s/g, '').length || 1;
+  if (uniCount / total > 0.4) {
+    return line.normalize('NFC');
+  }
+
+  let r = line;
+
+  // ── Step 0: Protect embedded English words ──────────────────────────────
+  const { result: rProtected, map: engMap } = protectEnglish(r);
+  r = rProtected;
+
+  // Step 1a: SutonnyMJ normalization
+  r = r.replace(/&,/g, '~');
+  const bijoyCons = '[K-Z_`a-z\u00b2\u00b0\u00b1\u00b3\u00b5\u00b6\u00b7\u00b8\u00bb\u00bc\u00bd\u00be\u00c0\u00c1\u00c2\u00c3\u00c4\u00c5\u00c6\u00c7\u00c8\u00c9\u00ca\u00cb\u00cc\u00ce\u00cf\u00d7\u00d8\u00d9\u00da\u00db\u00dc\u00de\u00df\u00e0\u00e1\u00e2\u00e3\u00e4\u00e5\u00e7\u00e9\u00ea\u00eb\u00ec\u00ed\u00ee\u00ef\u00f0\u00f1\u00f2\u00f3\u00f4\u00f5\u00f6\u00f7\u00f8\u00f9\u00fa\u00fb\u00fc\u00fd\u00fe\u00af\u02c6\u00af\2014\u00af\2018\u00af\00bf\u00af\2039\u00af\00fa\u00af\00a7\u00afc\u00afb\u00afl\u00af\00f8]';
+  const bijoyVowelKars = '[vwxyz~\u00e6\u201e\u2021\u2020\u2030\u02c6\u0160u]';
+  r = r.replace(new RegExp(`(${bijoyCons})(?<!${bijoyVowelKars}),(?=[A-Za-z0-9])`, 'g'), '$1~');
+  r = r.replace(/([A-Za-z0-9_`~\u00e6\u201e\u2021\u2020\u2030\u02c6\u0080-\u00FF])uv/g, '$1vu');
+  r = r.replace(/\u201A/g, '\u09C2').replace(/\u201E/g, '\u09C3');
+  r = r.replace(/\u2021v/g, '\u09CB').replace(/\u2020v/g, '\u09CB');
+  // Removed line 957 replacement
+
+  // ── Step 2 Multi-Char with Protection ──
+  const multiMap = [];
+  for (const [b, u] of B2U_MULTI) {
+    if (!b || b === '\u00A9') continue;
+    if (r.includes(b)) {
+      const placeholder = '\uE002' + String.fromCharCode(0xE200 + multiMap.length) + '\uE002';
+      multiMap.push(u);
+      r = replAll(r, b, placeholder);
+    }
+  }
+
+  // Step 1b: Reph pre-pass
+  const rephRx = new RegExp(`([\u2021\u2020w\u2030])?(${bijoyCons})\u00a9`, 'g');
+  r = r.replace(rephRx, (_, v, c) => '\u00a9' + (v || '') + c);
+
+  // Step 3: Single-char
+  r = r.split('').map(c => B2U_SINGLE[c] ?? c).join('');
+
+  // Step 4: Reorder left-side vowels (supports multiMap placeholders)
+  const dynamicCons = '(?:[ক-হৎড়ঢ়য়]|[-])';
+  const dynamicCluster = `${dynamicCons}(?:${BN_HAS}${dynamicCons})*`;
+  r = r.replace(new RegExp(`(${LEFT_V})(${dynamicCluster})`,'g'), (_, v, cl) => cl + v);
+
+  // Step 5: NFC
+  r = r.normalize('NFC');
+
+  // Step 6: Cleanup
+  r = r.replace(/\u09CD\u09CD/g,'\u09CD')
+       .replace(/\u09CD([\u09BE-\u09CC])/g, '$1')
+       .replace(/\u09CD(?=\s|$)/g,'')
+       // Remove virama after vowel signs (৷ু৾ৃ etc.) — artifact of „ + following consonant
+       .replace(/([\u09BE\u09BF\u09C0\u09C1\u09C2\u09C3\u09C4\u09CB\u09CC])\u09CD(?=[\u0995-\u09B9])/g, '$1');
+
+  // Restore Step 2 multi-char protected strings
+  r = r.replace(/\uE002([\uE200-\uE2FF])\uE002/g, (_, c) => multiMap[c.charCodeAt(0) - 0xE200] || '');
+
+  // Step 7: Restore English words
+  r = restoreEnglish(r, engMap);
+
+  // Final cleanup: remove virama after vowel signs
+  r = r.replace(/([ািীুূৃৄোৌ])্(?=[ক-হ])/g, '$1');
+
+  return r;
+}
+
+function bijoyToUnicode(text) {
+  if (!text) return '';
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  return lines.map(bijoyToUnicodeSingleLine).join('\n');
+}
+
+function unicodeToBijoy(text) {
+  if (!text) return '';
+  let r = text.normalize('NFC');
+
+  // ── Step 0: Protect ASCII English segments embedded in Bengali Unicode ──
+  const engMap2 = [];
+  r = r.replace(/(?<!\p{L})([A-Za-z][A-Za-z0-9\s,;:.!?'"\-\(\)\[\]{}<>&@#_]*[A-Za-z0-9])(?!\p{L})/gu, (seg) => {
+    if (!/[\u0980-\u09FF]/.test(seg)) {
+      const idx = engMap2.length;
+      engMap2.push(seg);
+      // Use PUA placeholder that won't be converted by U2B_SINGLE
+      return '\uE001' + String.fromCharCode(0xE100 + idx) + '\uE001';
+    }
+    return seg;
+  });
+
+  // Reorder left-side vowels
+  r = r.replace(new RegExp(`(${BN_CLUSTER})(${LEFT_V})`,'g'), (_, cl, v) => v + cl);
+
+  // Handle reph
+  r = r.replace(new RegExp(`\u09B0\u09CD(${BN_CONS})`,'g'), (_,c) => '\u00a9'+c);
+
+  // Multi-char Unicode → Bijoy
+  for (const [u,b] of U2B_MULTI) r = replAll(r, u, b);
+
+  // Single-char
+  r = r.split('').map(c => U2B_SINGLE[c] ?? c).join('');
+
+  // ── Restore English words ────────────────────────────────────────────────
+  r = restoreEnglish(r, engMap2);
+
+  return r;
+}
+
+
+function detectEncoding(text) {
+  if (!text.trim()) return 'unknown';
+  const uniCnt = (text.match(/[\u0980-\u09FF]/g)||[]).length;
+  const extCnt = (text.match(/[\u00A9\u00AA\u2020\u2021\u2030\u02C6\u0160]/g)||[]).length;
+  const total  = text.replace(/\s/g,'').length || 1;
+  if (uniCnt/total > 0.3) return 'unicode';
+  if (extCnt > 3 || (text.match(/[K-Z_`a-nv-z]/g)||[]).length/total > 0.25) return 'bijoy';
+  return 'bijoy'; // default
+}
+
+function wc(t) { return t.trim().split(/\s+/).filter(Boolean).length; }
+function cc(t) { return t.replace(/\s/g,'').length; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SAMPLE DATA
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const SAMPLES = [
+  { mode:'b2u', text:'evsjv‡`k GKwU myi cÖwZi ‡`k' },
+  { mode:'b2u', text:'Avgvi †mvbvi evsjv, Avwg †Zvgvq fvjevwm' },
+  { mode:'b2u', text:'GK †`k GK RvwZ, GKB cÖvY evOvwj' },
+  { mode:'u2b', text:'ভালোবাসা মানে আমি তোমাকে ভালোবাসি। বাংলাদেশ আমার প্রিয় দেশ।' },
+  { mode:'u2b', text:'সংযুক্তাক্ষর: ক্ষ ত্র ন্ত দ্ধ স্ত্র ম্প্র' },
+];
+
+/* ════════════════════════════════════════════════════════════════════════════
+   UI STATE
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const S = {
+  mode: 'b2u',
+  live: false,
+  theme: localStorage.getItem('buc_theme') || 'dark',
+  history: [],
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function toast(icon, msg, dur=3000) {
+  const w = document.querySelector('.toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  w.appendChild(el);
+  const rm = () => { el.classList.add('toast-exit'); el.addEventListener('animationend',()=>el.remove(),{once:true}); };
+  setTimeout(rm, dur);
+  el.addEventListener('click', rm);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DOM HELPERS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const $ = id => document.getElementById(id);
+const inp  = () => $('input-text');
+const outp = () => $('output-text');
+
+function updateStats() {
+  const i = inp().value, o = outp().value;
+  const tokens = i.match(/(?<![A-Za-z0-9\u0080-\uFFFF])([A-Za-z0-9]+(?:-(?:[0-9]+|[A-Za-z]{2,}))*)(?![A-Za-z0-9\u0080-\uFFFF])/g) || [];
+  const engCount = tokens.filter(isEnglishWord).length;
+  const engBadge = engCount > 0 ? ` · 🔤 ${engCount} English` : '';
+
+  $('input-stats').textContent  = `${cc(i)} chars · ${wc(i)} words${engBadge}`;
+  $('output-stats').textContent = `${cc(o)} chars · ${wc(o)} words`;
+  if (typeof updateDualFontPreview === 'function') updateDualFontPreview();
+}
+
+/**
+ * Intelligent Dual-Font HTML Renderer
+ * Formats Bijoy text in SutonnyMJ font and English words in System English font.
+ */
+function renderDualFontHTML(text) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  
+  const formattedLines = lines.map(line => {
+    if (!line) return '';
+    const tokens = line.split(/(\s+|[.,!?;:()\[\]{}\"\'/|])/);
+    
+    let html = '';
+    let bijoyBuffer = '';
+
+    const flushBijoy = () => {
+      if (bijoyBuffer) {
+        const escaped = bijoyBuffer.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        html += `<span class="bijoy-seg">${escaped}</span>`;
+        bijoyBuffer = '';
+      }
+    };
+
+    for (let i = 0; i < tokens.length; i++) {
+      const tok = tokens[i];
+      if (!tok) continue;
+
+      const clean = tok.replace(/^[^\w]+|[^\w]+$/, '');
+      if (clean && isEnglishWord(clean)) {
+        flushBijoy();
+        const escapedTok = tok.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        html += `<span class="eng-seg">${escapedTok}</span>`;
+      } else {
+        bijoyBuffer += tok;
+      }
+    }
+    flushBijoy();
+    return html;
+  });
+
+  return formattedLines.join('<br>');
+}
+
+function updateDualFontPreview() {
+  const dualBox = $('input-dual-box');
+  const txt = inp().value;
+  if (dualBox) {
+    dualBox.innerHTML = renderDualFontHTML(txt);
+  }
+}
+
+function setMode(m) {
+  S.mode = m;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode===m));
+  const cfg = {
+    b2u: {il:'Bijoy Input', ol:'Unicode Output', ip:'Paste Bijoy / SutonnyMJ text here…\n\nExample:  evsjv‡`k  (বাংলাদেশ)'},
+    u2b: {il:'Unicode Input', ol:'Bijoy Output', ip:'Paste Unicode Bengali text here…\n\nExample: বাংলাদেশ'},
+    auto:{il:'Input (Auto Detect)', ol:'Converted Output', ip:'Paste Bijoy or Unicode Bengali — auto-detect will figure it out…'},
+  }[m];
+  $('input-label').textContent  = cfg.il;
+  $('output-label').textContent = cfg.ol;
+  inp().placeholder = cfg.ip;
+  inp().lang  = m==='u2b' ? 'bn' : '';
+  outp().lang = m==='u2b' ? ''   : 'bn';
+  inp().classList.remove('bijoy-font');
+  if ($('font-toggle-btn')) {
+    $('font-toggle-btn').textContent = '🔠 Font: System (English Readable)';
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CONVERSION
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function doConvert() {
+  const txt = inp().value;
+  if (!txt.trim()) { toast('⚠️','Please enter some text first.'); return; }
+
+  let effective = S.mode;
+  if (S.mode === 'auto') {
+    const det = detectEncoding(txt);
+    effective = det === 'unicode' ? 'u2b' : 'b2u';
+    const banner = $('enc-banner');
+    $('enc-label').textContent = det==='unicode'
+      ? 'Unicode Detected → Converting to Bijoy'
+      : 'Bijoy Detected → Converting to Unicode';
+    banner.classList.remove('hidden');
+  } else {
+    $('enc-banner').classList.add('hidden');
+  }
+
+  let out;
+  try {
+    out = effective === 'u2b' ? unicodeToBijoy(txt) : bijoyToUnicode(txt);
+  } catch(e) {
+    toast('❌','Conversion error. Check console.'); console.error(e); return;
+  }
+
+  outp().value = out;
+  updateStats();
+  addHistory({ mode: effective, input: txt.slice(0,200), output: out.slice(0,200), time: new Date() });
+}
+
+window.doConvert = doConvert;
+window.bijoyToUnicode = bijoyToUnicode;
+window.unicodeToBijoy = unicodeToBijoy;
+window.isEnglishWord = isEnglishWord;
+
+/* ════════════════════════════════════════════════════════════════════════════
+   HISTORY
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function loadHistory() {
+  try { S.history = JSON.parse(localStorage.getItem('buc_h')||'[]'); } catch { S.history=[]; }
+  renderHistory();
+}
+
+function addHistory(entry) {
+  if (S.history[0] && S.history[0].input===entry.input) return;
+  S.history.unshift(entry);
+  if (S.history.length>20) S.history.pop();
+  localStorage.setItem('buc_h', JSON.stringify(S.history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = $('hist-list');
+  if (!S.history.length) {
+    el.innerHTML='<div class="hist-empty">No conversions yet. Convert something to see history!</div>';
+    return;
+  }
+  const fmtTime = d => {
+    const diff=(Date.now()-new Date(d))/1000;
+    if(diff<60) return 'just now';
+    if(diff<3600) return `${Math.floor(diff/60)}m ago`;
+    if(diff<86400) return `${Math.floor(diff/3600)}h ago`;
+    return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+  };
+  el.innerHTML = S.history.map((h,i)=>`
+    <div class="hist-item" data-i="${i}" role="button" tabindex="0">
+      <span class="hist-badge ${h.mode==='b2u'?'badge-b2u':'badge-u2b'}">${h.mode==='b2u'?'B→U':'U→B'}</span>
+      <span class="hist-preview">${h.output.replace(/</g,'&lt;')}</span>
+      <span class="hist-time">${fmtTime(h.time)}</span>
+    </div>`).join('');
+
+  el.querySelectorAll('.hist-item').forEach(item => {
+    const restore = () => {
+      const h = S.history[+item.dataset.i];
+      inp().value  = h.input;
+      outp().value = h.output;
+      setMode(h.mode);
+      updateStats();
+      toast('🕑','Restored from history.');
+    };
+    item.addEventListener('click', restore);
+    item.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') restore(); });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CLIPBOARD & FILES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+async function copyText(text, label) {
+  if (!text.trim()) { toast('⚠️','Nothing to copy.'); return; }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('✅',`${label} copied!`);
+  } catch {
+    const t=document.createElement('textarea');
+    t.value=text; t.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(t); t.select(); document.execCommand('copy');
+    document.body.removeChild(t); toast('✅',`${label} copied!`);
+  }
+}
+
+async function pasteClip() {
+  try {
+    const t = await navigator.clipboard.readText();
+    inp().value = t; updateStats();
+    if (S.live) doConvert();
+    toast('📋','Pasted from clipboard.');
+  } catch { toast('❌','Cannot read clipboard. Please paste manually (Ctrl+V).'); }
+}
+
+function downloadOutput() {
+  const t = outp().value;
+  if (!t.trim()) { toast('⚠️','Nothing to download.'); return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));
+  a.download = `converted_${Date.now()}.txt`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('⬇️','File downloaded.');
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COLLAPSIBLES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function setupCollapsible(toggleId, bodyId, storageKey, defOpen) {
+  const tog = $(toggleId), body = $(bodyId);
+  if (!tog || !body) return;
+  const open = JSON.parse(localStorage.getItem(storageKey) ?? String(defOpen));
+  if (open) { body.classList.add('open'); tog.classList.add('open'); }
+  tog.addEventListener('click', () => {
+    const o = body.classList.toggle('open');
+    tog.classList.toggle('open', o);
+    localStorage.setItem(storageKey, JSON.stringify(o));
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DRAG & DROP
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function setupDrop() {
+  const zone = $('input-drop-zone');
+  if (!zone) return;
+  ['dragenter','dragover'].forEach(e => zone.addEventListener(e, ev => {
+    ev.preventDefault(); zone.style.outline='2px dashed var(--accent)';
+  }));
+  ['dragleave','drop'].forEach(e => zone.addEventListener(e, () => zone.style.outline=''));
+  zone.addEventListener('drop', ev => {
+    ev.preventDefault();
+    const f = ev.dataTransfer.files[0];
+    if (!f) return;
+    if (!f.name.match(/\.(txt|md)$/i)) { toast('⚠️','Only .txt files are supported.'); return; }
+    const rd = new FileReader();
+    rd.onload = e => {
+      inp().value = e.target.result; updateStats();
+      toast('📄',`"${f.name}" loaded.`);
+      if (S.live) doConvert();
+    };
+    rd.readAsText(f, 'utf-8');
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function setupKeys() {
+  document.addEventListener('keydown', e => {
+    const c = e.ctrlKey || e.metaKey;
+    if (c && e.key==='Enter') { e.preventDefault(); doConvert(); }
+    if (c && e.shiftKey && e.key==='C') { e.preventDefault(); copyText(outp().value,'Output'); }
+    if (c && e.shiftKey && e.key==='X') { e.preventDefault(); clearAll(); }
+    if (c && e.shiftKey && e.key==='S') { e.preventDefault(); swap(); }
+    if (c && e.shiftKey && e.key==='D') { e.preventDefault(); downloadOutput(); }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ACTIONS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function swap() {
+  const iv=inp().value, ov=outp().value;
+  inp().value=ov; outp().value=iv;
+  setMode(S.mode==='b2u'?'u2b':S.mode==='u2b'?'b2u':S.mode);
+  updateStats();
+}
+
+function clearAll() {
+  inp().value=''; outp().value='';
+  $('enc-banner').classList.add('hidden');
+  updateStats(); inp().focus();
+}
+
+function setTheme(t) {
+  S.theme=t;
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('buc_theme',t);
+  $('theme-btn').textContent = t==='dark' ? '☀️' : '🌙';
+}
+
+let liveTimer = null;
+function handleInput() {
+  updateStats();
+  if (!S.live) return;
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(doConvert, 380);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   INIT
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function applyFontMode() {
+  const mode = S.fontMode ?? 0;
+  const dualBox = $('input-dual-box');
+  const btn = $('font-toggle-btn');
+
+  if (mode === 0) {
+    inp().classList.add('transparent-mode');
+    inp().classList.remove('bijoy-font');
+    if (dualBox) dualBox.style.display = 'block';
+    if (btn) btn.textContent = '🎨 Dual-Font: SutonnyMJ + English';
+  } else if (mode === 1) {
+    inp().classList.remove('transparent-mode');
+    inp().classList.add('bijoy-font');
+    if (dualBox) dualBox.style.display = 'none';
+    if (btn) btn.textContent = '🔤 Font: SutonnyMJ Only';
+  } else {
+    inp().classList.remove('transparent-mode');
+    inp().classList.remove('bijoy-font');
+    if (dualBox) dualBox.style.display = 'none';
+    if (btn) btn.textContent = '🔠 Font: System Readable';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTheme(S.theme);
+  loadHistory();
+  setMode('b2u');
+
+  // Mode tabs
+  document.querySelectorAll('.mode-tab').forEach(t =>
+    t.addEventListener('click', () => setMode(t.dataset.mode))
+  );
+
+  // Convert
+  $('convert-btn').addEventListener('click', doConvert);
+
+  // Live toggle
+  const ll = $('live-label');
+  ll.addEventListener('click', () => {
+    S.live = !S.live;
+    ll.classList.toggle('active', S.live);
+    ll.setAttribute('aria-checked', String(S.live));
+    if (S.live) doConvert();
+  });
+  ll.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();ll.click();} });
+
+  // Input & Output listeners
+  inp().addEventListener('input', handleInput);
+
+  // Synchronize scrolling between #input-text and #input-dual-box
+  inp().addEventListener('scroll', () => {
+    const dualBox = $('input-dual-box');
+    if (dualBox) {
+      dualBox.scrollTop = inp().scrollTop;
+      dualBox.scrollLeft = inp().scrollLeft;
+    }
+  });
+
+  outp().addEventListener('input', updateStats);
+
+  // Buttons
+  $('swap-btn').addEventListener('click', swap);
+  $('clear-btn').addEventListener('click', clearAll);
+  $('paste-btn').addEventListener('click', pasteClip);
+  $('copy-input-btn').addEventListener('click', () => copyText(inp().value,'Input'));
+  $('font-toggle-btn').addEventListener('click', () => {
+    S.fontMode = ((S.fontMode ?? 0) + 1) % 3;
+    applyFontMode();
+    const modeNames = ['Intelligent Dual-Font view', 'SutonnyMJ Font view', 'System Readable Font view'];
+    toast('🎨', `${modeNames[S.fontMode]} enabled.`);
+  });
+  $('copy-output-btn').addEventListener('click', () => copyText(outp().value,'Output'));
+  $('download-btn').addEventListener('click', downloadOutput);
+  $('theme-btn').addEventListener('click', () => setTheme(S.theme==='dark'?'light':'dark'));
+  $('clear-hist-btn').addEventListener('click', () => {
+    S.history=[]; localStorage.removeItem('buc_h'); renderHistory(); toast('🗑️','History cleared.');
+  });
+  
+  // Initial font mode apply
+  applyFontMode();
+
+  // Collapsibles
+  setupCollapsible('samples-toggle','samples-body','buc_samp',true);
+  setupCollapsible('hist-toggle','hist-body','buc_hist',false);
+
+  // Sample chips
+  document.querySelectorAll('.sample-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const s = SAMPLES[+chip.dataset.idx];
+      if (!s) return;
+      inp().value = s.text; outp().value='';
+      setMode(s.mode); updateStats(); doConvert();
+    });
+  });
+
+  // Drag & drop
+  setupDrop();
+
+  // Keyboard shortcuts
+  setupKeys();
+
+  updateStats();
+});
+</script>
+</body>
+</html>

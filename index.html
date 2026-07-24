@@ -46,55 +46,157 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700;800&family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
 /* ═══════════════════════════════════════════════════════════════════════════
-   Bijoy & Unicode Converter — Design System
-   Glassmorphism · Dark/Light Mode · Animated Gradient
+   Bijoy & Unicode Converter — Classic Bengali Cultural Design System
+   Parchment / Classic Light & Royal Navy Dark Mode with Shaheed Minar Watermark
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --grad-1: #6C3FEF;
-  --grad-2: #4776E6;
-  --grad-3: #8E54E9;
-  --glass-bg: rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.15);
-  --glass-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  --glass-blur: blur(20px);
-  --text-primary: rgba(255,255,255,0.95);
-  --text-secondary: rgba(255,255,255,0.6);
-  --text-muted: rgba(255,255,255,0.35);
-  --surface-dark: rgba(0,0,0,0.25);
-  --surface-hover: rgba(255,255,255,0.12);
-  --surface-active: rgba(255,255,255,0.18);
-  --accent: #7C5FFC;
-  --accent-glow: rgba(124,95,252,0.4);
-  --accent-hover: #9579FF;
+  /* Dark Mode Default (Midnight Navy & Crimson Sun) */
+  --bg-main: #0B0E17;
+  --bg-gradient: radial-gradient(circle at 50% 25%, #1D1022 0%, #0B0E17 75%);
+  --sun-red: #D32F2F;
+  --sun-glow: rgba(211, 47, 47, 0.45);
+  
+  --glass-bg: rgba(18, 23, 36, 0.76);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --glass-blur: blur(16px);
+
+  --text-primary: #F7F7FA;
+  --text-secondary: #C4C9D6;
+  --text-muted: #7E869B;
+
+  --surface-dark: rgba(0, 0, 0, 0.35);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.14);
+
+  --accent: #E53935;
+  --accent-glow: rgba(229, 57, 53, 0.35);
+  --accent-hover: #FF5252;
+  --accent-gold: #E5A93C;
+
   --success: #43D98A;
   --warning: #F7B731;
   --danger: #FC5C65;
+
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
-  --transition-fast: 0.15s ease;
-  --transition-med: 0.3s cubic-bezier(0.4,0,0.2,1);
+
   --font-ui: 'Inter', system-ui, sans-serif;
-  --font-bn: 'Noto Serif Bengali', serif;
+  --font-bn: 'Noto Serif Bengali', 'Tiro Bangla', serif;
   --font-bijoy: 'SutonnyMJ', 'SutonnyMJ-Bold', 'SutonnyMJ Regular', 'Sutonny Bangla OM', 'Sutonny', 'Bijoy', var(--font-ui);
 }
+
+/* Light Mode — Classic Bengali Parchment Theme */
 [data-theme="light"] {
-  --glass-bg: rgba(255,255,255,0.75);
-  --glass-border: rgba(0,0,0,0.08);
-  --glass-shadow: 0 8px 32px rgba(100,80,200,0.12);
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a6a;
-  --text-muted: #8888aa;
-  --surface-dark: rgba(0,0,0,0.04);
-  --surface-hover: rgba(108,63,239,0.07);
-  --surface-active: rgba(108,63,239,0.12);
-  --accent-glow: rgba(124,95,252,0.2);
+  --bg-main: #FBF7F0;
+  --bg-gradient: radial-gradient(circle at 50% 25%, #FFFDF9 0%, #F4ECE1 100%);
+  --sun-red: #C62828;
+  --sun-glow: rgba(198, 40, 40, 0.25);
+
+  --glass-bg: rgba(255, 253, 248, 0.86);
+  --glass-border: rgba(180, 140, 90, 0.25);
+  --glass-shadow: 0 12px 36px rgba(120, 70, 30, 0.09);
+
+  --text-primary: #2B1B10;
+  --text-secondary: #5C4636;
+  --text-muted: #9E8570;
+
+  --surface-dark: rgba(0, 0, 0, 0.04);
+  --surface-hover: rgba(198, 40, 40, 0.06);
+  --surface-active: rgba(198, 40, 40, 0.12);
+
+  --accent: #C62828;
+  --accent-glow: rgba(198, 40, 40, 0.2);
+  --accent-hover: #B71C1C;
+  --accent-gold: #B8860B;
 }
+
+/* Background Watermarks Container */
+.minar-watermark-wrapper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  opacity: 0.22;
+  transition: opacity 0.4s ease;
+}
+[data-theme="light"] .minar-watermark-wrapper {
+  opacity: 0.28;
+}
+
+/* Shaheed Minar SVG Styling */
+.shaheed-minar-bg {
+  width: 100%;
+  max-width: 950px;
+  height: 82vh;
+  margin-bottom: -40px;
+}
+
+.minar-sun {
+  fill: url(#sun-glow-dark);
+}
+[data-theme="light"] .minar-sun {
+  fill: url(#sun-glow-light);
+}
+
+/* Floating Bengali Letter Watermarks */
+.bn-floating-watermarks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bn-char {
+  position: absolute;
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 7.5vw, 7rem);
+  color: var(--text-primary);
+  opacity: 0.07;
+  user-select: none;
+  transition: opacity 0.3s ease;
+}
+[data-theme="light"] .bn-char {
+  color: #8C2D19;
+  opacity: 0.09;
+}
+
+/* Floating Keyframes */
+@keyframes bnFloat1 {
+  0%, 100% { transform: translateY(0px) rotate(-8deg); }
+  50% { transform: translateY(-18px) rotate(-2deg); }
+}
+@keyframes bnFloat2 {
+  0%, 100% { transform: translateY(0px) rotate(10deg); }
+  50% { transform: translateY(-22px) rotate(4deg); }
+}
+@keyframes bnFloat3 {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50% { transform: translateY(-15px) rotate(-12deg); }
+}
+@keyframes bnFloat4 {
+  0%, 100% { transform: translateY(0px) rotate(6deg); }
+  50% { transform: translateY(-25px) rotate(14deg); }
+}
+
+.float-1 { animation: bnFloat1 8s ease-in-out infinite; }
+.float-2 { animation: bnFloat2 10s ease-in-out infinite 1s; }
+.float-3 { animation: bnFloat3 9s ease-in-out infinite 2s; }
+.float-4 { animation: bnFloat4 11s ease-in-out infinite 0.5s; }
+.float-5 { animation: bnFloat2 12s ease-in-out infinite 1.5s; }
+
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -530,6 +632,104 @@ kbd {
 </style>
 </head>
 <body>
+
+  <!-- Classic Shaheed Minar & Red Sun Background Watermark -->
+  <div class="minar-watermark-wrapper" aria-hidden="true">
+    <svg viewBox="0 0 900 650" class="shaheed-minar-bg" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sun-glow-dark" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#E53935" stop-opacity="0.95"/>
+          <stop offset="65%" stop-color="#C62828" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#8E0000" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="sun-glow-light" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#D32F2F" stop-opacity="0.9"/>
+          <stop offset="70%" stop-color="#B71C1C" stop-opacity="0.75"/>
+          <stop offset="100%" stop-color="#7F0000" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="concrete-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#E8E8E8"/>
+          <stop offset="50%" stop-color="#FFFFFF"/>
+          <stop offset="100%" stop-color="#D0D0D0"/>
+        </linearGradient>
+      </defs>
+      
+      <!-- Red Sun Circle -->
+      <circle cx="450" cy="270" r="145" class="minar-sun" />
+
+      <!-- Base Pedestal & Steps -->
+      <g class="minar-base">
+        <rect x="70" y="520" width="760" height="24" fill="#3E2723" opacity="0.75"/>
+        <rect x="95" y="500" width="710" height="20" fill="#4E342E" opacity="0.8"/>
+        <rect x="120" y="484" width="660" height="16" fill="#5D4037" opacity="0.85"/>
+        <!-- Center Stairs -->
+        <polygon points="120,484 780,484 750,544 150,544" fill="#424242" opacity="0.7"/>
+        <path d="M 400,484 L 500,484 L 500,544 L 400,544 Z" fill="#EEEEEE" opacity="0.6"/>
+      </g>
+
+      <!-- Shaheed Minar Pillars -->
+      <g class="minar-pillars" stroke="#212121" stroke-width="1.8">
+        <!-- Main Central Tilted Pillar -->
+        <!-- Left column -->
+        <path d="M 390,484 L 396,80 L 426,80 L 430,484 Z" fill="url(#concrete-grad)" />
+        <!-- Right column -->
+        <path d="M 470,484 L 474,80 L 504,80 L 510,484 Z" fill="url(#concrete-grad)" />
+        <!-- Top Tilted Header Bar -->
+        <polygon points="384,80 516,80 510,40 390,40" fill="#E0E0E0" />
+        <!-- Inner Vertical Steel Rods -->
+        <line x1="436" y1="80" x2="438" y2="484" stroke="#263238" stroke-width="2"/>
+        <line x1="446" y1="80" x2="446" y2="484" stroke="#263238" stroke-width="2"/>
+        <line x1="454" y1="80" x2="454" y2="484" stroke="#263238" stroke-width="2"/>
+        <line x1="464" y1="80" x2="462" y2="484" stroke="#263238" stroke-width="2"/>
+
+        <!-- Inner Left Pillar -->
+        <path d="M 300,484 L 303,260 L 323,260 L 326,484 Z" fill="url(#concrete-grad)" />
+        <path d="M 350,484 L 352,260 L 372,260 L 375,484 Z" fill="url(#concrete-grad)" />
+        <polygon points="298,260 377,260 374,232 300,232" fill="#D6D6D6" />
+        <line x1="331" y1="260" x2="333" y2="484" stroke="#263238" stroke-width="1.6"/>
+        <line x1="339" y1="260" x2="340" y2="484" stroke="#263238" stroke-width="1.6"/>
+        <line x1="345" y1="260" x2="346" y2="484" stroke="#263238" stroke-width="1.6"/>
+
+        <!-- Inner Right Pillar -->
+        <path d="M 525,484 L 528,260 L 548,260 L 550,484 Z" fill="url(#concrete-grad)" />
+        <path d="M 575,484 L 577,260 L 597,260 L 600,484 Z" fill="url(#concrete-grad)" />
+        <polygon points="523,260 602,260 600,232 525,232" fill="#D6D6D6" />
+        <line x1="555" y1="260" x2="556" y2="484" stroke="#263238" stroke-width="1.6"/>
+        <line x1="561" y1="260" x2="562" y2="484" stroke="#263238" stroke-width="1.6"/>
+        <line x1="567" y1="260" x2="568" y2="484" stroke="#263238" stroke-width="1.6"/>
+
+        <!-- Outer Left Pillar -->
+        <path d="M 225,484 L 227,330 L 243,330 L 245,484 Z" fill="url(#concrete-grad)" />
+        <path d="M 265,484 L 267,330 L 283,330 L 285,484 Z" fill="url(#concrete-grad)" />
+        <polygon points="223,330 287,330 285,310 225,310" fill="#CCCCCC" />
+        <line x1="248" y1="330" x2="249" y2="484" stroke="#263238" stroke-width="1.4"/>
+        <line x1="254" y1="330" x2="255" y2="484" stroke="#263238" stroke-width="1.4"/>
+        <line x1="260" y1="330" x2="261" y2="484" stroke="#263238" stroke-width="1.4"/>
+
+        <!-- Outer Right Pillar -->
+        <path d="M 615,484 L 617,330 L 633,330 L 635,484 Z" fill="url(#concrete-grad)" />
+        <path d="M 655,484 L 657,330 L 673,330 L 675,484 Z" fill="url(#concrete-grad)" />
+        <polygon points="613,330 677,330 675,310 615,310" fill="#CCCCCC" />
+        <line x1="638" y1="330" x2="639" y2="484" stroke="#263238" stroke-width="1.4"/>
+        <line x1="644" y1="330" x2="645" y2="484" stroke="#263238" stroke-width="1.4"/>
+        <line x1="650" y1="330" x2="651" y2="484" stroke="#263238" stroke-width="1.4"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Floating Bengali Vowels & Consonants Watermark (অ আ ই ঈ ক খ গ ঘ) -->
+  <div class="bn-floating-watermarks" aria-hidden="true">
+    <span class="bn-char float-1" style="top: 12%; left: 5%;">অ</span>
+    <span class="bn-char float-2" style="top: 28%; left: 14%;">আ</span>
+    <span class="bn-char float-3" style="top: 48%; left: 6%;">ই</span>
+    <span class="bn-char float-4" style="top: 68%; left: 12%;">ঈ</span>
+    <span class="bn-char float-5" style="top: 84%; left: 5%;">উ</span>
+    <span class="bn-char float-1" style="top: 14%; right: 7%;">ক</span>
+    <span class="bn-char float-3" style="top: 32%; right: 15%;">খ</span>
+    <span class="bn-char float-2" style="top: 52%; right: 6%;">গ</span>
+    <span class="bn-char float-4" style="top: 72%; right: 13%;">ঘ</span>
+    <span class="bn-char float-5" style="top: 86%; right: 7%;">ম</span>
+  </div>
 
 <div class="bg-gradient" aria-hidden="true"><div class="bg-orb"></div></div>
 

@@ -995,7 +995,6 @@ kbd {
   border-radius: 13px;
   position: relative;
   flex-shrink: 0;
-  overflow: hidden;
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
@@ -1027,8 +1026,8 @@ kbd {
 }
 
 .live-label.active .toggle-track::after {
-  /* track=52, knob=20, gap=3  → travel = 52 - 20 - 3*2 = 26px */
-  transform: translateX(26px);
+  /* track=52, knob=20, inset=3  → safe travel = 52 - 20 - 3*2 - 4px corner buffer = 22px */
+  transform: translateX(22px);
   background: #FFFFFF;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }

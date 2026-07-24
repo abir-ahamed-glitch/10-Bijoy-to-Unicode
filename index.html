@@ -175,20 +175,20 @@
 
 /* Floating Keyframes */
 @keyframes bnFloat1 {
-  0%, 100% { transform: translateY(0px) rotate(-8deg); }
-  50% { transform: translateY(-18px) rotate(-2deg); }
+  0%, 100% { transform: none !important; rotate(-8deg); }
+  50% { transform: none !important; rotate(-2deg); }
 }
 @keyframes bnFloat2 {
-  0%, 100% { transform: translateY(0px) rotate(10deg); }
-  50% { transform: translateY(-22px) rotate(4deg); }
+  0%, 100% { transform: none !important; rotate(10deg); }
+  50% { transform: none !important; rotate(4deg); }
 }
 @keyframes bnFloat3 {
-  0%, 100% { transform: translateY(0px) rotate(-5deg); }
-  50% { transform: translateY(-15px) rotate(-12deg); }
+  0%, 100% { transform: none !important; rotate(-5deg); }
+  50% { transform: none !important; rotate(-12deg); }
 }
 @keyframes bnFloat4 {
-  0%, 100% { transform: translateY(0px) rotate(6deg); }
-  50% { transform: translateY(-25px) rotate(14deg); }
+  0%, 100% { transform: none !important; rotate(6deg); }
+  50% { transform: none !important; rotate(14deg); }
 }
 
 .float-1 { animation: bnFloat1 8s ease-in-out infinite; }
@@ -306,14 +306,14 @@ body {
   transition:all var(--transition-fast);
   white-space:nowrap; user-select:none; text-decoration:none; outline:none;
 }
-.btn:active { transform:scale(0.96); }
+.btn:active { transform: none !important; }
 .btn-primary {
   background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
   color:#fff; box-shadow:0 4px 16px var(--accent-glow);
 }
 .btn-primary:hover {
   filter:brightness(1.12); box-shadow:0 6px 24px var(--accent-glow);
-  transform:translateY(-1px);
+  transform: none !important;
 }
 .btn-glass {
   background:var(--glass-bg); border-color:var(--glass-border);
@@ -321,7 +321,7 @@ body {
 }
 .btn-glass:hover {
   background:var(--surface-hover); border-color:rgba(255,255,255,0.25);
-  transform:translateY(-1px);
+  transform: none !important;
 }
 .btn-icon {
   padding:9px; aspect-ratio:1; border-radius:var(--radius-sm);
@@ -330,7 +330,7 @@ body {
 }
 .btn-icon:hover {
   background:var(--surface-hover); color:var(--text-primary);
-  transform:translateY(-1px);
+  transform: none !important;
 }
 .btn-sm { padding:6px 12px; font-size:12px; border-radius:var(--radius-sm); }
 .btn:disabled { opacity:0.45; cursor:not-allowed; transform:none !important; }
@@ -414,8 +414,8 @@ textarea::placeholder { color:var(--text-muted); font-style:italic; }
   box-shadow:0 4px 16px var(--accent-glow);
   transition:all var(--transition-fast);
 }
-.swap-btn:hover { transform:rotate(180deg) scale(1.1); box-shadow:0 6px 24px var(--accent-glow); }
-.swap-btn:active { transform:rotate(180deg) scale(0.95); }
+.swap-btn:hover { transform: rotate(180deg) !important; box-shadow:0 6px 24px var(--accent-glow); }
+.swap-btn:active { transform: rotate(180deg) !important; }
 
 /* Convert row */
 .convert-row {
@@ -486,7 +486,7 @@ kbd {
 }
 .sample-chip:hover {
   border-color:rgba(124,95,252,0.5); color:var(--text-primary);
-  background:rgba(124,95,252,0.12); transform:translateY(-2px);
+  background:rgba(124,95,252,0.12); transform: none !important;
   box-shadow:0 4px 16px rgba(124,95,252,0.2);
 }
 
@@ -551,9 +551,9 @@ kbd {
 }
 .toast-icon { font-size:18px; flex-shrink:0; }
 .toast-exit { animation:tout 0.25s ease forwards; }
-@keyframes tin  { from{opacity:0;transform:translateY(12px) scale(0.94)} to{opacity:1;transform:none} }
-@keyframes tout { from{opacity:1;transform:none} to{opacity:0;transform:translateY(-8px) scale(0.94)} }
-@keyframes fadein { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+@keyframes tin  { from{opacity:0;transform: none !important; scale(0.94)} to{opacity:1;transform:none} }
+@keyframes tout { from{opacity:1;transform:none} to{opacity:0;transform: none !important; scale(0.94)} }
+@keyframes fadein { from{opacity:0;transform: none !important;} to{opacity:1;transform:none} }
 
 /* Info card */
 .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
@@ -644,7 +644,7 @@ kbd {
   white-space: nowrap; user-select: none; text-decoration: none; outline: none;
   position: relative; z-index: 2;
 }
-.btn:active { transform: scale(0.96) !important; }
+.btn:active { transform: none !important; !important; }
 
 /* Primary Convert Button (High Visibility Crimson Gradient) */
 .btn-primary, #convert-btn {
@@ -660,7 +660,7 @@ kbd {
 .btn-primary:hover, #convert-btn:hover {
   background: linear-gradient(135deg, #FF4D4D 0%, #E53935 50%, #D32F2F 100%) !important;
   box-shadow: 0 8px 28px rgba(229, 57, 53, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-  transform: translateY(-2px) scale(1.02) !important;
+  transform: none !important; scale(1.02) !important;
   color: #FFFFFF !important;
 }
 
@@ -682,13 +682,13 @@ kbd {
   background: rgba(255, 255, 255, 0.22);
   border-color: rgba(255, 255, 255, 0.4);
   color: #FFFFFF;
-  transform: translateY(-1.5px);
+  transform: none !important;
 }
 [data-theme="light"] .btn-glass:hover {
   background: #FFFFFF;
   border-color: var(--accent);
   color: var(--accent);
-  transform: translateY(-1.5px);
+  transform: none !important;
 }
 
 /* Icon Buttons */
@@ -706,7 +706,7 @@ kbd {
 .btn-icon:hover {
   background: var(--accent); color: #FFFFFF;
   border-color: var(--accent);
-  transform: translateY(-1.5px) scale(1.05);
+  transform: none !important; scale(1.05);
 }
 
 /* Convert Row Fixes */
@@ -731,7 +731,7 @@ kbd {
   transition: all 0.25s ease; position: relative; z-index: 5;
 }
 .swap-btn:hover {
-  transform: rotate(180deg) scale(1.12);
+  transform: rotate(180deg) !important;
   box-shadow: 0 8px 28px rgba(229, 57, 53, 0.7);
 }
 
@@ -795,6 +795,23 @@ kbd {
 .float-3 { animation: bnMotion3 10s ease-in-out infinite 2.5s; }
 .float-4 { animation: bnMotion4 12s ease-in-out infinite 0.7s; }
 .float-5 { animation: bnMotion2 13s ease-in-out infinite 1.8s; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DISABLE ALL HOVER ZOOM / SCALE / TRANSLATE TRANSFORMS ON BUTTONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.btn, .btn-primary, .btn-glass, .btn-icon, .swap-btn, .mode-tab, .sample-chip, button {
+  transform: none !important;
+}
+.btn:hover, .btn-primary:hover, .btn-glass:hover, .btn-icon:hover, .mode-tab:hover, .sample-chip:hover, button:hover {
+  transform: none !important;
+}
+.swap-btn:hover {
+  transform: rotate(180deg) !important;
+}
+.btn:active, .btn-primary:active, .btn-glass:active, .btn-icon:active, button:active {
+  transform: none !important;
+}
 
 </style>
 </head>

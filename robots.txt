@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://10-bijoy-to-unicode.pages.dev/sitemap.xml
+Sitemap: https://bijoy-to-unicode.pages.dev/sitemap.xml

@@ -1,12 +1,12 @@
 # Bijoy & Unicode Converter (বিজয় ↔ ইউনিকোড কনভার্টার)
 
-[![Live App](https://img.shields.io/badge/Live%20App-10--bijoy--to--unicode.pages.dev-brightgreen?style=for-the-badge&logo=cloudflare)](https://10-bijoy-to-unicode.pages.dev/)
-[![Cloudflare Pages](https://img.shields.io/badge/Deployed%20with-Cloudflare%20Pages-F38020?style=for-the-badge&logo=cloudflare)](https://10-bijoy-to-unicode.pages.dev/)
+[![Live App](https://img.shields.io/badge/Live%20App-bijoy--to--unicode.pages.dev-brightgreen?style=for-the-badge&logo=cloudflare)](https://bijoy-to-unicode.pages.dev/)
+[![Cloudflare Pages](https://img.shields.io/badge/Deployed%20with-Cloudflare%20Pages-F38020?style=for-the-badge&logo=cloudflare)](https://bijoy-to-unicode.pages.dev/)
 [![GitHub repo](https://img.shields.io/badge/GitHub-abir--ahamed--glitch%2F10--Bijoy--to--Unicode-blue?style=for-the-badge&logo=github)](https://github.com/abir-ahamed-glitch/10-Bijoy-to-Unicode)
 
 A fast, accurate, and standalone online text converter between **Bijoy 52 / Bijoy Bahadur (ANSI / SutonnyMJ)** and **Bengali Unicode**. Features 100% precision for screenplay formatting, complex conjuncts (*Juktakkhar*), reph positioning, left-vowel (*e-kar*, *i-kar*) reordering, and mixed English/Bengali text preservation.
 
-🌐 **Live Website**: [https://10-bijoy-to-unicode.pages.dev/](https://10-bijoy-to-unicode.pages.dev/)
+🌐 **Live Website**: [https://bijoy-to-unicode.pages.dev/](https://bijoy-to-unicode.pages.dev/)
 
 ---
 
@@ -53,7 +53,7 @@ Since this project is built using standard web technologies (HTML5, CSS3, and Ja
 
 This project is automatically built and deployed to **Cloudflare Pages** using GitHub Actions on every push to the `master` branch.
 
-- **Production URL**: [https://10-bijoy-to-unicode.pages.dev/](https://10-bijoy-to-unicode.pages.dev/)
+- **Production URL**: [https://bijoy-to-unicode.pages.dev/](https://bijoy-to-unicode.pages.dev/)
 - **Repository**: `abir-ahamed-glitch/10-Bijoy-to-Unicode`
 
 ---

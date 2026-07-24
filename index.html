@@ -875,8 +875,9 @@ kbd {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 
@@ -2338,159 +2339,215 @@ function initLetterPhysics() {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let width = canvas.width = window.innerWidth;
-  let height = canvas.height = window.innerHeight;
-
-  window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
+  // ── Size canvas to window ──────────────────────────────────────────────────
+  let width, height;
+  function resize() {
+    width  = canvas.width  = window.innerWidth;
     height = canvas.height = window.innerHeight;
-  });
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-  const chars = ['অ', 'আ', 'ক', 'খ', 'ই', 'ঈ', 'উ', 'ঋ', 'এ', 'ও', 'শ', 'হ'];
+  // ── Ball definitions ───────────────────────────────────────────────────────
+  const CHARS = ['অ','আ','ক','খ','ই','ঈ','উ','ঋ','এ','ও','শ','হ','ব','ম','র','স'];
+  // Colour palettes: [ball fill, stroke, text]
+  const LIGHT_PALETTES = [
+    ['rgba(199,57,40,0.18)',   'rgba(199,57,40,0.45)',   'rgba(160,30,20,0.82)'],
+    ['rgba(120,60,20,0.14)',   'rgba(140,80,30,0.40)',   'rgba(100,45,10,0.80)'],
+    ['rgba(20,80,150,0.13)',   'rgba(30,90,180,0.38)',   'rgba(15,60,130,0.78)'],
+    ['rgba(30,120,70,0.13)',   'rgba(40,140,80,0.38)',   'rgba(20,100,55,0.78)'],
+    ['rgba(100,40,140,0.13)',  'rgba(120,50,160,0.38)',  'rgba(85,30,120,0.78)'],
+  ];
+  const DARK_PALETTES = [
+    ['rgba(240,100,80,0.20)',  'rgba(240,120,90,0.55)',  'rgba(255,180,160,0.90)'],
+    ['rgba(255,200,80,0.18)',  'rgba(255,210,100,0.50)', 'rgba(255,230,140,0.90)'],
+    ['rgba(80,200,255,0.18)',  'rgba(100,220,255,0.50)', 'rgba(160,240,255,0.90)'],
+    ['rgba(100,240,160,0.18)', 'rgba(120,255,180,0.50)', 'rgba(160,255,200,0.90)'],
+    ['rgba(200,130,255,0.18)', 'rgba(210,150,255,0.50)', 'rgba(230,190,255,0.90)'],
+  ];
+
+  const NUM = Math.min(12, Math.max(7, Math.floor(window.innerWidth / 130)));
+  const SPEED = 0.95;   // base speed – enough so balls actually meet
+  const MAX_SPEED = 2.2;
+  const MIN_SPEED = 0.35;
+
   const balls = [];
-  const numBalls = Math.min(10, Math.max(6, Math.floor(width / 140)));
-
-  for (let i = 0; i < numBalls; i++) {
-    const radius = Math.random() * 18 + 36;
+  for (let i = 0; i < NUM; i++) {
+    const r = 32 + Math.random() * 22;          // radius 32–54 px
+    const ang = Math.random() * Math.PI * 2;
+    const spd = MIN_SPEED + Math.random() * (SPEED - MIN_SPEED);
+    const palIdx = i % LIGHT_PALETTES.length;
     balls.push({
-      char: chars[i % chars.length],
-      x: Math.random() * (width - radius * 2) + radius,
-      y: Math.random() * (height - radius * 2) + radius,
-      vx: (Math.random() - 0.5) * 0.8,
-      vy: (Math.random() - 0.5) * 0.8,
-      radius: radius,
-      mass: radius * radius,
-      angle: Math.random() * Math.PI * 2,
-      vRot: (Math.random() - 0.5) * 0.008,
-      squash: 1,
-      squashAngle: 0,
-      squashTimer: 0
+      char : CHARS[i % CHARS.length],
+      x    : r + Math.random() * (width  - r * 2),
+      y    : r + Math.random() * (height - r * 2),
+      vx   : Math.cos(ang) * spd,
+      vy   : Math.sin(ang) * spd,
+      r    : r,
+      mass : r * r,
+      spin : 0,
+      dSpin: (Math.random() - 0.5) * 0.006,
+      sx   : 1,   // squash-x
+      sy   : 1,   // squash-y (sy = 1/sx when squashing)
+      sAng : 0,   // squash angle
+      sTmr : 0,   // squash timer
+      palIdx
     });
   }
 
-  let mouseX = -1000, mouseY = -1000;
-  window.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
+  // ── Mouse repulsion ────────────────────────────────────────────────────────
+  let mouseX = -9999, mouseY = -9999;
+  window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  window.addEventListener('touchmove', e => {
+    if (e.touches.length) { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; }
+  }, { passive: true });
 
-  function updatePhysics() {
-    balls.forEach(b => {
+  // ── Clamp speed helper ─────────────────────────────────────────────────────
+  function clampSpeed(b) {
+    const s = Math.hypot(b.vx, b.vy);
+    if (s > MAX_SPEED) { b.vx = b.vx/s*MAX_SPEED; b.vy = b.vy/s*MAX_SPEED; }
+    if (s < MIN_SPEED && s > 0) { b.vx = b.vx/s*MIN_SPEED; b.vy = b.vy/s*MIN_SPEED; }
+  }
+
+  // ── Physics update ─────────────────────────────────────────────────────────
+  function step() {
+    // Move + wall bounce
+    for (const b of balls) {
       b.x += b.vx;
       b.y += b.vy;
-      b.angle += b.vRot;
+      b.spin += b.dSpin;
 
-      if (b.squashTimer > 0) {
-        b.squashTimer--;
-        b.squash += (1 - b.squash) * 0.15;
+      // Decay squash smoothly
+      if (b.sTmr > 0) {
+        b.sTmr--;
+        const t = b.sTmr / 12;
+        const s = 1 - 0.18 * t;     // squash factor damps out
+        b.sx = 1 + (1/s - 1);       // stretch perpendicular
+        b.sy = s;
       } else {
-        b.squash = 1;
+        b.sx = 1; b.sy = 1;
       }
 
-      if (b.x - b.radius < 0) {
-        b.x = b.radius;
-        b.vx = -b.vx * 0.95;
-      } else if (b.x + b.radius > width) {
-        b.x = width - b.radius;
-        b.vx = -b.vx * 0.95;
+      // Wall collisions with bounce squash
+      if (b.x - b.r < 0) {
+        b.x = b.r; b.vx = Math.abs(b.vx) * 0.97;
+        b.sx = 0.75; b.sy = 1.25; b.sAng = 0; b.sTmr = 12;
+      } else if (b.x + b.r > width) {
+        b.x = width - b.r; b.vx = -Math.abs(b.vx) * 0.97;
+        b.sx = 0.75; b.sy = 1.25; b.sAng = 0; b.sTmr = 12;
+      }
+      if (b.y - b.r < 0) {
+        b.y = b.r; b.vy = Math.abs(b.vy) * 0.97;
+        b.sx = 1.25; b.sy = 0.75; b.sAng = Math.PI/2; b.sTmr = 12;
+      } else if (b.y + b.r > height) {
+        b.y = height - b.r; b.vy = -Math.abs(b.vy) * 0.97;
+        b.sx = 1.25; b.sy = 0.75; b.sAng = Math.PI/2; b.sTmr = 12;
       }
 
-      if (b.y - b.radius < 0) {
-        b.y = b.radius;
-        b.vy = -b.vy * 0.95;
-      } else if (b.y + b.radius > height) {
-        b.y = height - b.radius;
-        b.vy = -b.vy * 0.95;
+      // Mouse repulsion
+      const dxM = b.x - mouseX, dyM = b.y - mouseY;
+      const dM = Math.hypot(dxM, dyM);
+      const repelZone = b.r + 70;
+      if (dM < repelZone && dM > 0) {
+        const f = ((repelZone - dM) / repelZone) * 0.12;
+        b.vx += (dxM / dM) * f;
+        b.vy += (dyM / dM) * f;
       }
 
-      const dxM = b.x - mouseX;
-      const dyM = b.y - mouseY;
-      const distM = Math.hypot(dxM, dyM);
-      if (distM < b.radius + 60 && distM > 0) {
-        const force = (b.radius + 60 - distM) / (b.radius + 60) * 0.08;
-        b.vx += (dxM / distM) * force;
-        b.vy += (dyM / distM) * force;
-      }
-    });
+      clampSpeed(b);
+    }
 
+    // Ball–ball elastic collisions (full momentum conservation)
     for (let i = 0; i < balls.length; i++) {
       for (let j = i + 1; j < balls.length; j++) {
-        const b1 = balls[i];
-        const b2 = balls[j];
-        const dx = b2.x - b1.x;
-        const dy = b2.y - b1.y;
+        const a = balls[i], b = balls[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
         const dist = Math.hypot(dx, dy);
-        const minDist = b1.radius + b2.radius;
+        const minD = a.r + b.r;
+        if (dist >= minD || dist === 0) continue;
 
-        if (dist < minDist && dist > 0) {
-          const overlap = 0.5 * (minDist - dist);
-          const nx = dx / dist;
-          const ny = dy / dist;
+        // Separate
+        const overlap = (minD - dist) / 2;
+        const nx = dx / dist, ny = dy / dist;
+        a.x -= nx * overlap; a.y -= ny * overlap;
+        b.x += nx * overlap; b.y += ny * overlap;
 
-          b1.x -= nx * overlap;
-          b1.y -= ny * overlap;
-          b2.x += nx * overlap;
-          b2.y += ny * overlap;
+        // Elastic exchange
+        const dvx = a.vx - b.vx, dvy = a.vy - b.vy;
+        const dot = dvx * nx + dvy * ny;
+        if (dot < 0) continue;   // already separating
+        const coeff = (2 * dot) / (a.mass + b.mass);
+        a.vx -= coeff * b.mass * nx;
+        a.vy -= coeff * b.mass * ny;
+        b.vx += coeff * a.mass * nx;
+        b.vy += coeff * a.mass * ny;
 
-          const kx = b1.vx - b2.vx;
-          const ky = b1.vy - b2.vy;
-          const p = 2 * (nx * kx + ny * ky) / (b1.mass + b2.mass);
+        // Football squash on both balls
+        const impactAng = Math.atan2(ny, nx);
+        a.sx = 0.72; a.sy = 1.30; a.sAng = impactAng + Math.PI/2; a.sTmr = 14;
+        b.sx = 0.72; b.sy = 1.30; b.sAng = impactAng + Math.PI/2; b.sTmr = 14;
+        a.dSpin = (Math.random() - 0.5) * 0.025;
+        b.dSpin = (Math.random() - 0.5) * 0.025;
 
-          b1.vx -= p * b2.mass * nx;
-          b1.vy -= p * b2.mass * ny;
-          b2.vx += p * b1.mass * nx;
-          b2.vy += p * b1.mass * ny;
-
-          const maxSpeed = 1.2;
-          const s1 = Math.hypot(b1.vx, b1.vy);
-          if (s1 > maxSpeed) { b1.vx = (b1.vx / s1) * maxSpeed; b1.vy = (b1.vy / s1) * maxSpeed; }
-          const s2 = Math.hypot(b2.vx, b2.vy);
-          if (s2 > maxSpeed) { b2.vx = (b2.vx / s2) * maxSpeed; b2.vy = (b2.vy / s2) * maxSpeed; }
-
-          b1.squash = 0.88;
-          b1.squashAngle = Math.atan2(ny, nx);
-          b1.squashTimer = 8;
-          b1.vRot = (Math.random() - 0.5) * 0.02;
-
-          b2.squash = 0.88;
-          b2.squashAngle = Math.atan2(ny, nx);
-          b2.squashTimer = 8;
-          b2.vRot = (Math.random() - 0.5) * 0.02;
-        }
+        clampSpeed(a);
+        clampSpeed(b);
       }
     }
   }
 
-  function renderPhysics() {
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function draw() {
     ctx.clearRect(0, 0, width, height);
 
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const textColor = isLight ? 'rgba(140, 28, 19, 0.16)' : 'rgba(247, 247, 250, 0.11)';
+    const PAL = isLight ? LIGHT_PALETTES : DARK_PALETTES;
 
-    balls.forEach(b => {
+    for (const b of balls) {
+      const [fill, stroke, txtCol] = PAL[b.palIdx];
+
       ctx.save();
       ctx.translate(b.x, b.y);
-      ctx.rotate(b.angle);
-      if (b.squash !== 1) {
-        ctx.rotate(b.squashAngle);
-        ctx.scale(b.squash, 1 / b.squash);
-        ctx.rotate(-b.squashAngle);
+      ctx.rotate(b.spin);
+
+      // Squash/stretch transform
+      if (b.sTmr > 0) {
+        ctx.rotate(b.sAng);
+        ctx.scale(b.sy, b.sx);   // sy/sx intentional (rotate frame)
+        ctx.rotate(-b.sAng);
       }
 
-      ctx.font = `800 ${b.radius * 1.5}px "Noto Serif Bengali", "Tiro Bangla", serif`;
-      ctx.fillStyle = textColor;
+      // ── Ball body (circle) ─────────────────────────────
+      ctx.beginPath();
+      ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+
+      // Radial gradient for 3-D football feel
+      const grad = ctx.createRadialGradient(-b.r*0.28, -b.r*0.30, b.r*0.08,
+                                             0,         0,         b.r);
+      grad.addColorStop(0,   fill.replace(/[\d.]+\)$/, '0.55)'));
+      grad.addColorStop(0.6, fill);
+      grad.addColorStop(1,   fill.replace(/[\d.]+\)$/, '0.08)'));
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      // ── Letter ────────────────────────────────────────
+      ctx.font = `800 ${(b.r * 1.15).toFixed(0)}px "Noto Serif Bengali","Tiro Bangla",serif`;
+      ctx.fillStyle = txtCol;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(b.char, 0, 0);
+      ctx.fillText(b.char, 0, 1);
 
       ctx.restore();
-    });
+    }
 
-    updatePhysics();
-    requestAnimationFrame(renderPhysics);
+    step();
+    requestAnimationFrame(draw);
   }
 
-  renderPhysics();
+  draw();
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

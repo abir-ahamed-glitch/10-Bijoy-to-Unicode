@@ -995,6 +995,7 @@ kbd {
   border-radius: 13px;
   position: relative;
   flex-shrink: 0;
+  overflow: hidden;
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
@@ -1244,7 +1245,7 @@ kbd {
     <label class="live-label" id="live-label" title="Convert automatically as you type" tabindex="0"
            role="switch" aria-checked="false" aria-label="Live mode toggle">
       <div class="toggle-track" aria-hidden="true"></div>
-      <span id="live-mode-text">⚡ Live Mode</span>
+      <span id="live-mode-text">Live Mode</span>
     </label>
 
     <button id="clear-btn" class="btn btn-glass" title="Ctrl+Shift+X" aria-label="Clear all">
@@ -2267,7 +2268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ll.classList.toggle('active', S.live);
     ll.setAttribute('aria-checked', String(S.live));
     const txt = $('live-mode-text');
-    if (txt) txt.textContent = S.live ? '⚡ Live Mode: ON' : '⚡ Live Mode';
+    if (txt) txt.textContent = S.live ? 'Live Mode: ON' : 'Live Mode';
     if (S.live) doConvert();
   });
   ll.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();ll.click();} });

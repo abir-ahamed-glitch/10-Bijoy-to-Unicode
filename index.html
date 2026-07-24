@@ -2377,7 +2377,7 @@ function initLetterPhysics() {
   const balls = [];
   for (let i = 0; i < NUM; i++) {
     const fontSize = 108 + Math.random() * 43;    // 108–151 px variety (+20%)
-    const r   = fontSize * 0.52;                  // collision radius
+    const r   = fontSize * 0.38;                  // tighter collision radius – letters touch visually
     const ang = Math.random() * Math.PI * 2;
     const spd = MIN_SPD + Math.random() * 0.275;  // 0.20 – 0.475 px/frame
     balls.push({
@@ -2393,7 +2393,7 @@ function initLetterPhysics() {
       sx      : 1,
       sy      : 1,
       sAng    : 0,
-      sTmr    : 0,
+      squashing: false,  // true while mid-squash to prevent reset-stutter
       fontSize: fontSize
     });
   }
@@ -2421,32 +2421,28 @@ function initLetterPhysics() {
       b.spin  += b.dSpin;
       b.dSpin *= 0.97;  // gradual spin decay – realistic damping
 
-      // Decay squash smoothly
-      if (b.sTmr > 0) {
-        b.sTmr--;
-        const t = b.sTmr / 12;
-        const s = 1 - 0.18 * t;     // squash factor damps out
-        b.sx = 1 + (1/s - 1);       // stretch perpendicular
-        b.sy = s;
-      } else {
-        b.sx = 1; b.sy = 1;
+      // Smooth squash recovery via lerp – no jitter, no trembling
+      b.sx += (1 - b.sx) * 0.22;
+      b.sy += (1 - b.sy) * 0.22;
+      // Mark as done when close enough
+      if (Math.abs(b.sx - 1) < 0.005 && Math.abs(b.sy - 1) < 0.005) {
+        b.sx = 1; b.sy = 1; b.squashing = false;
       }
 
       // Wall bounce – only reverse if moving TOWARD the wall (prevents climbing)
-      // 0.82 restitution = realistic energy loss on wall impact
       if (b.x - b.r < 0 && b.vx < 0) {
         b.x = b.r; b.vx = -b.vx * 0.82;
-        b.sx = 0.88; b.sy = 1.12; b.sAng = 0; b.sTmr = 10;
+        if (!b.squashing) { b.sx = 0.94; b.sy = 1.06; b.sAng = 0; b.squashing = true; }
       } else if (b.x + b.r > width && b.vx > 0) {
         b.x = width - b.r; b.vx = -b.vx * 0.82;
-        b.sx = 0.88; b.sy = 1.12; b.sAng = 0; b.sTmr = 10;
+        if (!b.squashing) { b.sx = 0.94; b.sy = 1.06; b.sAng = 0; b.squashing = true; }
       }
       if (b.y - b.r < 0 && b.vy < 0) {
         b.y = b.r; b.vy = -b.vy * 0.82;
-        b.sx = 1.12; b.sy = 0.88; b.sAng = Math.PI/2; b.sTmr = 10;
+        if (!b.squashing) { b.sx = 1.06; b.sy = 0.94; b.sAng = Math.PI/2; b.squashing = true; }
       } else if (b.y + b.r > height && b.vy > 0) {
         b.y = height - b.r; b.vy = -b.vy * 0.82;
-        b.sx = 1.12; b.sy = 0.88; b.sAng = Math.PI/2; b.sTmr = 10;
+        if (!b.squashing) { b.sx = 1.06; b.sy = 0.94; b.sAng = Math.PI/2; b.squashing = true; }
       }
 
       // Mouse repulsion (gentle)
@@ -2488,12 +2484,12 @@ function initLetterPhysics() {
         b.vx += coeff * a.mass * nx;
         b.vy += coeff * a.mass * ny;
 
-        // Subtle squash – not cartoony, just enough to feel the impact
+        // Very subtle squash – only if not already squashing, to avoid stutter
         const impactAng = Math.atan2(ny, nx);
-        a.sx = 0.88; a.sy = 1.12; a.sAng = impactAng + Math.PI/2; a.sTmr = 10;
-        b.sx = 0.88; b.sy = 1.12; b.sAng = impactAng + Math.PI/2; b.sTmr = 10;
-        a.dSpin = (Math.random() - 0.5) * 0.012;
-        b.dSpin = (Math.random() - 0.5) * 0.012;
+        if (!a.squashing) { a.sx = 0.94; a.sy = 1.06; a.sAng = impactAng + Math.PI/2; a.squashing = true; }
+        if (!b.squashing) { b.sx = 0.94; b.sy = 1.06; b.sAng = impactAng + Math.PI/2; b.squashing = true; }
+        a.dSpin = (Math.random() - 0.5) * 0.006;
+        b.dSpin = (Math.random() - 0.5) * 0.006;
 
         clampSpeed(a);
         clampSpeed(b);
@@ -2513,8 +2509,8 @@ function initLetterPhysics() {
       ctx.translate(b.x, b.y);
       ctx.rotate(b.spin);
 
-      // Squash/stretch on impact
-      if (b.sTmr > 0) {
+      // Squash/stretch – always apply (sx/sy=1 when idle, so ctx.scale(1,1) is a no-op)
+      if (b.squashing || Math.abs(b.sx - 1) > 0.002 || Math.abs(b.sy - 1) > 0.002) {
         ctx.rotate(b.sAng);
         ctx.scale(b.sx, b.sy);
         ctx.rotate(-b.sAng);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn" data-theme="dark">
+<html lang="bn" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -811,6 +811,145 @@ kbd {
 }
 .btn:active, .btn-primary:active, .btn-glass:active, .btn-icon:active, button:active {
   transform: none !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLEEK DRAG RESIZE HANDLE & DUAL-FONT SYNCED CONTAINER
+   ═══════════════════════════════════════════════════════════════════════════ */
+.input-container-rel {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  min-height: 200px;
+  max-height: 850px;
+}
+
+#input-text {
+  resize: none !important;
+}
+
+#output-text {
+  resize: none !important;
+  min-height: 200px;
+  max-height: 850px;
+}
+
+.panel-resize-handle {
+  height: 20px;
+  background: var(--surface-dark);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  user-select: none;
+  touch-action: none;
+  transition: background 0.2s, border-color 0.2s;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+.panel-resize-handle:hover, .panel-resize-handle.active {
+  background: var(--surface-hover);
+  border-top-color: var(--accent);
+}
+
+.panel-resize-handle .grip-line {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--text-muted);
+  opacity: 0.65;
+  transition: opacity 0.2s, background 0.2s, width 0.2s;
+}
+
+.panel-resize-handle:hover .grip-line, .panel-resize-handle.active .grip-line {
+  opacity: 1;
+  background: var(--accent);
+  width: 54px;
+}
+
+#floating-letters-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PERFECT CORNER & BAR RESIZING FOR DUAL-FONT BIJOY INPUT & UNICODE OUTPUT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.input-container-rel {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  min-height: 200px;
+  max-height: 850px;
+  resize: vertical;
+  overflow: hidden;
+}
+
+#input-text {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  resize: none !important;
+  z-index: 2;
+}
+
+#input-dual-box {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#output-text {
+  width: 100%;
+  min-height: 320px;
+  max-height: 850px;
+  resize: vertical;
+}
+
+.panel-resize-handle {
+  height: 22px;
+  background: var(--surface-dark);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  user-select: none;
+  touch-action: none;
+  transition: background 0.2s, border-color 0.2s;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+.panel-resize-handle:hover, .panel-resize-handle.active {
+  background: var(--surface-hover);
+  border-top-color: var(--accent);
+}
+
+.panel-resize-handle .grip-line {
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--text-muted);
+  opacity: 0.7;
+  transition: opacity 0.2s, background 0.2s, width 0.2s;
+}
+
+.panel-resize-handle:hover .grip-line, .panel-resize-handle.active .grip-line {
+  opacity: 1;
+  background: var(--accent);
+  width: 58px;
 }
 
 </style>
@@ -1672,7 +1811,7 @@ const SAMPLES = [
 const S = {
   mode: 'b2u',
   live: false,
-  theme: localStorage.getItem('buc_theme') || 'dark',
+  theme: localStorage.getItem('buc_theme') || 'light',
   history: [],
 };
 
@@ -2110,6 +2249,246 @@ document.addEventListener('DOMContentLoaded', () => {
   initLetterPhysics();
   setupCustomResizers();
 });
+
+/* ════════════════════════════════════════════════════════════════════════════
+   2D FOOTBALL COLLISION PHYSICS FOR FLOATING BENGALI LETTERS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function initLetterPhysics() {
+  const canvas = document.getElementById('floating-letters-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  const chars = ['অ', 'আ', 'ক', 'খ', 'ই', 'ঈ', 'উ', 'ঋ', 'এ', 'ও', 'শ', 'হ'];
+  const balls = [];
+  const numBalls = Math.min(10, Math.max(6, Math.floor(width / 140)));
+
+  for (let i = 0; i < numBalls; i++) {
+    const radius = Math.random() * 18 + 36;
+    balls.push({
+      char: chars[i % chars.length],
+      x: Math.random() * (width - radius * 2) + radius,
+      y: Math.random() * (height - radius * 2) + radius,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
+      radius: radius,
+      mass: radius * radius,
+      angle: Math.random() * Math.PI * 2,
+      vRot: (Math.random() - 0.5) * 0.008,
+      squash: 1,
+      squashAngle: 0,
+      squashTimer: 0
+    });
+  }
+
+  let mouseX = -1000, mouseY = -1000;
+  window.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function updatePhysics() {
+    balls.forEach(b => {
+      b.x += b.vx;
+      b.y += b.vy;
+      b.angle += b.vRot;
+
+      if (b.squashTimer > 0) {
+        b.squashTimer--;
+        b.squash += (1 - b.squash) * 0.15;
+      } else {
+        b.squash = 1;
+      }
+
+      if (b.x - b.radius < 0) {
+        b.x = b.radius;
+        b.vx = -b.vx * 0.95;
+      } else if (b.x + b.radius > width) {
+        b.x = width - b.radius;
+        b.vx = -b.vx * 0.95;
+      }
+
+      if (b.y - b.radius < 0) {
+        b.y = b.radius;
+        b.vy = -b.vy * 0.95;
+      } else if (b.y + b.radius > height) {
+        b.y = height - b.radius;
+        b.vy = -b.vy * 0.95;
+      }
+
+      const dxM = b.x - mouseX;
+      const dyM = b.y - mouseY;
+      const distM = Math.hypot(dxM, dyM);
+      if (distM < b.radius + 60 && distM > 0) {
+        const force = (b.radius + 60 - distM) / (b.radius + 60) * 0.08;
+        b.vx += (dxM / distM) * force;
+        b.vy += (dyM / distM) * force;
+      }
+    });
+
+    for (let i = 0; i < balls.length; i++) {
+      for (let j = i + 1; j < balls.length; j++) {
+        const b1 = balls[i];
+        const b2 = balls[j];
+        const dx = b2.x - b1.x;
+        const dy = b2.y - b1.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = b1.radius + b2.radius;
+
+        if (dist < minDist && dist > 0) {
+          const overlap = 0.5 * (minDist - dist);
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          b1.x -= nx * overlap;
+          b1.y -= ny * overlap;
+          b2.x += nx * overlap;
+          b2.y += ny * overlap;
+
+          const kx = b1.vx - b2.vx;
+          const ky = b1.vy - b2.vy;
+          const p = 2 * (nx * kx + ny * ky) / (b1.mass + b2.mass);
+
+          b1.vx -= p * b2.mass * nx;
+          b1.vy -= p * b2.mass * ny;
+          b2.vx += p * b1.mass * nx;
+          b2.vy += p * b1.mass * ny;
+
+          const maxSpeed = 1.2;
+          const s1 = Math.hypot(b1.vx, b1.vy);
+          if (s1 > maxSpeed) { b1.vx = (b1.vx / s1) * maxSpeed; b1.vy = (b1.vy / s1) * maxSpeed; }
+          const s2 = Math.hypot(b2.vx, b2.vy);
+          if (s2 > maxSpeed) { b2.vx = (b2.vx / s2) * maxSpeed; b2.vy = (b2.vy / s2) * maxSpeed; }
+
+          b1.squash = 0.88;
+          b1.squashAngle = Math.atan2(ny, nx);
+          b1.squashTimer = 8;
+          b1.vRot = (Math.random() - 0.5) * 0.02;
+
+          b2.squash = 0.88;
+          b2.squashAngle = Math.atan2(ny, nx);
+          b2.squashTimer = 8;
+          b2.vRot = (Math.random() - 0.5) * 0.02;
+        }
+      }
+    }
+  }
+
+  function renderPhysics() {
+    ctx.clearRect(0, 0, width, height);
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const textColor = isLight ? 'rgba(140, 28, 19, 0.16)' : 'rgba(247, 247, 250, 0.11)';
+
+    balls.forEach(b => {
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.angle);
+      if (b.squash !== 1) {
+        ctx.rotate(b.squashAngle);
+        ctx.scale(b.squash, 1 / b.squash);
+        ctx.rotate(-b.squashAngle);
+      }
+
+      ctx.font = `800 ${b.radius * 1.5}px "Noto Serif Bengali", "Tiro Bangla", serif`;
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.char, 0, 0);
+
+      ctx.restore();
+    });
+
+    updatePhysics();
+    requestAnimationFrame(renderPhysics);
+  }
+
+  renderPhysics();
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RELIABLE CUSTOM DRAG RESIZER CONTROLLER FOR INPUT & OUTPUT BOXES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function setupCustomResizers() {
+  function attachResizer(handleId, targetElement) {
+    const handle = document.getElementById(handleId);
+    if (!handle || !targetElement) return;
+
+    let isDragging = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    const onStart = (clientY) => {
+      isDragging = true;
+      startY = clientY;
+      startHeight = targetElement.offsetHeight;
+      handle.classList.add('active');
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+    };
+
+    const onMove = (clientY) => {
+      if (!isDragging) return;
+      const dy = clientY - startY;
+      const newHeight = Math.max(180, Math.min(850, startHeight + dy));
+      targetElement.style.height = newHeight + 'px';
+    };
+
+    const onEnd = () => {
+      if (isDragging) {
+        isDragging = false;
+        handle.classList.remove('active');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    };
+
+    handle.addEventListener('mousedown', e => {
+      e.preventDefault();
+      onStart(e.clientY);
+    });
+
+    document.addEventListener('mousemove', e => {
+      onMove(e.clientY);
+    });
+
+    document.addEventListener('mouseup', onEnd);
+
+    handle.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        onStart(e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (isDragging && e.touches.length === 1) {
+        onMove(e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', onEnd);
+  }
+
+  // Target input-drop-zone (.input-container-rel) for Bijoy Input box
+  const inputContainer = document.getElementById('input-drop-zone');
+  attachResizer('input-resize-handle', inputContainer);
+
+  // Target output-text textarea for Unicode Output box
+  const outputText = document.getElementById('output-text');
+  attachResizer('output-resize-handle', outputText);
+}
+
+
+
 </script>
 </body>
 </html>

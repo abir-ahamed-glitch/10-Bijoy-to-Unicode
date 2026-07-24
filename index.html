@@ -960,8 +960,8 @@ kbd {
 .live-label {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 7px 18px 7px 12px;
+  gap: 20px;
+  padding: 7px 20px 7px 14px;
   border-radius: var(--radius-md);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -988,30 +988,31 @@ kbd {
 }
 
 .toggle-track {
-  width: 52px;
+  width: 48px;
   height: 26px;
   background: rgba(120, 120, 128, 0.3);
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 13px;
   position: relative;
   flex-shrink: 0;
+  overflow: hidden;
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
 .toggle-track::after {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
+  top: 5px;
+  left: 5px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #FFFFFF;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s;
 }
 
-/* Active Live Mode Styling (High-Visibility Glowing Emerald/Green State) */
+/* Active Live Mode Styling */
 .live-label.active {
   background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
   border-color: #047857 !important;
@@ -1021,15 +1022,15 @@ kbd {
 }
 
 .live-label.active .toggle-track {
-  background: rgba(255, 255, 255, 0.35);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .live-label.active .toggle-track::after {
-  /* track=52, knob=20, inset=3  → safe travel = 52 - 20 - 3*2 - 4px corner buffer = 22px */
+  /* track=48, knob=16, inset=5 → travel = 48 - 16 - 5*2 = 22px */
   transform: translateX(22px);
   background: #FFFFFF;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 </style>

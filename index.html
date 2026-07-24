@@ -952,6 +952,83 @@ kbd {
   width: 58px;
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIGH-VISIBILITY LIVE MODE TOGGLE BUTTON PILL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.live-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .live-label {
+  background: #FFFFFF;
+  border: 1px solid rgba(180, 140, 90, 0.4);
+  color: var(--text-primary);
+  box-shadow: 0 2px 10px rgba(120, 70, 30, 0.08);
+}
+
+.live-label:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(198, 40, 40, 0.15);
+}
+
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  background: rgba(120, 120, 128, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  flex-shrink: 0;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s;
+}
+
+/* Active Live Mode Styling (High-Visibility Glowing Emerald/Green State) */
+.live-label.active {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  border-color: #047857 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.live-label.active .toggle-track {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.live-label.active .toggle-track::after {
+  transform: translateX(20px);
+  background: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
 </style>
 </head>
 <body>
@@ -1161,10 +1238,10 @@ kbd {
       ⚡ Convert Now
     </button>
 
-    <label class="live-label" id="live-label" title="Convert as you type" tabindex="0"
+    <label class="live-label" id="live-label" title="Convert automatically as you type" tabindex="0"
            role="switch" aria-checked="false" aria-label="Live mode toggle">
       <div class="toggle-track" aria-hidden="true"></div>
-      <span>Live Mode</span>
+      <span id="live-mode-text">⚡ Live Mode</span>
     </label>
 
     <button id="clear-btn" class="btn btn-glass" title="Ctrl+Shift+X" aria-label="Clear all">
@@ -2186,6 +2263,8 @@ document.addEventListener('DOMContentLoaded', () => {
     S.live = !S.live;
     ll.classList.toggle('active', S.live);
     ll.setAttribute('aria-checked', String(S.live));
+    const txt = $('live-mode-text');
+    if (txt) txt.textContent = S.live ? '⚡ Live Mode: ON' : '⚡ Live Mode';
     if (S.live) doConvert();
   });
   ll.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();ll.click();} });

@@ -944,6 +944,8 @@ kbd {
 /* ── Label wrapper ──────────────────────────────────────────────────────── */
 .live-label {
   display: inline-flex;
+  width: 162px;
+  box-sizing: border-box;
   align-items: center;
   gap: 10px;
   padding: 6px 16px 6px 8px;
@@ -971,6 +973,11 @@ kbd {
 .live-label:hover {
   border-color: var(--accent);
   box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+#live-mode-text {
+  display: inline-block;
+  text-align: left;
 }
 
 /* ── Toggle Track (48×26px pill) ────────────────────────────────────────── */

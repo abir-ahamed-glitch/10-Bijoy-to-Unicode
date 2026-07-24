@@ -2368,16 +2368,17 @@ function initLetterPhysics() {
     ['rgba(200,130,255,0.18)', 'rgba(210,150,255,0.50)', 'rgba(230,190,255,0.90)'],
   ];
 
-  const NUM     = Math.min(12, Math.max(7, Math.floor(window.innerWidth / 130)));
-  const MAX_SPD = 1.8;
-  const MIN_SPD = 0.4;
+  const NUM        = Math.min(12, Math.max(7, Math.floor(window.innerWidth / 130)));
+  const MAX_SPD    = 0.90;   // 50% of previous 1.8
+  const MIN_SPD    = 0.20;   // 50% of previous 0.4
+  const RESTITUTION = 0.78;  // energy retained on collision (< 1 = realistic loss)
 
   const balls = [];
   for (let i = 0; i < NUM; i++) {
     const fontSize = 60 + Math.random() * 24;     // 60–84 px variety
     const r   = fontSize * 0.52;                  // collision radius
     const ang = Math.random() * Math.PI * 2;
-    const spd = MIN_SPD + Math.random() * 0.55;
+    const spd = MIN_SPD + Math.random() * 0.275;  // 0.20 – 0.475 px/frame
     balls.push({
       char    : CHARS[i % CHARS.length],
       x       : r + Math.random() * (width  - r * 2),
@@ -2416,7 +2417,8 @@ function initLetterPhysics() {
     for (const b of balls) {
       b.x += b.vx;
       b.y += b.vy;
-      b.spin += b.dSpin;
+      b.spin  += b.dSpin;
+      b.dSpin *= 0.97;  // gradual spin decay – realistic damping
 
       // Decay squash smoothly
       if (b.sTmr > 0) {
@@ -2429,28 +2431,29 @@ function initLetterPhysics() {
         b.sx = 1; b.sy = 1;
       }
 
-      // Wall bounce – only reverse if moving TOWARD the wall (prevents climbing/sticking)
+      // Wall bounce – only reverse if moving TOWARD the wall (prevents climbing)
+      // 0.82 restitution = realistic energy loss on wall impact
       if (b.x - b.r < 0 && b.vx < 0) {
-        b.x = b.r; b.vx = -b.vx * 0.97;
-        b.sx = 0.70; b.sy = 1.35; b.sAng = 0; b.sTmr = 12;
+        b.x = b.r; b.vx = -b.vx * 0.82;
+        b.sx = 0.88; b.sy = 1.12; b.sAng = 0; b.sTmr = 10;
       } else if (b.x + b.r > width && b.vx > 0) {
-        b.x = width - b.r; b.vx = -b.vx * 0.97;
-        b.sx = 0.70; b.sy = 1.35; b.sAng = 0; b.sTmr = 12;
+        b.x = width - b.r; b.vx = -b.vx * 0.82;
+        b.sx = 0.88; b.sy = 1.12; b.sAng = 0; b.sTmr = 10;
       }
       if (b.y - b.r < 0 && b.vy < 0) {
-        b.y = b.r; b.vy = -b.vy * 0.97;
-        b.sx = 1.35; b.sy = 0.70; b.sAng = Math.PI/2; b.sTmr = 12;
+        b.y = b.r; b.vy = -b.vy * 0.82;
+        b.sx = 1.12; b.sy = 0.88; b.sAng = Math.PI/2; b.sTmr = 10;
       } else if (b.y + b.r > height && b.vy > 0) {
-        b.y = height - b.r; b.vy = -b.vy * 0.97;
-        b.sx = 1.35; b.sy = 0.70; b.sAng = Math.PI/2; b.sTmr = 12;
+        b.y = height - b.r; b.vy = -b.vy * 0.82;
+        b.sx = 1.12; b.sy = 0.88; b.sAng = Math.PI/2; b.sTmr = 10;
       }
 
-      // Mouse repulsion
+      // Mouse repulsion (gentle)
       const dxM = b.x - mouseX, dyM = b.y - mouseY;
       const dM = Math.hypot(dxM, dyM);
-      const repelZone = b.r + 70;
+      const repelZone = b.r + 60;
       if (dM < repelZone && dM > 0) {
-        const f = ((repelZone - dM) / repelZone) * 0.12;
+        const f = ((repelZone - dM) / repelZone) * 0.06;
         b.vx += (dxM / dM) * f;
         b.vy += (dyM / dM) * f;
       }
@@ -2477,18 +2480,19 @@ function initLetterPhysics() {
         const dvx = a.vx - b.vx, dvy = a.vy - b.vy;
         const dot = dvx * nx + dvy * ny;
         if (dot < 0) continue;   // already separating
-        const coeff = (2 * dot) / (a.mass + b.mass);
+        // Realistic inelastic collision: RESTITUTION < 1 loses energy naturally
+        const coeff = (1 + RESTITUTION) * dot / (a.mass + b.mass);
         a.vx -= coeff * b.mass * nx;
         a.vy -= coeff * b.mass * ny;
         b.vx += coeff * a.mass * nx;
         b.vy += coeff * a.mass * ny;
 
-        // Football squash on both balls
+        // Subtle squash – not cartoony, just enough to feel the impact
         const impactAng = Math.atan2(ny, nx);
-        a.sx = 0.72; a.sy = 1.30; a.sAng = impactAng + Math.PI/2; a.sTmr = 14;
-        b.sx = 0.72; b.sy = 1.30; b.sAng = impactAng + Math.PI/2; b.sTmr = 14;
-        a.dSpin = (Math.random() - 0.5) * 0.025;
-        b.dSpin = (Math.random() - 0.5) * 0.025;
+        a.sx = 0.88; a.sy = 1.12; a.sAng = impactAng + Math.PI/2; a.sTmr = 10;
+        b.sx = 0.88; b.sy = 1.12; b.sAng = impactAng + Math.PI/2; b.sTmr = 10;
+        a.dSpin = (Math.random() - 0.5) * 0.012;
+        b.dSpin = (Math.random() - 0.5) * 0.012;
 
         clampSpeed(a);
         clampSpeed(b);

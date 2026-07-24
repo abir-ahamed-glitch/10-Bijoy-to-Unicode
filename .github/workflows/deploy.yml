@@ -13,11 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 371b5ee90b4835d12434ab1303087f85
-          projectName: bijoy-to-unicode
-          directory: .
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 20
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 371b5ee90b4835d12434ab1303087f85
+        run: npx wrangler pages deploy . --project-name=bijoy-to-unicode

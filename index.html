@@ -2369,35 +2369,31 @@ function initLetterPhysics() {
     ['rgba(200,130,255,0.18)', 'rgba(210,150,255,0.50)', 'rgba(230,190,255,0.90)'],
   ];
 
-  const NUM = Math.min(12, Math.max(7, Math.floor(window.innerWidth / 130)));
-  const SPEED = 0.95;   // base speed – enough so balls actually meet
-  const MAX_SPEED = 2.2;
-  const MIN_SPEED = 0.35;
-  // DRAW_SCALE: visual circle is slightly smaller than physics radius
-  // This makes letters visually touch at collision instead of showing a gap
-  const DRAW_SCALE = 0.80;
+  const NUM     = Math.min(12, Math.max(7, Math.floor(window.innerWidth / 130)));
+  const MAX_SPD = 1.8;
+  const MIN_SPD = 0.4;
 
   const balls = [];
   for (let i = 0; i < NUM; i++) {
-    const r = 48 + Math.random() * 33;          // radius 48–81 px (50% bigger)
+    const fontSize = 60 + Math.random() * 24;     // 60–84 px variety
+    const r   = fontSize * 0.52;                  // collision radius
     const ang = Math.random() * Math.PI * 2;
-    const spd = MIN_SPEED + Math.random() * (SPEED - MIN_SPEED);
-    const palIdx = i % LIGHT_PALETTES.length;
+    const spd = MIN_SPD + Math.random() * 0.55;
     balls.push({
-      char : CHARS[i % CHARS.length],
-      x    : r + Math.random() * (width  - r * 2),
-      y    : r + Math.random() * (height - r * 2),
-      vx   : Math.cos(ang) * spd,
-      vy   : Math.sin(ang) * spd,
-      r    : r,
-      mass : r * r,
-      spin : 0,
-      dSpin: (Math.random() - 0.5) * 0.006,
-      sx   : 1,   // squash-x
-      sy   : 1,   // squash-y (sy = 1/sx when squashing)
-      sAng : 0,   // squash angle
-      sTmr : 0,   // squash timer
-      palIdx
+      char    : CHARS[i % CHARS.length],
+      x       : r + Math.random() * (width  - r * 2),
+      y       : r + Math.random() * (height - r * 2),
+      vx      : Math.cos(ang) * spd,
+      vy      : Math.sin(ang) * spd,
+      r       : r,
+      mass    : r * r,
+      spin    : 0,
+      dSpin   : (Math.random() - 0.5) * 0.005,
+      sx      : 1,
+      sy      : 1,
+      sAng    : 0,
+      sTmr    : 0,
+      fontSize: fontSize
     });
   }
 
@@ -2408,11 +2404,11 @@ function initLetterPhysics() {
     if (e.touches.length) { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; }
   }, { passive: true });
 
-  // ── Clamp speed helper ─────────────────────────────────────────────────────
+  // ── Speed clamp ────────────────────────────────────────────────────────
   function clampSpeed(b) {
     const s = Math.hypot(b.vx, b.vy);
-    if (s > MAX_SPEED) { b.vx = b.vx/s*MAX_SPEED; b.vy = b.vy/s*MAX_SPEED; }
-    if (s < MIN_SPEED && s > 0) { b.vx = b.vx/s*MIN_SPEED; b.vy = b.vy/s*MIN_SPEED; }
+    if (s > MAX_SPD) { b.vx = b.vx/s*MAX_SPD; b.vy = b.vy/s*MAX_SPD; }
+    if (s < MIN_SPD && s > 0) { b.vx = b.vx/s*MIN_SPD; b.vy = b.vy/s*MIN_SPD; }
   }
 
   // ── Physics update ─────────────────────────────────────────────────────────
@@ -2434,20 +2430,20 @@ function initLetterPhysics() {
         b.sx = 1; b.sy = 1;
       }
 
-      // Wall collisions with bounce squash
-      if (b.x - b.r < 0) {
-        b.x = b.r; b.vx = Math.abs(b.vx) * 0.97;
-        b.sx = 0.75; b.sy = 1.25; b.sAng = 0; b.sTmr = 12;
-      } else if (b.x + b.r > width) {
-        b.x = width - b.r; b.vx = -Math.abs(b.vx) * 0.97;
-        b.sx = 0.75; b.sy = 1.25; b.sAng = 0; b.sTmr = 12;
+      // Wall bounce – only reverse if moving TOWARD the wall (prevents climbing/sticking)
+      if (b.x - b.r < 0 && b.vx < 0) {
+        b.x = b.r; b.vx = -b.vx * 0.97;
+        b.sx = 0.70; b.sy = 1.35; b.sAng = 0; b.sTmr = 12;
+      } else if (b.x + b.r > width && b.vx > 0) {
+        b.x = width - b.r; b.vx = -b.vx * 0.97;
+        b.sx = 0.70; b.sy = 1.35; b.sAng = 0; b.sTmr = 12;
       }
-      if (b.y - b.r < 0) {
-        b.y = b.r; b.vy = Math.abs(b.vy) * 0.97;
-        b.sx = 1.25; b.sy = 0.75; b.sAng = Math.PI/2; b.sTmr = 12;
-      } else if (b.y + b.r > height) {
-        b.y = height - b.r; b.vy = -Math.abs(b.vy) * 0.97;
-        b.sx = 1.25; b.sy = 0.75; b.sAng = Math.PI/2; b.sTmr = 12;
+      if (b.y - b.r < 0 && b.vy < 0) {
+        b.y = b.r; b.vy = -b.vy * 0.97;
+        b.sx = 1.35; b.sy = 0.70; b.sAng = Math.PI/2; b.sTmr = 12;
+      } else if (b.y + b.r > height && b.vy > 0) {
+        b.y = height - b.r; b.vy = -b.vy * 0.97;
+        b.sx = 1.35; b.sy = 0.70; b.sAng = Math.PI/2; b.sTmr = 12;
       }
 
       // Mouse repulsion
@@ -2501,52 +2497,36 @@ function initLetterPhysics() {
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render – letters only, no bubble/orb ─────────────────────────────
   function draw() {
     ctx.clearRect(0, 0, width, height);
 
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const PAL = isLight ? LIGHT_PALETTES : DARK_PALETTES;
+    const col = isLight ? 'rgba(120, 30, 15, 0.28)' : 'rgba(255, 238, 210, 0.20)';
 
     for (const b of balls) {
-      const [fill, stroke, txtCol] = PAL[b.palIdx];
-
       ctx.save();
       ctx.translate(b.x, b.y);
       ctx.rotate(b.spin);
 
-      // Squash/stretch transform
+      // Squash/stretch on impact
       if (b.sTmr > 0) {
         ctx.rotate(b.sAng);
-        ctx.scale(b.sy, b.sx);   // sy/sx intentional (rotate frame)
+        ctx.scale(b.sx, b.sy);
         ctx.rotate(-b.sAng);
       }
 
-      // ── Ball body (circle) ─────────────────────────────
-      // Use DRAW_SCALE so drawn circle is tight around glyph → no visible gap at collision
-      const dr = b.r * DRAW_SCALE;
-      ctx.beginPath();
-      ctx.arc(0, 0, dr, 0, Math.PI * 2);
+      // Subtle depth shadow
+      ctx.shadowColor   = isLight ? 'rgba(80,15,5,0.10)' : 'rgba(0,0,0,0.15)';
+      ctx.shadowBlur    = 6;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
 
-      // Radial gradient for 3-D football feel
-      const grad = ctx.createRadialGradient(-dr*0.28, -dr*0.30, dr*0.08,
-                                             0,        0,        dr);
-      grad.addColorStop(0,   fill.replace(/[\d.]+\)$/, '0.55)'));
-      grad.addColorStop(0.6, fill);
-      grad.addColorStop(1,   fill.replace(/[\d.]+\)$/, '0.08)'));
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = 1.6;
-      ctx.stroke();
-
-      // ── Letter (50% bigger than before) ───────────────────
-      ctx.font = `800 ${(b.r * 1.73).toFixed(0)}px "Noto Serif Bengali","Tiro Bangla",serif`;
-      ctx.fillStyle = txtCol;
-      ctx.textAlign = 'center';
+      ctx.font         = `800 ${b.fontSize.toFixed(0)}px "Noto Serif Bengali","Tiro Bangla",serif`;
+      ctx.fillStyle    = col;
+      ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(b.char, 0, 1);
+      ctx.fillText(b.char, 0, 0);
 
       ctx.restore();
     }

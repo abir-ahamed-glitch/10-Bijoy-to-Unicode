@@ -2370,10 +2370,13 @@ function initLetterPhysics() {
   const SPEED = 0.95;   // base speed – enough so balls actually meet
   const MAX_SPEED = 2.2;
   const MIN_SPEED = 0.35;
+  // DRAW_SCALE: visual circle is slightly smaller than physics radius
+  // This makes letters visually touch at collision instead of showing a gap
+  const DRAW_SCALE = 0.80;
 
   const balls = [];
   for (let i = 0; i < NUM; i++) {
-    const r = 32 + Math.random() * 22;          // radius 32–54 px
+    const r = 48 + Math.random() * 33;          // radius 48–81 px (50% bigger)
     const ang = Math.random() * Math.PI * 2;
     const spd = MIN_SPEED + Math.random() * (SPEED - MIN_SPEED);
     const palIdx = i % LIGHT_PALETTES.length;
@@ -2517,12 +2520,14 @@ function initLetterPhysics() {
       }
 
       // ── Ball body (circle) ─────────────────────────────
+      // Use DRAW_SCALE so drawn circle is tight around glyph → no visible gap at collision
+      const dr = b.r * DRAW_SCALE;
       ctx.beginPath();
-      ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+      ctx.arc(0, 0, dr, 0, Math.PI * 2);
 
       // Radial gradient for 3-D football feel
-      const grad = ctx.createRadialGradient(-b.r*0.28, -b.r*0.30, b.r*0.08,
-                                             0,         0,         b.r);
+      const grad = ctx.createRadialGradient(-dr*0.28, -dr*0.30, dr*0.08,
+                                             0,        0,        dr);
       grad.addColorStop(0,   fill.replace(/[\d.]+\)$/, '0.55)'));
       grad.addColorStop(0.6, fill);
       grad.addColorStop(1,   fill.replace(/[\d.]+\)$/, '0.08)'));
@@ -2533,8 +2538,8 @@ function initLetterPhysics() {
       ctx.lineWidth = 1.6;
       ctx.stroke();
 
-      // ── Letter ────────────────────────────────────────
-      ctx.font = `800 ${(b.r * 1.15).toFixed(0)}px "Noto Serif Bengali","Tiro Bangla",serif`;
+      // ── Letter (50% bigger than before) ───────────────────
+      ctx.font = `800 ${(b.r * 1.73).toFixed(0)}px "Noto Serif Bengali","Tiro Bangla",serif`;
       ctx.fillStyle = txtCol;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';

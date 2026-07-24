@@ -629,6 +629,173 @@ kbd {
   border-radius: 4px;
   margin: 0 1px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   High-Contrast Buttons & Enhanced Bengali Letter Floating Motion
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Buttons Base */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 10px 20px; border-radius: var(--radius-md);
+  border: 1px solid transparent; font-family: var(--font-ui);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap; user-select: none; text-decoration: none; outline: none;
+  position: relative; z-index: 2;
+}
+.btn:active { transform: scale(0.96) !important; }
+
+/* Primary Convert Button (High Visibility Crimson Gradient) */
+.btn-primary, #convert-btn {
+  background: linear-gradient(135deg, #E53935 0%, #D32F2F 50%, #C62828 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 6px 20px rgba(229, 57, 53, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.3px;
+}
+.btn-primary:hover, #convert-btn:hover {
+  background: linear-gradient(135deg, #FF4D4D 0%, #E53935 50%, #D32F2F 100%) !important;
+  box-shadow: 0 8px 28px rgba(229, 57, 53, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  color: #FFFFFF !important;
+}
+
+/* Glass Buttons */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+[data-theme="light"] .btn-glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(180, 140, 90, 0.35);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(100, 60, 20, 0.06);
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #FFFFFF;
+  transform: translateY(-1.5px);
+}
+[data-theme="light"] .btn-glass:hover {
+  background: #FFFFFF;
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1.5px);
+}
+
+/* Icon Buttons */
+.btn-icon {
+  padding: 10px; aspect-ratio: 1; border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--text-primary); font-size: 18px;
+}
+[data-theme="light"] .btn-icon {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(180, 140, 90, 0.3);
+  color: var(--text-primary);
+}
+.btn-icon:hover {
+  background: var(--accent); color: #FFFFFF;
+  border-color: var(--accent);
+  transform: translateY(-1.5px) scale(1.05);
+}
+
+/* Convert Row Fixes */
+.convert-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap; margin: 18px 0;
+  position: relative; z-index: 10;
+}
+.convert-row .btn-primary {
+  padding: 13px 42px !important;
+  min-width: 190px;
+}
+
+/* Swap Button */
+.swap-btn {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #FFFFFF; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(229, 57, 53, 0.5);
+  transition: all 0.25s ease; position: relative; z-index: 5;
+}
+.swap-btn:hover {
+  transform: rotate(180deg) scale(1.12);
+  box-shadow: 0 8px 28px rgba(229, 57, 53, 0.7);
+}
+
+/* Enhanced Floating Letter Watermarks & Motion */
+.bn-floating-watermarks {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.bn-char {
+  position: absolute;
+  font-family: var(--font-bn);
+  font-weight: 800;
+  font-size: clamp(3.8rem, 8.5vw, 8.5rem);
+  color: var(--text-primary);
+  opacity: 0.16;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  user-select: none;
+  transition: opacity 0.4s ease;
+  will-change: transform;
+}
+[data-theme="light"] .bn-char {
+  color: #8C1C13;
+  opacity: 0.22;
+  text-shadow: 0 2px 12px rgba(140,28,19,0.15);
+}
+
+/* Dynamic Multi-Axis Motion Keyframes */
+@keyframes bnMotion1 {
+  0%   { transform: translate(0px, 0px) rotate(-10deg) scale(1); }
+  25%  { transform: translate(25px, -35px) rotate(4deg) scale(1.08); }
+  50%  { transform: translate(-15px, -60px) rotate(-6deg) scale(0.95); }
+  75%  { transform: translate(-30px, -25px) rotate(8deg) scale(1.04); }
+  100% { transform: translate(0px, 0px) rotate(-10deg) scale(1); }
+}
+
+@keyframes bnMotion2 {
+  0%   { transform: translate(0px, 0px) rotate(12deg) scale(1); }
+  25%  { transform: translate(-30px, -45px) rotate(-8deg) scale(1.12); }
+  50%  { transform: translate(20px, -70px) rotate(6deg) scale(0.92); }
+  75%  { transform: translate(35px, -30px) rotate(-4deg) scale(1.06); }
+  100% { transform: translate(0px, 0px) rotate(12deg) scale(1); }
+}
+
+@keyframes bnMotion3 {
+  0%   { transform: translate(0px, 0px) rotate(-6deg) scale(1); }
+  25%  { transform: translate(28px, -40px) rotate(12deg) scale(0.96); }
+  50%  { transform: translate(-22px, -65px) rotate(-12deg) scale(1.1); }
+  75%  { transform: translate(15px, -20px) rotate(4deg) scale(1.02); }
+  100% { transform: translate(0px, 0px) rotate(-6deg) scale(1); }
+}
+
+@keyframes bnMotion4 {
+  0%   { transform: translate(0px, 0px) rotate(14deg) scale(1); }
+  25%  { transform: translate(-25px, -50px) rotate(-10deg) scale(1.14); }
+  50%  { transform: translate(22px, -80px) rotate(10deg) scale(0.94); }
+  75%  { transform: translate(-18px, -35px) rotate(-6deg) scale(1.05); }
+  100% { transform: translate(0px, 0px) rotate(14deg) scale(1); }
+}
+
+.float-1 { animation: bnMotion1 9s ease-in-out infinite; }
+.float-2 { animation: bnMotion2 11s ease-in-out infinite 1.2s; }
+.float-3 { animation: bnMotion3 10s ease-in-out infinite 2.5s; }
+.float-4 { animation: bnMotion4 12s ease-in-out infinite 0.7s; }
+.float-5 { animation: bnMotion2 13s ease-in-out infinite 1.8s; }
+
 </style>
 </head>
 <body>

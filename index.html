@@ -2043,6 +2043,10 @@ function doConvert() {
 
   let effective = S.mode;
   const det = detectEncoding(txt);
+  if (S.mode === 'b2u' && det === 'unicode') effective = 'u2b';
+  if (S.mode === 'u2b' && det === 'bijoy') effective = 'b2u';
+  if (S.mode === 'auto') effective = det === 'unicode' ? 'u2b' : 'b2u';
+  applyFontMode();
 
   if (S.mode === 'auto') {
     effective = det === 'unicode' ? 'u2b' : 'b2u';
@@ -2258,11 +2262,21 @@ function handleInput() {
    INIT
    ════════════════════════════════════════════════════════════════════════════ */
 
+function getEffectiveMode() {
+  const txt = inp().value ? inp().value.trim() : '';
+  if (!txt) return S.mode === 'u2b' ? 'u2b' : 'b2u';
+  const det = detectEncoding(txt);
+  if (S.mode === 'auto') return det === 'unicode' ? 'u2b' : 'b2u';
+  if (S.mode === 'b2u' && det === 'unicode') return 'u2b';
+  if (S.mode === 'u2b' && det === 'bijoy') return 'b2u';
+  return S.mode;
+}
+
 function applyFontMode() {
   const mode = S.fontMode ?? 0;
   const dualBox = $('input-dual-box');
   const btn = $('font-toggle-btn');
-  const effMode = S.mode === 'auto' ? (detectEncoding(inp().value) === 'unicode' ? 'u2b' : 'b2u') : S.mode;
+  const effMode = getEffectiveMode();
 
   if (effMode === 'u2b') {
     // Unicode to Bijoy mode: Output box holds Bijoy text -> render in SutonnyMJ Font by default!

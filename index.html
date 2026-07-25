@@ -574,7 +574,7 @@ kbd {
   
 /* Intelligent Dual-Font Rendering */
 .input-container-rel { position: relative; width: 100%; min-height: 320px; }
-#input-text { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 1; transition: opacity 0.2s; }
+#input-text, #output-text { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 1; transition: opacity 0.2s; }
 #input-text.transparent-mode, #output-text.transparent-mode {
   opacity: 1 !important;
   color: transparent !important;
@@ -582,11 +582,11 @@ kbd {
   background: transparent !important;
   pointer-events: auto !important;
 }
-#input-text.transparent-mode::selection {
+#input-text.transparent-mode::selection, #output-text.transparent-mode::selection {
   background: rgba(124, 95, 252, 0.45) !important;
   color: #ffffff !important;
 }
-#input-text.transparent-mode::-moz-selection {
+#input-text.transparent-mode::-moz-selection, #output-text.transparent-mode::-moz-selection {
   background: rgba(124, 95, 252, 0.45) !important;
   color: #ffffff !important;
 }
@@ -1241,7 +1241,7 @@ kbd {
         </span>
         <span class="panel-stats" id="output-stats" aria-live="polite">0 chars · 0 words</span>
       </div>
-      <div class="input-container-rel">
+      <div id="output-drop-zone" class="input-container-rel">
         <div id="output-dual-box" aria-hidden="true"></div>
         <textarea id="output-text" name="output-text" lang="bn"
           placeholder="Converted Unicode Bengali will appear here… (Fully editable)"
@@ -2744,9 +2744,9 @@ function setupCustomResizers() {
   const inputContainer = document.getElementById('input-drop-zone');
   attachResizer('input-resize-handle', inputContainer);
 
-  // Target output-text textarea for Unicode Output box
-  const outputText = document.getElementById('output-text');
-  attachResizer('output-resize-handle', outputText);
+  // Target output-drop-zone (.input-container-rel) for Output box
+  const outputContainer = document.getElementById('output-drop-zone');
+  attachResizer('output-resize-handle', outputContainer);
 }
 
 

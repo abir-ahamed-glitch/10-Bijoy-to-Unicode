@@ -1908,16 +1908,9 @@ function unicodeToBijoy(text) {
     .replace(/\u09A1\u09BC/g, '\u09DC')
     .replace(/\u09A2\u09BC/g, '\u09DD');
 
-  // Step 0: Protect ASCII English segments embedded in Bengali Unicode
-  const engMap2 = [];
-  r = r.replace(/(?<!\p{L})([A-Za-z][A-Za-z0-9\s,;:.!?'"\-\(\)\[\]{}<>&@#_]*[A-Za-z0-9])(?!\p{L})/gu, (seg) => {
-    if (!/[\u0980-\u09FF]/.test(seg)) {
-      const idx = engMap2.length;
-      engMap2.push(seg);
-      return '\uE001' + String.fromCharCode(0xE100 + idx) + '\uE001';
-    }
-    return seg;
-  });
+  // Step 0: Protect English tokens embedded in Bengali Unicode using unified protectEnglishTokens engine
+  const { text: cleanR, map: engMap2 } = protectEnglishTokens(r);
+  r = cleanR;
 
   const SINGLE_CLUSTER = '(?:[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC](?:\u09CD[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC])*(?:\u09CD[রয])?)';
 
@@ -2105,20 +2098,31 @@ function doConvert() {
   if (S.mode === 'b2u' && det === 'unicode') effective = 'u2b';
   if (S.mode === 'u2b' && det === 'bijoy') effective = 'b2u';
   if (S.mode === 'auto') effective = det === 'unicode' ? 'u2b' : 'b2u';
+
+  // Dynamically update labels based on effective conversion mode
+  if (effective === 'u2b') {
+    $('input-label').textContent  = 'Unicode Input';
+    $('output-label').textContent = 'Bijoy Output';
+  } else {
+    $('input-label').textContent  = 'Bijoy Input';
+    $('output-label').textContent = 'Unicode Output';
+  }
+
   applyFontMode();
 
   if (S.mode === 'auto') {
-    effective = det === 'unicode' ? 'u2b' : 'b2u';
     const banner = $('enc-banner');
     $('enc-label').textContent = det==='unicode'
       ? 'Unicode Detected → Converting to Bijoy'
       : 'Bijoy Detected → Converting to Unicode';
     banner.classList.remove('hidden');
   } else if (S.mode === 'b2u' && det === 'unicode') {
-    // Auto detect if user pasted Unicode Bengali into B2U panel
-    effective = 'u2b';
     const banner = $('enc-banner');
     $('enc-label').textContent = 'Unicode Input Detected → Converting to Bijoy';
+    banner.classList.remove('hidden');
+  } else if (S.mode === 'u2b' && det === 'bijoy') {
+    const banner = $('enc-banner');
+    $('enc-label').textContent = 'Bijoy Input Detected → Converting to Unicode';
     banner.classList.remove('hidden');
   } else {
     $('enc-banner').classList.add('hidden');

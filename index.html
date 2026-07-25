@@ -2348,42 +2348,59 @@ function getEffectiveMode() {
 
 function applyFontMode() {
   const mode = S.fontMode ?? 0;
-  const dualBox = $('input-dual-box');
+  const inDual = $('input-dual-box');
+  const outDual = $('output-dual-box');
   const btn = $('font-toggle-btn');
   const effMode = getEffectiveMode();
 
   if (effMode === 'u2b') {
-    // Unicode to Bijoy mode: Output box holds Bijoy text -> render in SutonnyMJ Font by default!
+    // Unicode to Bijoy mode: Output box holds Bijoy text
     inp().classList.remove('transparent-mode', 'bijoy-font');
-    if (dualBox) dualBox.style.display = 'none';
+    if (inDual) inDual.style.display = 'none';
 
-    if (mode === 0 || mode === 1) {
-      outp().classList.add('bijoy-font');
-      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Bengali View)';
-    } else {
+    if (mode === 0) {
+      // Auto Dual Font mode for Output box
+      outp().classList.add('transparent-mode');
       outp().classList.remove('bijoy-font');
+      if (outDual) outDual.style.display = 'block';
+      if (btn) btn.textContent = '🔤 Font: Auto (Dual Bijoy + English)';
+    } else if (mode === 1) {
+      // Force SutonnyMJ font on Output box
+      outp().classList.remove('transparent-mode');
+      outp().classList.add('bijoy-font');
+      if (outDual) outDual.style.display = 'none';
+      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Full Bijoy)';
+    } else {
+      // Force System font on Output box
+      outp().classList.remove('transparent-mode', 'bijoy-font');
+      if (outDual) outDual.style.display = 'none';
       if (btn) btn.textContent = '🔠 Font: System (English Readable)';
     }
   } else {
     // Bijoy to Unicode mode: Input box holds Bijoy text
-    outp().classList.remove('bijoy-font');
+    outp().classList.remove('transparent-mode', 'bijoy-font');
+    if (outDual) outDual.style.display = 'none';
+
     if (mode === 0) {
+      // Auto Dual Font mode for Input box
       inp().classList.add('transparent-mode');
       inp().classList.remove('bijoy-font');
-      if (dualBox) dualBox.style.display = 'block';
-      if (btn) btn.textContent = '🎨 Dual-Font: SutonnyMJ + English';
+      if (inDual) inDual.style.display = 'block';
+      if (btn) btn.textContent = '🔤 Font: Auto (Dual Bijoy + English)';
     } else if (mode === 1) {
+      // Force SutonnyMJ font on Input box
       inp().classList.remove('transparent-mode');
       inp().classList.add('bijoy-font');
-      if (dualBox) dualBox.style.display = 'none';
-      if (btn) btn.textContent = '🔤 Font: SutonnyMJ Only';
+      if (inDual) inDual.style.display = 'none';
+      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Full Bijoy)';
     } else {
-      inp().classList.remove('transparent-mode');
-      inp().classList.remove('bijoy-font');
-      if (dualBox) dualBox.style.display = 'none';
-      if (btn) btn.textContent = '🔠 Font: System Readable';
+      // Force System font on Input box
+      inp().classList.remove('transparent-mode', 'bijoy-font');
+      if (inDual) inDual.style.display = 'none';
+      if (btn) btn.textContent = '🔠 Font: System (English Readable)';
     }
   }
+  updateDualFontPreview();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1592,7 +1592,7 @@ const U2B_MULTI = [
   ["ল্ল","jø"],["শ্চ","ð"],["শ্ন","kœ"],["শ্ব","k¦"],["শ্ম","k¥"],
   ["শ্ল","kø"],["ষ্ক্র","®Œ"],["ষ্ক","®‹"],["ষ্ট","ó"],["ষ্ঠ","ô"],
   ["ষ্ণ","ò"],["ষ্প","®ú"],["ষ্ফ","õ"],["ষ্ম","®§"],["স্ক","¯‹"],
-  ["স্ট","÷"],["স্খ","ö"],["স্ত","¯Í"],["স্থ","¯\u2018"],["স্ন","mœ"],
+  ["স্ট","÷"],["স্খ","ö"],["স্ত","¯—"],["স্থ","¯\u2018"],["স্ন","mœ"],
   ["স্প","¯ú"],["স্ফ","ù"],["স্ব","m^"],["স্ম","¯§"],["স্ল","¯ø"],
   ["হ্ণ","nè"],["হ্ব","nŸ"],["হ্ন","ý"],["হ্ম","þ"],["হ্ল","n¬"],
   ["্র","ª"],["্য","¨"],["র্","©"],
@@ -1613,7 +1613,7 @@ const BIJOY_BLACKLIST = new Set([
   'avgvi', 'avwg', 'evovwj', 'evsjv', 'fjevwm', 'gkwu', 'gkwz', 'gkb', 'gk', 'mvbvi', 'myi', 'rvwz', 'zvgvq', 'mvdv', 'mvb', 'gvi', 'fvjevwm',
   'avi', 'gb', 'ib', 'me', 'be', 'mv', 'dv', 'in', 'am', 'an',
   'is', 'as', 'us', 'or', 'so', 'to', 'do', 'go', 'no', 'vi',
-  'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj',
+  'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj', 'li', 'Ii', 'ii', 'II', 'LI', 'lI',
   'gkk', 'dj', 'gk', 'pk', 'kgb', 'i', 'I'
 ]);
 
@@ -2032,6 +2032,7 @@ function renderDualFontHTML(text) {
     
     let html = '';
     let bijoyBuffer = '';
+    let engBuffer = '';
 
     const flushBijoy = () => {
       if (bijoyBuffer) {
@@ -2041,19 +2042,48 @@ function renderDualFontHTML(text) {
       }
     };
 
+    const flushEng = () => {
+      if (engBuffer) {
+        const escaped = engBuffer.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        html += `<span class="eng-seg">${escaped}</span>`;
+        engBuffer = '';
+      }
+    };
+
     for (let i = 0; i < tokens.length; i++) {
       const tok = tokens[i];
       if (!tok) continue;
 
       const clean = tok.replace(/^[^\w]+|[^\w]+$/, '');
-      if (clean && isEnglishWord(clean)) {
+      const isEng = clean && isEnglishWord(clean) && !hasBijoyStructure(tok);
+      const isWhitespaceOrPunct = /^[\s.,!?;:()\[\]{}\"\'/|-]+$/.test(tok);
+
+      if (isEng) {
         flushBijoy();
-        const escapedTok = tok.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        html += `<span class="eng-seg">${escapedTok}</span>`;
+        engBuffer += tok;
+      } else if (isWhitespaceOrPunct && engBuffer.length > 0) {
+        // Peek ahead to see if next word is also English
+        let nextIsEng = false;
+        for (let j = i + 1; j < tokens.length; j++) {
+          if (!tokens[j]) continue;
+          const nextClean = tokens[j].replace(/^[^\w]+|[^\w]+$/, '');
+          if (nextClean) {
+            nextIsEng = isEnglishWord(nextClean) && !hasBijoyStructure(tokens[j]);
+            break;
+          }
+        }
+        if (nextIsEng) {
+          engBuffer += tok;
+        } else {
+          flushEng();
+          bijoyBuffer += tok;
+        }
       } else {
+        flushEng();
         bijoyBuffer += tok;
       }
     }
+    flushEng();
     flushBijoy();
     return html;
   });

@@ -1043,6 +1043,15 @@ kbd {
 }
 
 </style>
+
+    @font-face {
+      font-family: 'SutonnyMJ';
+      src: local('SutonnyMJ'), local('SutonnyMJ Regular'), local('SutonnyMJ-Bold'), local('Sutonny Bangla OM'), local('Bijoy'),
+           url('https://cdn.jsdelivr.net/gh/bangla-fonts/sutonnymj@main/SutonnyMJ.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/gh/bangla-fonts/sutonnymj@main/SutonnyMJ.ttf') format('truetype');
+      font-display: swap;
+    }
+
 </head>
 <body>
 
@@ -2018,6 +2027,7 @@ function setMode(m) {
   inp().placeholder = cfg.ip;
   inp().lang  = m==='u2b' ? 'bn' : '';
   outp().lang = m==='u2b' ? ''   : 'bn';
+  applyFontMode();
   inp().classList.remove('bijoy-font');
   if ($('font-toggle-btn')) {
     $('font-toggle-btn').textContent = '🔠 Font: System (English Readable)';
@@ -2253,22 +2263,39 @@ function applyFontMode() {
   const mode = S.fontMode ?? 0;
   const dualBox = $('input-dual-box');
   const btn = $('font-toggle-btn');
+  const effMode = S.mode === 'auto' ? (detectEncoding(inp().value) === 'unicode' ? 'u2b' : 'b2u') : S.mode;
 
-  if (mode === 0) {
-    inp().classList.add('transparent-mode');
-    inp().classList.remove('bijoy-font');
-    if (dualBox) dualBox.style.display = 'block';
-    if (btn) btn.textContent = '🎨 Dual-Font: SutonnyMJ + English';
-  } else if (mode === 1) {
-    inp().classList.remove('transparent-mode');
-    inp().classList.add('bijoy-font');
+  if (effMode === 'u2b') {
+    // Unicode to Bijoy mode: Output box holds Bijoy text -> render in SutonnyMJ Font by default!
+    inp().classList.remove('transparent-mode', 'bijoy-font');
     if (dualBox) dualBox.style.display = 'none';
-    if (btn) btn.textContent = '🔤 Font: SutonnyMJ Only';
+
+    if (mode === 0 || mode === 1) {
+      outp().classList.add('bijoy-font');
+      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Bengali View)';
+    } else {
+      outp().classList.remove('bijoy-font');
+      if (btn) btn.textContent = '🔠 Font: System (English Readable)';
+    }
   } else {
-    inp().classList.remove('transparent-mode');
-    inp().classList.remove('bijoy-font');
-    if (dualBox) dualBox.style.display = 'none';
-    if (btn) btn.textContent = '🔠 Font: System Readable';
+    // Bijoy to Unicode mode: Input box holds Bijoy text
+    outp().classList.remove('bijoy-font');
+    if (mode === 0) {
+      inp().classList.add('transparent-mode');
+      inp().classList.remove('bijoy-font');
+      if (dualBox) dualBox.style.display = 'block';
+      if (btn) btn.textContent = '🎨 Dual-Font: SutonnyMJ + English';
+    } else if (mode === 1) {
+      inp().classList.remove('transparent-mode');
+      inp().classList.add('bijoy-font');
+      if (dualBox) dualBox.style.display = 'none';
+      if (btn) btn.textContent = '🔤 Font: SutonnyMJ Only';
+    } else {
+      inp().classList.remove('transparent-mode');
+      inp().classList.remove('bijoy-font');
+      if (dualBox) dualBox.style.display = 'none';
+      if (btn) btn.textContent = '🔠 Font: System Readable';
+    }
   }
 }
 

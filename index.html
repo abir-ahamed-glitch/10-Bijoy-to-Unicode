@@ -1876,24 +1876,20 @@ function unicodeToBijoy(text) {
   const SINGLE_CLUSTER = '(?:[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC](?:\u09CD[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC])*(?:\u09CD[রয])?)';
 
   // Step 1: Handle Reph (র্ \u09B0\u09CD) + Cluster + Vowels
-  // Convert vowels to Bijoy form immediately to prevent step 3 from re-reordering them.
-  // ি (\u09BF) → w, ে (\u09C7) → ‡ (U+2021), ৈ (\u09C8) → ‰ (U+2030)
   const VOWEL_TO_BIJOY = {'\u09BF':'w', '\u09C7':'\u2021', '\u09C8':'\u2030'};
   r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => (VOWEL_TO_BIJOY[v] || v) + cl + '\u00a9');
-  // ো (= ে+া split): র্ + Cluster + ো → ‡ + Cluster + © + আকার marker
   r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})\u09CB`, 'g'), (_, cl) => '\u2021' + cl + '\u00a9' + '\u09BE');
   r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})\u09CC`, 'g'), (_, cl) => '\u2021' + cl + '\u00a9' + 'Š');
-  // No vowel after cluster:
   r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})`, 'g'), (_, cl) => cl + '\u00a9');
 
   // Step 2: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) directly using Bijoy e-kar marker (‡)
-  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CB`, 'g'), (_, cl) => '‡' + cl + '\u09BE');
-  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CC`, 'g'), (_, cl) => '‡' + cl + 'Š');
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CB`, 'g'), (_, cl) => '\u2021' + cl + '\u09BE');
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CC`, 'g'), (_, cl) => '\u2021' + cl + 'Š');
 
   // Step 3: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): Cluster + [িেৈ] -> [িেৈ] + Cluster
-  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => v + cl);
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => (VOWEL_TO_BIJOY[v] || v) + cl);
 
-  // Step 4: Multi-char Unicode → Bijoy mapping
+  // Step 4: Multi-char Unicode -> Bijoy mapping
   for (const [u, b] of U2B_MULTI) {
     r = replAll(r, u, b);
   }

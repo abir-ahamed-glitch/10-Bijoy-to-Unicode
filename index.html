@@ -1861,20 +1861,19 @@ function unicodeToBijoy(text) {
     return seg;
   });
 
-  // Step 1: Reorder Reph (র্ + cons -> cons + ©)
-  r = r.replace(new RegExp(`\u09B0\u09CD(${BN_CONS})`, 'g'), (_, c) => c + '\u00a9');
+  const SINGLE_CLUSTER = '(?:[\u0995-\u09B9\u09CE\u09DC\u09DD\u09DF](?:\u09CD[\u0995-\u09B9\u09CE\u09DC\u09DD\u09DF])*(?:\u09CD[রয])?)';
 
-  const BN_CLUSTER_FULL = `${BN_CONS}(?:${BN_HAS}${BN_CONS})*(?:${BN_HAS}[রয])?`;
+  // Step 1: Handle Reph (র্ \u09B0\u09CD) + Cluster + Vowels
+  // e.g. র্ + ণ + ি -> wY© (বর্ণিত), র্ + ত + ী -> Z©x (মধ্যবর্তী), র্ + ট + ি -> wU© (মার্টিনস)
+  r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})([\u09BF])`, 'g'), (_, cl, v) => v + cl + '\u00a9');
+  r = r.replace(new RegExp(`\u09B0\u09CD(${SINGLE_CLUSTER})`, 'g'), (_, cl) => cl + '\u00a9');
 
-  // Step 2: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): cluster + [িেৈ] -> [িেৈ] + cluster
-  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => v + cl);
+  // Step 2: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) directly using Bijoy e-kar marker (‡)
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CB`, 'g'), (_, cl) => '‡' + cl + '\u09BE');
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})\u09CC`, 'g'), (_, cl) => '‡' + cl + 'Š');
 
-  // Step 3: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) directly using Bijoy e-kar marker (‡)
-  // cluster + ো -> ‡ + cluster + া
-  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CB`, 'g'), (_, cl) => '‡' + cl + '\u09BE');
-  
-  // cluster + ৌ -> ‡ + cluster + Š
-  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CC`, 'g'), (_, cl) => '‡' + cl + 'Š');
+  // Step 3: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): Cluster + [িেৈ] -> [িেৈ] + Cluster
+  r = r.replace(new RegExp(`(${SINGLE_CLUSTER})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => v + cl);
 
   // Step 4: Multi-char Unicode → Bijoy mapping
   for (const [u, b] of U2B_MULTI) {

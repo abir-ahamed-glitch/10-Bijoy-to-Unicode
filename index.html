@@ -1044,13 +1044,17 @@ kbd {
 
 </style>
 
-    @font-face {
-      font-family: 'SutonnyMJ';
-      src: local('SutonnyMJ'), local('SutonnyMJ Regular'), local('SutonnyMJ-Bold'), local('Sutonny Bangla OM'), local('Bijoy'),
-           url('https://cdn.jsdelivr.net/gh/bangla-fonts/sutonnymj@main/SutonnyMJ.woff2') format('woff2'),
-           url('https://cdn.jsdelivr.net/gh/bangla-fonts/sutonnymj@main/SutonnyMJ.ttf') format('truetype');
-      font-display: swap;
-    }
+<style>
+  @font-face {
+    font-family: 'SutonnyMJ';
+    src: local('SutonnyMJ'), local('SutonnyMJ Regular'), local('Sutonny MJ'), local('Bijoy'),
+         url('./fonts/SutonnyMJ.ttf') format('truetype'),
+         url('https://cdn.jsdelivr.net/gh/tazihad/bangla-fonts@main/Sutonny%20MJ.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+</style>
 
 </head>
 <body>
@@ -2033,11 +2037,10 @@ function setMode(m) {
   inp().placeholder = cfg.ip;
   inp().lang  = m==='u2b' ? 'bn' : '';
   outp().lang = m==='u2b' ? ''   : 'bn';
+  // Reset fontMode to default (0 = auto-intelligent) when switching modes
+  S.fontMode = 0;
+  // applyFontMode handles all bijoy-font class and button text logic
   applyFontMode();
-  inp().classList.remove('bijoy-font');
-  if ($('font-toggle-btn')) {
-    $('font-toggle-btn').textContent = '🔠 Font: System (English Readable)';
-  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

@@ -1549,6 +1549,7 @@ const B2U_SINGLE = {
 
 // Unicode → Bijoy: multi-char sequences
 const U2B_MULTI = [
+  ["য়","q"],["য\u09BC","q"],["ড়","o"],["ড\u09BC","o"],["ঢ়","p"],["ঢ\u09BC","p"],
   ["ক্ষ্ম","²"],["ন্ত্ব","š\u2014¡"],["ম্প্র","¤cÖ"],["ন্দ্ব","›Ø"],
   ["স্ক্র","¯Œ"],["ন্ত্র","š\u00BF"],["স্ত্র","¯¿"],["ম্ভ্র","¤£"],
   ["ক্ক","°"],["ক্ট","±"],["ক্ত","³"],["ক্ব","K¡"],["ক্র","µ"],
@@ -1840,36 +1841,44 @@ function unicodeToBijoy(text) {
   if (!text) return '';
   let r = text.normalize('NFC');
 
-  // ── Step 0: Protect ASCII English segments embedded in Bengali Unicode ──
+  // Step 0: Protect ASCII English segments embedded in Bengali Unicode
   const engMap2 = [];
   r = r.replace(/(?<!\p{L})([A-Za-z][A-Za-z0-9\s,;:.!?'"\-\(\)\[\]{}<>&@#_]*[A-Za-z0-9])(?!\p{L})/gu, (seg) => {
     if (!/[\u0980-\u09FF]/.test(seg)) {
       const idx = engMap2.length;
       engMap2.push(seg);
-      // Use PUA placeholder that won't be converted by U2B_SINGLE
       return '\uE001' + String.fromCharCode(0xE100 + idx) + '\uE001';
     }
     return seg;
   });
 
-  // Reorder left-side vowels
-  r = r.replace(new RegExp(`(${BN_CLUSTER})(${LEFT_V})`,'g'), (_, cl, v) => v + cl);
+  // Step 1: Reorder Reph (র্ + cons -> cons + ©)
+  r = r.replace(new RegExp(`\u09B0\u09CD(${BN_CONS})`, 'g'), (_, c) => c + '\u00a9');
 
-  // Handle reph
-  r = r.replace(new RegExp(`\u09B0\u09CD(${BN_CONS})`,'g'), (_,c) => '\u00a9'+c);
+  // Step 2: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) BEFORE left-vowel reordering!
+  const BN_CLUSTER_FULL = `${BN_CONS}(?:${BN_HAS}${BN_CONS})*(?:${BN_HAS}[রয])?`;
+  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CB`, 'g'), (_, cl) => '\u09C7' + cl + '\u09BE');
+  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CC`, 'g'), (_, cl) => '\u09C7' + cl + '\u09D7');
 
-  // Multi-char Unicode → Bijoy
-  for (const [u,b] of U2B_MULTI) r = replAll(r, u, b);
+  // Step 3: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): cluster + [িেৈ] -> [িেৈ] + cluster
+  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => v + cl);
 
-  // Single-char
+  // Step 4: Multi-char Unicode → Bijoy mapping
+  for (const [u, b] of U2B_MULTI) {
+    r = replAll(r, u, b);
+  }
+
+  // Step 5: Single-char mapping
   r = r.split('').map(c => U2B_SINGLE[c] ?? c).join('');
 
-  // ── Restore English words ────────────────────────────────────────────────
+  // Step 6: Special character cleanups (e.g. \u09D7 -> Š)
+  r = replAll(r, '\u09D7', 'Š');
+
+  // Step 7: Restore English
   r = restoreEnglish(r, engMap2);
 
   return r;
 }
-
 
 function detectEncoding(text) {
   if (!text.trim()) return 'unknown';

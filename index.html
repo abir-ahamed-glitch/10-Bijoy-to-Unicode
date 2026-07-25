@@ -1616,8 +1616,8 @@ function isEnglishWord(word) {
   if (BIJOY_BLACKLIST.has(lower)) return false;
 
   // 2. Single letters except 'a' / 'A' are NEVER English words in Bijoy text!
-  if (clean.length === 1 && lower !== 'a') return false;
-  if (word.length === 1 && word.toLowerCase() !== 'a') return false;
+  if (clean.length === 1) return false;
+  if (word.length === 1) return false;
 
   // 3. Parenthesized Roman numerals e.g. (i), (ii), (v), (x), (xxvi)
   if (/^\([ivxIVXLCDM]+\)$/.test(word)) return true;
@@ -1855,13 +1855,17 @@ function unicodeToBijoy(text) {
   // Step 1: Reorder Reph (র্ + cons -> cons + ©)
   r = r.replace(new RegExp(`\u09B0\u09CD(${BN_CONS})`, 'g'), (_, c) => c + '\u00a9');
 
-  // Step 2: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) BEFORE left-vowel reordering!
   const BN_CLUSTER_FULL = `${BN_CONS}(?:${BN_HAS}${BN_CONS})*(?:${BN_HAS}[রয])?`;
-  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CB`, 'g'), (_, cl) => '\u09C7' + cl + '\u09BE');
-  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CC`, 'g'), (_, cl) => '\u09C7' + cl + '\u09D7');
 
-  // Step 3: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): cluster + [িেৈ] -> [িেৈ] + cluster
+  // Step 2: Reorder Left Vowels (ি \u09BF, ে \u09C7, ৈ \u09C8): cluster + [িেৈ] -> [িেৈ] + cluster
   r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})([\u09BF\u09C7\u09C8])`, 'g'), (_, cl, v) => v + cl);
+
+  // Step 3: Split O-kar (ো \u09CB) and OU-kar (ৌ \u09CC) directly using Bijoy e-kar marker (‡)
+  // cluster + ো -> ‡ + cluster + া
+  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CB`, 'g'), (_, cl) => '‡' + cl + '\u09BE');
+  
+  // cluster + ৌ -> ‡ + cluster + Š
+  r = r.replace(new RegExp(`(${BN_CLUSTER_FULL})\u09CC`, 'g'), (_, cl) => '‡' + cl + 'Š');
 
   // Step 4: Multi-char Unicode → Bijoy mapping
   for (const [u, b] of U2B_MULTI) {
@@ -1871,7 +1875,7 @@ function unicodeToBijoy(text) {
   // Step 5: Single-char mapping
   r = r.split('').map(c => U2B_SINGLE[c] ?? c).join('');
 
-  // Step 6: Special character cleanups (e.g. \u09D7 -> Š)
+  // Step 6: Special character cleanups
   r = replAll(r, '\u09D7', 'Š');
 
   // Step 7: Restore English

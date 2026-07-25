@@ -2167,7 +2167,7 @@ async function pasteClip() {
   try {
     const t = await navigator.clipboard.readText();
     inp().value = t; updateStats();
-    if (S.live) doConvert();
+    doConvert();
     toast('📋','Pasted from clipboard.');
   } catch { toast('❌','Cannot read clipboard. Please paste manually (Ctrl+V).'); }
 }
@@ -2218,7 +2218,7 @@ function setupDrop() {
     rd.onload = e => {
       inp().value = e.target.result; updateStats();
       toast('📄',`"${f.name}" loaded.`);
-      if (S.live) doConvert();
+      doConvert();
     };
     rd.readAsText(f, 'utf-8');
   });
@@ -2346,7 +2346,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ll.setAttribute('aria-checked', String(S.live));
     const txt = $('live-mode-text');
     if (txt) txt.textContent = S.live ? 'Live Mode: ON' : 'Live Mode';
-    if (S.live) doConvert();
+    doConvert();
   });
   ll.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();ll.click();} });
 

@@ -1442,7 +1442,7 @@ const B2U_MULTI = [
   ["ZvKvq", "তাকায়"],
   ["†M‡Qb", "গেছেন"],
   ["š‘","ন্তু"],["cš’x","পন্থী"],["cš’","পন্থ"],["bg:ky","নমঃশু"],["cÖZ¨¶`k©x","প্রত্যক্ষদর্শী"],
-  ["g~Zz¨","মৃত্যু"],["g~","মৃ"],["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],
+  ["g~Zz¨","মৃত্যু"],["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],
   ["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],["g„Zz¨","মৃত্যু"],["Zz¨","্ত্যু"],["Zz","্তু"],["c_hvÎx","পথযাত্রী"],
   ["w`ye","দিয়ে"],["w`ye","দিয়ে"],["w`d","দি"],["g„Zz¨","মৃত্যু"],["mv`v","সাদা"],["‡mKv`vi","সিকান্দার"],
   ["i¨","\u09B0\u200C\u09CD\u09AF"],["ª¨","্র্য"],["¤cÖ","ম্প্র"],
@@ -1691,7 +1691,7 @@ const U2B_SINGLE = {
   "ক":"K","খ":"L","গ":"M","ঘ":"N","ঙ":"O","চ":"P","ছ":"Q","জ":"R","ঝ":"S","ঞ":"T",
   "ট":"U","ঠ":"V","ড":"W","ঢ":"X","ণ":"Y","ত":"Z","থ":"_","দ":"`","ধ":"a","ন":"b",
   "প":"c","ফ":"d","ব":"e","ভ":"f","ম":"g","য":"h","র":"i","ল":"j","শ":"k","ষ":"l",
-  "স":"m","হ":"n","ড়":"o","ঢ়":"p","য়":"q","ৎ":"r",
+  "স":"m","হ":"n","ড়":"o","ঢ়":"p","য়":"q","\u09DC":"o","\u09DD":"p","\u09DF":"q","ৎ":"r",
   "০":"0","১":"1","২":"2","৩":"3","৪":"4","৫":"5","৬":"6","৭":"7","৮":"8","৯":"9",
   "া":"v","ি":"w","ী":"x","ু":"y","ূ":"~","ৃ":"„",
   "ে":"\u2021","ৈ":"\u2030",
@@ -1756,7 +1756,7 @@ function extractEngBulletproof(text) {
   });
 
   // 0d: Single English words (MUST be at least 2 characters long unless 'a', 'A', 'I')
-  r = r.replace(/(?<![A-Za-z0-9])([A-Za-z0-9]{2,}|a|A|I)(?![A-Za-z0-9])/g, (w) => {
+  r = r.replace(/(?<![A-Za-z0-9\u2021\u2020\u2030\u02C6\u0160vwxyz~„uª¨©\u00A0])([A-Za-z0-9]{2,}|a|A|I)(?![A-Za-z0-9\u2021\u2020\u2030\u02C6\u0160vwxyz~„uª¨©\u00A0])/g, (w) => {
     if (w.length === 1 && w !== 'a' && w !== 'A' && w !== 'I') return w;
     if (isEnglishWord(w)) {
       const idx = engMap.length;
@@ -1786,8 +1786,9 @@ function bijoyToUnicodeSingleLine(line) {
   for (const [b, u] of B2U_MULTI) {
     if (!b || b === '\u00A9') continue;
     if (r.includes(b)) {
-      const placeholder = '\uE002' + multiMap.length + '\uE002';
+      const idx = multiMap.length;
       multiMap.push(u);
+      const placeholder = '\uE002' + String.fromCharCode(0xE200 + idx) + '\uE002';
       r = replAll(r, b, placeholder);
     }
   }
@@ -1813,7 +1814,7 @@ function bijoyToUnicodeSingleLine(line) {
   r = r.split('').map(c => B2U_SINGLE[c] ?? c).join('');
 
   // Step 4: Reorder left-side vowels using STRICT dynamicCons
-  const dynamicCons = '[ক-হৎড়ঢ়য়]';
+  const dynamicCons = '(?:[ক-হৎড়ঢ়য়]|\\uE002[\\uE200-\\uE2FF]\\uE002)';
   const dynamicCluster = `${dynamicCons}(?:${BN_HAS}${dynamicCons})*`;
   r = r.replace(new RegExp(`(${LEFT_V})(${dynamicCluster})`,'g'), (_, v, cl) => cl + v);
 
@@ -1826,7 +1827,7 @@ function bijoyToUnicodeSingleLine(line) {
        .replace(/\u09CD(?=\s|$)/g,'');
 
   // Restore Step 2 multi-char
-  r = r.replace(/\uE002([০-৯0-9]+)\uE002/g, (_, dStr) => multiMap[parseInt(toAsciiDigits(dStr), 10)] || '');
+  r = r.replace(/\uE002([\uE200-\uE2FF])\uE002/g, (_, c) => multiMap[c.charCodeAt(0) - 0xE200] || '');
 
   // Restore English words
   r = r.replace(/\uE000([০-৯0-9]+)\uE000/g, (_, dStr) => engMap[parseInt(toAsciiDigits(dStr), 10)] || '');
@@ -1836,7 +1837,7 @@ function bijoyToUnicodeSingleLine(line) {
 
   // Final spelling fixes
   r = r.replace(/অাঁ/g, 'আঁ').replace(/অঁা/g, 'আঁ').replace(/আাঁ/g, 'আঁ');
-  r = r.replace(/([ািীুূৃৄোৌ])্(?=[ক-হ])/g, '$1');
+  // r = r.replace(/([ািীুূৃৄোৌ])্(?=[ক-হ])/g, '$1');
 
   return r;
 }
@@ -1849,7 +1850,11 @@ function bijoyToUnicode(text) {
 
 function unicodeToBijoy(text) {
   if (!text) return '';
-  let r = text.normalize('NFC');
+  // Normalize decomposed nukta combinations (য+nukta -> য়, ড+nukta -> ড়, ঢ+nukta -> ঢ়)
+  let r = text.normalize('NFC')
+    .replace(/\u09AF\u09BC/g, '\u09DF')
+    .replace(/\u09A1\u09BC/g, '\u09DC')
+    .replace(/\u09A2\u09BC/g, '\u09DD');
 
   // Step 0: Protect ASCII English segments embedded in Bengali Unicode
   const engMap2 = [];
@@ -1862,7 +1867,7 @@ function unicodeToBijoy(text) {
     return seg;
   });
 
-  const SINGLE_CLUSTER = '(?:[\u0995-\u09B9\u09CE\u09DC\u09DD\u09DF](?:\u09CD[\u0995-\u09B9\u09CE\u09DC\u09DD\u09DF])*(?:\u09CD[রয])?)';
+  const SINGLE_CLUSTER = '(?:[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC](?:\u09CD[\u0995-\u09B9\u09CE\u09DC-\u09DF\u09BC])*(?:\u09CD[রয])?)';
 
   // Step 1: Handle Reph (র্ \u09B0\u09CD) + Cluster + Vowels
   // e.g. র্ + ণ + ি -> wY© (বর্ণিত), র্ + ত + ী -> Z©x (মধ্যবর্তী), র্ + ট + ি -> wU© (মার্টিনস)

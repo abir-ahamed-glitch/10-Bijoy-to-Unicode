@@ -38,10 +38,13 @@
   }
   </script>
 
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>বি</text></svg>" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#FBF7F0" media="(prefers-color-scheme: light)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bijoy ⇄ Unicode" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1049,7 +1052,7 @@ kbd {
     font-family: 'SutonnyMJ';
     src: local('SutonnyMJ'), local('SutonnyMJ Regular'), local('Sutonny MJ'), local('Bijoy'),
          url('./fonts/SutonnyMJ.ttf') format('truetype'),
-         url('https://cdn.jsdelivr.net/gh/tazihad/bangla-fonts@main/Sutonny%20MJ.ttf') format('truetype');
+         url('./fonts/SutonnyMJ.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -2297,17 +2300,17 @@ function setupDrop() {
   const zone = $('input-drop-zone');
   if (!zone) return;
   ['dragenter','dragover'].forEach(evt => zone.addEventListener(evt, e => {
-    ev.preventDefault(); zone.style.outline='2px dashed var(--accent)';
+    e.preventDefault(); zone.style.outline='2px dashed var(--accent)';
   }));
-  ['dragleave','drop'].forEach(e => zone.addEventListener(e, () => zone.style.outline=''));
+  ['dragleave','drop'].forEach(evt => zone.addEventListener(evt, () => zone.style.outline=''));
   zone.addEventListener('drop', e => {
-    ev.preventDefault();
-    const f = ev.dataTransfer.files[0];
+    e.preventDefault();
+    const f = e.dataTransfer.files[0];
     if (!f) return;
     if (!f.name.match(/\.(txt|md)$/i)) { toast('⚠️','Only .txt files are supported.'); return; }
     const rd = new FileReader();
-    rd.onload = e => {
-      inp().value = e.target.result; updateStats();
+    rd.onload = ev => {
+      inp().value = ev.target.result; updateStats();
       toast('📄',`"${f.name}" loaded.`);
       doConvert();
     };
@@ -2516,6 +2519,15 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   initLetterPhysics();
   setupCustomResizers();
+
+  // Register service worker for offline support (PWA)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
 });
 
 /* ════════════════════════════════════════════════════════════════════════════

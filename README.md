@@ -18,7 +18,7 @@ A fast, accurate, and standalone online text converter between **Bijoy 52 / Bijo
 - **Reph & Vowel Reordering Engine**: Handles pre-base vowels (`ে`, `ৈ`, `ি`) and *Reph* (`র্`) placement without letter garbling.
 - **Smart English Preservation**: Prevents accidental conversion of English numbers, scene headers (e.g., `Scene 1 (xxvi)`), and mixed text.
 - **Premium Glassmorphism Design**: Sleek dark/light theme toggle, custom typography, smooth copy-to-clipboard, clear buttons, and dynamic line counts.
-- **PWA & Offline Capable**: Zero server-side dependency. Runs directly in the browser with 100% privacy and lightning speed.
+- **PWA & Offline Capable**: Installable, runs entirely in the browser with a service worker pre-caching the app shell. Zero server-side dependency, 100% privacy, lightning speed.
 
 ---
 

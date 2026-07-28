@@ -1,4 +1,9 @@
 node_modules/
 .wrangler/
+.agent/
+.deprecated/
 *.log
 final_screenshot.png
+app_summary.pdf
+.DS_Store
+Thumbs.db

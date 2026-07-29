@@ -1254,6 +1254,7 @@ kbd {
         <div class="panel-actions">
           <button id="copy-output-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+C" aria-label="Copy output">📋 Copy Output</button>
           <button id="download-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+D" aria-label="Download output">⬇️ Download</button>
+          <button id="report-btn" class="btn btn-glass btn-sm" title="Save this conversion as a broken-word report" aria-label="Report broken conversion">⚠️ Report</button>
         </div>
         <span style="font-size:11px;color:var(--text-muted)">Editable box</span>
       </div>
@@ -1288,6 +1289,7 @@ kbd {
     <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>S</kbd> &nbsp;Swap</div>
     <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>X</kbd> &nbsp;Clear</div>
     <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>D</kbd> &nbsp;Download</div>
+    <div class="sc-item"><kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>R</kbd> &nbsp;Report</div>
   </div>
 
   <!-- Sample Texts -->
@@ -1319,6 +1321,29 @@ kbd {
       </div>
       <div id="hist-list" class="hist-list" role="list" aria-live="polite">
         <div class="hist-empty">No conversions yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Broken-Word Reports -->
+  <section class="glass-card" style="padding:16px 20px;" aria-labelledby="rep-heading">
+    <button class="coll-toggle" id="rep-toggle" aria-expanded="false" aria-controls="rep-body">
+      <span class="section-title" id="rep-heading">⚠️ Broken-Word Reports <span id="rep-count" style="color:var(--text-muted);font-weight:400;">(0)</span></span>
+      <span class="chevron" aria-hidden="true">▾</span>
+    </button>
+    <div class="coll-body" id="rep-body">
+      <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;">
+        Hit <strong>⚠️ Report</strong> in the output panel when a conversion looks wrong.
+        These help us improve the converter over time. Export as JSON or CSV and share the file.
+      </p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        <button id="export-rep-json" class="btn btn-glass btn-sm" aria-label="Export reports as JSON">⬇️ JSON</button>
+        <button id="export-rep-csv" class="btn btn-glass btn-sm" aria-label="Export reports as CSV">⬇️ CSV</button>
+        <button id="copy-rep-text" class="btn btn-glass btn-sm" aria-label="Copy reports as plain text">📋 Copy</button>
+        <button id="clear-rep-btn" class="btn btn-glass btn-sm" aria-label="Clear all reports" style="margin-left:auto;">🗑️ Clear</button>
+      </div>
+      <div id="rep-list" class="hist-list" role="list" aria-live="polite">
+        <div class="hist-empty">No reports yet. Click "⚠️ Report" to capture a broken conversion.</div>
       </div>
     </div>
   </section>
@@ -1983,6 +2008,7 @@ const S = {
   live: false,
   theme: localStorage.getItem('buc_theme') || 'light',
   history: [],
+  reports: [],
 };
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -2239,6 +2265,156 @@ function renderHistory() {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+   BROKEN-WORD REPORTS
+   Captures input/output pairs that look wrong so we can iterate on the
+   conversion engine. Reports are stored in localStorage as 'buc_reports'
+   and can be exported as JSON, CSV, or plain text.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const REPORTS_KEY = 'buc_reports';
+const REPORTS_MAX = 200;
+
+function loadReports() {
+  try { S.reports = JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]'); }
+  catch { S.reports = []; }
+  renderReports();
+}
+
+function addReport() {
+  const input = inp().value;
+  const output = outp().value;
+  if (!input.trim()) { toast('⚠️','Nothing to report — input is empty.'); return; }
+  if (!output.trim()) { toast('⚠️','Nothing to report — convert something first.'); return; }
+
+  const mode = getEffectiveMode();
+  const report = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,8),
+    mode,
+    direction: mode === 'b2u' ? 'bijoy-to-unicode' : 'unicode-to-bijoy',
+    input: input,
+    output: output,
+    inputPreview: input.slice(0, 60),
+    outputPreview: output.slice(0, 60),
+    time: new Date().toISOString(),
+  };
+
+  // De-dupe: skip if last report has identical input
+  if (S.reports[0] && S.reports[0].input === report.input && S.reports[0].mode === report.mode) {
+    toast('ℹ️','This conversion was just reported.');
+    return;
+  }
+
+  S.reports.unshift(report);
+  if (S.reports.length > REPORTS_MAX) S.reports.length = REPORTS_MAX;
+  localStorage.setItem(REPORTS_KEY, JSON.stringify(S.reports));
+  renderReports();
+  toast('⚠️','Reported. Check the Reports panel below.');
+}
+
+function renderReports() {
+  const list = $('rep-list');
+  const count = $('rep-count');
+  if (!list) return;
+  if (!S.reports) S.reports = [];
+  if (count) count.textContent = `(${S.reports.length})`;
+
+  if (S.reports.length === 0) {
+    list.innerHTML = '<div class="hist-empty">No reports yet. Click "⚠️ Report" to capture a broken conversion.</div>';
+    return;
+  }
+
+  const fmtTime = iso => {
+    const d = new Date(iso);
+    const diff = (Date.now() - d) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  };
+
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  list.innerHTML = S.reports.map((r, i) => `
+    <div class="hist-item" data-i="${i}" role="button" tabindex="0" aria-label="Restore report ${i+1}">
+      <span class="hist-badge ${r.mode === 'b2u' ? 'badge-b2u' : 'badge-u2b'}">${r.mode === 'b2u' ? 'B→U' : 'U→B'}</span>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
+        <span class="hist-preview" style="font-family:var(--font-ui);">${esc(r.inputPreview)}${r.input.length > 60 ? '…' : ''}</span>
+        <span class="hist-preview" style="font-size:11px;opacity:0.7;">→ ${esc(r.outputPreview)}${r.output.length > 60 ? '…' : ''}</span>
+      </div>
+      <span class="hist-time">${fmtTime(r.time)}</span>
+    </div>`).join('');
+
+  list.querySelectorAll('.hist-item').forEach(item => {
+    const restore = () => {
+      const r = S.reports[+item.dataset.i];
+      if (!r) return;
+      inp().value  = r.input;
+      outp().value = r.output;
+      setMode(r.mode);
+      updateStats();
+      toast('⚠️','Report restored to editor.');
+    };
+    item.addEventListener('click', restore);
+    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') restore(); });
+  });
+}
+
+function clearReports() {
+  if (!S.reports || S.reports.length === 0) return;
+  if (!confirm(`Clear all ${S.reports.length} reports? This cannot be undone.`)) return;
+  S.reports = [];
+  localStorage.removeItem(REPORTS_KEY);
+  renderReports();
+  toast('🗑️','Reports cleared.');
+}
+
+function exportReportsJSON() {
+  if (!S.reports || S.reports.length === 0) { toast('⚠️','No reports to export.'); return; }
+  const payload = {
+    generated: new Date().toISOString(),
+    app: 'Bijoy-Unicode-Converter',
+    version: '1.0',
+    count: S.reports.length,
+    reports: S.reports,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  triggerDownload(blob, `bijoy_reports_${Date.now()}.json`);
+  toast('⬇️',`Exported ${S.reports.length} reports as JSON.`);
+}
+
+function exportReportsCSV() {
+  if (!S.reports || S.reports.length === 0) { toast('⚠️','No reports to export.'); return; }
+  const escape = v => {
+    const s = String(v == null ? '' : v);
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const header = 'id,time,direction,input,output';
+  const rows = S.reports.map(r => [r.id, r.time, r.direction, r.input, r.output].map(escape).join(','));
+  const csv = '\uFEFF' + header + '\n' + rows.join('\n'); // BOM for Excel
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  triggerDownload(blob, `bijoy_reports_${Date.now()}.csv`);
+  toast('⬇️',`Exported ${S.reports.length} reports as CSV.`);
+}
+
+function copyReportsAsText() {
+  if (!S.reports || S.reports.length === 0) { toast('⚠️','No reports to copy.'); return; }
+  const text = S.reports.map((r, i) =>
+    `#${i+1} [${r.direction}] ${r.time}\n  IN : ${r.input}\n  OUT: ${r.output}\n`
+  ).join('\n');
+  copyText(text, `${S.reports.length} reports`);
+}
+
+function triggerDownload(blob, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
    CLIPBOARD & FILES
    ════════════════════════════════════════════════════════════════════════════ */
 
@@ -2328,6 +2504,7 @@ function setupKeys() {
     if (c && e.shiftKey && e.key==='X') { e.preventDefault(); clearAll(); }
     if (c && e.shiftKey && e.key==='S') { e.preventDefault(); swap(); }
     if (c && e.shiftKey && e.key==='D') { e.preventDefault(); downloadOutput(); }
+    if (c && e.shiftKey && e.key==='R') { e.preventDefault(); addReport(); }
   });
 }
 
@@ -2437,6 +2614,7 @@ function applyFontMode() {
 document.addEventListener('DOMContentLoaded', () => {
   setTheme(S.theme);
   loadHistory();
+  loadReports();
   setMode('b2u');
 
   // Mode tabs
@@ -2490,13 +2668,22 @@ document.addEventListener('DOMContentLoaded', () => {
   $('clear-hist-btn').addEventListener('click', () => {
     S.history=[]; localStorage.removeItem('buc_h'); renderHistory(); toast('🗑️','History cleared.');
   });
-  
+
+  // Report broken-word button + Reports panel actions
+  const reportBtn = $('report-btn');
+  if (reportBtn) reportBtn.addEventListener('click', addReport);
+  $('export-rep-json').addEventListener('click', exportReportsJSON);
+  $('export-rep-csv').addEventListener('click', exportReportsCSV);
+  $('copy-rep-text').addEventListener('click', copyReportsAsText);
+  $('clear-rep-btn').addEventListener('click', clearReports);
+
   // Initial font mode apply
   applyFontMode();
 
   // Collapsibles
   setupCollapsible('samples-toggle','samples-body','buc_samp',true);
   setupCollapsible('hist-toggle','hist-body','buc_hist',false);
+  setupCollapsible('rep-toggle','rep-body','buc_rep_open',false);
 
   // Sample chips
   document.querySelectorAll('.sample-chip').forEach(chip => {

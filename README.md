@@ -58,6 +58,14 @@ This project is automatically built and deployed to **Cloudflare Pages** using G
 
 ---
 
+## 🧪 Tests
+
+The conversion engine is validated against **187 known-good Bijoy ↔ Unicode pairs** covering all 11 vowels, 39 consonants, numbers, all common conjuncts (জুক্তাক্ষর), and frequently-misencoded words. Run the suite live at [`/tests.html`](https://bijoy-to-unicode.pages.dev/tests.html).
+
+To extend the test corpus, edit the `TESTS` array in `tests.html`. The engine block is auto-extractable from `index.html` via `extract-engine.cjs` so tests stay in sync with the live converter.
+
+---
+
 ## 🏷️ Keywords & SEO Metadata
 
 `bijoy to unicode`, `unicode to bijoy`, `bangla converter`, `বাংলা কনভার্টার`, `SutonnyMJ converter`, `bijoy bahadur`, `bijoy 52 converter`, `10 bijoy to unicode`, `bangla screenplay converter`, `bengali typography converter`

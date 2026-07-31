@@ -1680,6 +1680,19 @@ const U2B_MULTI = [
 const ENG_DICT_RAW = "water marine science sciences physics chemistry biology mathematics history geography economics engineering technology computer software hardware internet website online digital data database server cloud system system's network python javascript java html css react vue angular node typescript modern web standards visit details contact developer support gained independence version available exterior location dhaka budget usd bdt temple built ancient times sanskrit terms were part documentation no answer everything read carefully paris city light admin password temperature participating fell love movie released yesterday friend wrote letter rural areas patient recovering spread europe 3d 4k 6k 8k a ab able academy accent accurate acronym action actions active add addeventlistener addhistory advanced after ago all ally also alternative am amp an analog analysis and angle animationend any appendchild application apply applyfontmode archive are aria art artifact artisitic as ascii assembly association assuming async at auditorium auteur author authorship auto autobiography avant avant-garde avi avoids await award away back background badge bangladesh banner bard basestem be beautiful because before bengali between bg big bijoy bijoybuffer bijoycons bijoytounicode bijoytounicodesingleline bijoyvowelkars bio biographical bioscope blacklist blob block blog bn body bodyid boolean both box br break brings broadcast btn but button buttons by cable camera cameraman can cannot capitalized catch cc cd celluloid center centre cfg char character charcodeat chars charset check checked chip chips chitra choosing ci cinema cinematographer cinematography cl class classical classlist classname clean cleanup cleanword clear clearall cleared cleartimeout click clipboard close club collapsibles college collision combines comedy commercial compound concept connotation consists console consonant const constitution contains context continue continues continuity conversion conversions convert converted converting copied copy copytext corporate createelement createobjecturl creation creative critic criticism csstext ctrl ctrlkey cultural culture cut cv dark dashed data dataset datatransfer date day decline default defence defopen democracy denotation department det detect detected detectencoding detection dialogue dictionary diegetic diff digit digital dignity direct director display div do doconvert document documentary documentelement dom domcontentloaded down download downloaded downloadoutput drag dragenter dragleave dragover drama dramatic drop drummer dual dualbox dubbing dur dv dvd dynamiccluster dynamiccons each ed editing editor effective ej el election else embedded empire empty en enabled enc endswith eng engbadge engcount engine english engmap enter entry episodic equality er error es escaped escapedtok escaping essay establishing etc even evt except excludes execcommand exit exorcism exposition expressionism extcnt extreme fall false feature festival few fiction figure file filereader files film filter final find first fixed flash floor flows flushbijoy fmttime focus followed following font fontmode for foreach formalist formats formattedlines forum forward frame fraternity freedom from fromcharcode fulm function garde garment gb genocide genre genuinely getelementbyid getitem girls give go government gt gu gv hall handheld handle handleinput harmony has have hd helpers her here hero heuristics hidden high his hist history how href html human humanity hyphen ib ible icon id idealism identity idx if ii iii il images immediately impressions in includes independent independents indexof indigenous ing init initial innerhtml inp input instead institute instrumental intellectual intellectuals intelligent internet into ip is isenglishword islam issues it item its iv ive ivxivxlcdm ix jamuna japanese join journal json just justice juxtaposition jv karnaphuli key keyboard keydown kv ky lab label laboratory lalon land lane lang lapse left length let letters liberation liberty library lifeless light line linear lines list listeners literal literature live livetimer ll loaded loadhistory localstorage long lower lt ly lyric lyrics made magazine magic mainstream manually many map martyr match material math md me media memoir ment metakey minorities minority mise mise-en-scene mm mode modenames modhumati monologue month more morphological most movement mp3 mp4 msg much multi multichar multimap music musical must mv mystery myths name narrative nationalism navigator neorealism ness network never new nexample next nextchars nfc nine no non non-diegetic non-linear none nor normalization normalize not nothing novel now null numerals nv of offset ol on once one online onload only opacity open or original other ous out outline outp output ov over overlaid overlap painting pan panel parenthesized parliament parse pass paste pasteclip pasted pdf peace personal placeholder placeholders plain play playback please point politics pop position pre preventdefault preview print producer producing progresses promised protect protected protectenglish protection pua public puppet push qi queryselector queryselectorall quite radio rb rd re re-editing read readable readastext readtext realism recording reference refugee refugees regex regexp remembrance remove removechild removed removeitem renderdualfonthtml renderer renderhistory rendering reorder rep reph rephrx replace replaceall replacement replall republic restore restored restoreenglish result return review revolution revolutions rhythm riders rights river rj rm role roman roots rprotected rule rules sample samples satellite scene school score screen script scroll scrolling scrollleft scrolltop secular secularism see seg segments select semiotic sequence set setattribute setitem setmode settheme settimeout setupcollapsible setupdrop setupkeys shiftkey short shortcuts shot should show side signified signifier signs single sion sister slice small so social society some someone something song soundtrack span split standard state stats step storagekey story str string stringify strings structure struggle studio style subject such sunderbans supported supports surrealism sutonnymj swap swapna synchronize synthesis system tab tabindex tabs tajuddin tale target tasteful teardrops technique telescope television ten test text textarea textcontent that the their them theme then theory these they third this thriller through tilt time time-lapse tion to toast tog toggle toggleid tok tokens tolocaledatestring tolowercase too top total track tracking tragedy transparent tree tribal trilogy trim true try txt type typeof uefff uffff ui unicnt unicode unicodetobijoy unicount university unknown unshift unsung up updatedualfontpreview updatestats url us use user utf uv value var verite very vhs vi view vii viii virama vocal vote vowel vowels vwxyz wall want wanted war was wave way wc we website well what when where which while who whom whose why wi wife will window with without won word words wrap writetext wv xi xii xiii xiv xix xl xli xlii xliii xliv xlix xlv xlvi xlvii xlviii xv xvi xvii xviii xx xxi xxii xxiii xxiv xxix xxv xxvi xxvii xxviii xxx xxxi xxxii xxxiii xxxiv xxxix xxxv xxxvi xxxvii xxxviii ye years yet your youtube yv za zone zoom zv";
 const COMMON_ENG = new Set(ENG_DICT_RAW.split(' '));
 
+// Extra English words commonly seen as inline category labels, menu items,
+// and standalone phrases in Bangla articles (covers words not in the base dict).
+const EXTRA_ENG_RAW = "people society community culture politics government economy business world country state city town village family home life work school college university hospital church temple market shop store office building room door window road street highway bridge park garden river mountain sea ocean forest field farm animal bird fish dog cat horse cow chicken plant flower tree fruit vegetable food water milk bread rice meat fish fruit vegetable salt sugar oil tea coffee juice wine beer restaurant kitchen recipe menu order delivery customer service support team staff member manager director officer leader founder owner author writer editor reader publisher producer actor singer artist musician player coach teacher student parent child baby boy girl man woman friend guest visitor neighbor colleague partner couple family husband wife brother sister son daughter uncle aunt cousin king queen prince princess hero villain master slave boss employee employer worker labor farmer fisher hunter driver pilot sailor soldier police doctor nurse lawyer judge priest monk volunteer tourist traveler explorer scientist engineer doctor nurse farmer worker builder painter designer programmer developer designer analyst researcher inventor scientist pilot driver captain chef driver cyclist swimmer runner athlete champion winner loser player coach fan supporter sponsor investor trader customer patient client guest visitor tourist traveler student pupil apprentice beginner expert master professional amateur volunteer employee employer boss colleague peer friend neighbor stranger foreigner native local resident citizen immigrant refugee resident citizen inhabitant settler pioneer colonist explorer missionary spy agent detective investigator journalist reporter editor publisher writer author poet artist musician composer performer actor actress singer dancer painter sculptor architect designer photographer filmmaker director producer manager supervisor coordinator assistant helper supporter partner ally friend colleague companion roommate neighbor relative family parents grandparents grandchildren siblings twins triplets quadruplets family children babies infants toddlers preschoolers schoolchildren teenagers adolescents adults elders seniors retirees widows widowers bachelors spinsters orphans adoptees stepchildren grandchildren inlaws relatives cousins nephews nieces aunts uncles grandparents grandchildren descendants ancestors predecessors heirs successors";
+const EXTRA_ENG = new Set(EXTRA_ENG_RAW.split(' '));
+
+// English suffixes — if a word ends with one of these and the stem is plausible,
+// it's very likely English. Used as a fallback when the word isn't in the dictionary.
+const ENGLISH_SUFFIXES = /^(?:tion|sion|ment|ness|ity|ence|ance|ery|ry|ist|ism|able|ible|ous|ive|al|ic|ical|ful|less|ly|ed|er|or|ing|est|en|ize|ise|ify|ate|hood|ship|dom|craft|wright|wise|fold|ward|wards|like|less|ful|most|some|thing|body|one|self|selves)$/;
+
+// Title Case words: capitalized first letter + 2+ lowercase letters + not in Bijoy blacklist
+// are very likely English proper nouns or category labels.
+const TITLE_CASE = /^[A-Z][a-z]{2,}$/;
+
 /**
  * Advanced English Word & Acronym Detection Engine
  * Combines 10,000+ word dictionary, compound word analysis,
@@ -1741,17 +1754,36 @@ function isEnglishWord(word) {
   // 4. "No." or "No"
   if (lower === 'no' || lower === 'no.') return true;
 
-  // 5. Check dictionary
-  if (COMMON_ENG.has(lower)) return true;
+  // 5. Check dictionary (base + extra)
+  if (COMMON_ENG.has(lower) || EXTRA_ENG.has(lower)) return true;
 
   const baseStem = lower.replace(/(?:ing|tion|sion|ment|ness|able|ible|ous|ive|ally|ly|ed|er|es|s|d)$/, '');
-  if (baseStem.length >= 2 && !BIJOY_BLACKLIST.has(baseStem) && COMMON_ENG.has(baseStem)) return true;
+  if (baseStem.length >= 2 && !BIJOY_BLACKLIST.has(baseStem) && (COMMON_ENG.has(baseStem) || EXTRA_ENG.has(baseStem))) return true;
 
   // 6. Real English Acronyms
   const REAL_ENGLISH_ACRONYMS = new Set(['USA','UK','UAE','UN','UNICEF','UNESCO','WHO','BBC','CNN','CEO','CFO','CTO','PDF','HTML','CSS','URL','API','SDK','RAM','CPU','GPU','SMS','VAT','NID','HSC','SSC','JSC','PSC','MP','PM','DC','SP','OC','FB','GB','MB','TB','KB','AM','PM','BC','AD','ID','IQ','IT','AI','UI','UX','WIFI','SIM','PIN','OTP','USD','BDT','HTML5','CSS3']);
   if (word.length >= 2 && REAL_ENGLISH_ACRONYMS.has(word)) return true;
 
   if (/\d/.test(word) && /[A-Za-z]/.test(word) && !hasBijoyStructure(word)) return true;
+
+  // 7. Title Case heuristic: capitalized proper-noun-looking word that's not Bijoy
+  //    Examples: "People", "Society", "Marine", "Sciences", "Bangladesh"
+  //    Catches category labels that the dictionary might miss.
+  if (TITLE_CASE.test(clean) && !hasBijoyStructure(clean)) {
+    return true;
+  }
+
+  // 8. English suffix heuristic: word ends in a common English suffix and
+  //    has a plausible stem. Catches "national", "global", "digital", etc.
+  if (lower.length >= 4 && ENGLISH_SUFFIXES.test(lower)) {
+    const stem = lower.replace(ENGLISH_SUFFIXES, '');
+    if (stem.length >= 2 && /[a-z]/.test(stem) && !BIJOY_BLACKLIST.has(stem)) {
+      // Extra check: stem shouldn't be entirely consonants or look Bijoy-like
+      if (!hasBijoyStructure(stem) && /[aeiouy]/.test(stem)) {
+        return true;
+      }
+    }
+  }
 
   return false;
 }
@@ -1785,7 +1817,32 @@ function protectEnglishTokens(text) {
   // 4. Bracketed/Parenthesized Roman Numerals (e.g. (i), (xxvi), [iii])
   r = r.replace(/(?:\(|\\[)(?:[ivxIVXLCDM]+)(?:\)|\\])/gi, addProt);
 
-  // 5. Tokenize remaining Latin text blocks
+  // 5. Multi-word English phrases connected by &, /, or -.
+  //    Examples: "People & Society", "Water / Marine Sciences", "Bangladesh-India"
+  //    Only protects when surrounding context looks English (no Bengali in the same run).
+  //    Match: Optional 3+ words separated by & / - (with spaces). The first word must
+  //    be title case or all-caps to avoid catching Bijoy punctuation.
+  r = r.replace(/([A-Z][A-Za-z]+(?:[''][a-zA-Z]+)?(?:\s+(?:&|\/|-)\s+[A-Z][A-Za-z]+){1,5}(?:\s+(?:&|\/|-)\s+[A-Z][A-Za-z]+){0,5})/g, (m) => {
+    // Only protect if every word in the phrase is English (or Title Case)
+    const words = m.split(/\s+(?:&|\/|-)\s+/);
+    if (words.every(w => isEnglishWord(w.trim()))) {
+      return addProt(m);
+    }
+    return m;
+  });
+
+  // 5b. Hyphenated or slash-connected lowercase English compounds:
+  //     "water-borne", "long-term", "sci-fi"
+  r = r.replace(/([a-z]+(?:[-/][a-z]+){1,3})/g, (m) => {
+    if (m.length < 5) return m;
+    const parts = m.split(/[-/]/);
+    if (parts.every(p => p.length >= 2 && (isEnglishWord(p) || EXTRA_ENG.has(p)))) {
+      return addProt(m);
+    }
+    return m;
+  });
+
+  // 6. Tokenize remaining Latin text blocks
   r = r.replace(/(?<![A-Za-z0-9_\u0080-\uFFFF])([A-Za-z0-9]+(?:['’][a-zA-Z]+|\.)?)(?![A-Za-z0-9_\u0080-\uFFFF])/g, (token) => {
     if (hasBijoyStructure(token)) {
       return token; // Leave Bijoy ASCII unprotected for conversion

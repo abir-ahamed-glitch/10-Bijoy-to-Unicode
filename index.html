@@ -1265,6 +1265,9 @@ kbd {
 
   </section>
 
+  <!-- Word-level Diff Panel (populated by renderWordDiff) -->
+  <section class="glass-card hidden" id="diff-panel" style="padding:14px 18px;" aria-labelledby="diff-heading"></section>
+
   <!-- Convert Row -->
   <div class="convert-row">
     <button id="convert-btn" class="btn btn-primary" title="Ctrl+Enter" aria-label="Convert">
@@ -1345,6 +1348,52 @@ kbd {
       <div id="rep-list" class="hist-list" role="list" aria-live="polite">
         <div class="hist-empty">No reports yet. Click "⚠️ Report" to capture a broken conversion.</div>
       </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border);">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text-secondary);">
+          💡 Quick save as override
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">
+          After clicking "⚠️ Report", edit the output below to what it <em>should</em> be, then save.
+          The converter will use your fix for all future conversions.
+        </div>
+        <div style="display:flex;gap:6px;align-items:flex-start;">
+          <textarea id="override-input" placeholder="Input (read-only)" rows="2"
+            style="flex:1;min-width:0;font-family:var(--font-bn);font-size:13px;padding:6px 8px;
+            background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-radius:6px;
+            color:var(--text-primary);resize:vertical;" readonly></textarea>
+          <textarea id="override-output" placeholder="Expected output (editable)" rows="2"
+            style="flex:1;min-width:0;font-family:var(--font-bn);font-size:13px;padding:6px 8px;
+            background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-radius:6px;
+            color:var(--text-primary);resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button id="save-override-btn" class="btn btn-glass btn-sm" aria-label="Save as personal override">💾 Save as override</button>
+          <span id="override-mode-label" style="font-size:11px;color:var(--text-muted);align-self:center;"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Personal Override Dictionary -->
+  <section class="glass-card" style="padding:16px 20px;" aria-labelledby="over-heading">
+    <button class="coll-toggle" id="over-toggle" aria-expanded="false" aria-controls="over-body">
+      <span class="section-title" id="over-heading">📚 Personal Override Dictionary <span id="over-count" style="color:var(--text-muted);font-weight:400;">(0)</span></span>
+      <span class="chevron" aria-hidden="true">▾</span>
+    </button>
+    <div class="coll-body" id="over-body">
+      <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;">
+        When a conversion looks wrong, paste the <strong>correct output</strong> in the report
+        and save it as an override. The converter will apply your personal fixes <em>before</em>
+        the engine runs, so future conversions of the same input stay correct.
+      </p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        <button id="export-over-json" class="btn btn-glass btn-sm" aria-label="Export overrides as JSON">⬇️ Export</button>
+        <button id="import-over-json" class="btn btn-glass btn-sm" aria-label="Import overrides from JSON">⬆️ Import</button>
+        <button id="clear-over-btn" class="btn btn-glass btn-sm" aria-label="Clear all overrides" style="margin-left:auto;">🗑️ Clear all</button>
+      </div>
+      <div id="over-list" class="hist-list" role="list" aria-live="polite">
+        <div class="hist-empty">No personal overrides yet. After reporting a broken word, paste the correct output and click "Save as override".</div>
+      </div>
     </div>
   </section>
 
@@ -1384,6 +1433,7 @@ kbd {
 
 <div class="toast-wrap" aria-live="assertive" aria-atomic="true"></div>
 
+<script src="./js/converter-client.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════════════════════
    MAPPING TABLES  (Bijoy SutonnyMJ / Bijoy Bahadur ↔ Unicode Bengali)
@@ -2009,6 +2059,7 @@ const S = {
   theme: localStorage.getItem('buc_theme') || 'light',
   history: [],
   reports: [],
+  overrides: {},
 };
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -2161,51 +2212,80 @@ function doConvert() {
   const txt = inp().value;
   if (!txt.trim()) { toast('⚠️','Please enter some text first.'); return; }
 
-  let effective = S.mode;
-  const det = detectEncoding(txt);
-  if (S.mode === 'b2u' && det === 'unicode') effective = 'u2b';
-  if (S.mode === 'u2b' && det === 'bijoy') effective = 'b2u';
-  if (S.mode === 'auto') effective = det === 'unicode' ? 'u2b' : 'b2u';
-
-  // Dynamically update labels based on effective conversion mode
-  if (effective === 'u2b') {
-    $('input-label').textContent  = 'Unicode Input';
-    $('output-label').textContent = 'Bijoy Output';
-  } else {
-    $('input-label').textContent  = 'Bijoy Input';
-    $('output-label').textContent = 'Unicode Output';
+  // Show "converting..." state
+  const convertBtn = $('convert-btn');
+  if (convertBtn) {
+    convertBtn.dataset.label = convertBtn.textContent;
+    convertBtn.textContent = '⏳ Converting…';
+    convertBtn.disabled = true;
   }
 
-  applyFontMode();
+  // Use worker if available, fall back to inline engine
+  const conv = window.__converter__;
+  const runConversion = async () => {
+    let effective = S.mode;
+    const det = conv ? await conv.detect(txt) : detectEncoding(txt);
+    if (S.mode === 'b2u' && det === 'unicode') effective = 'u2b';
+    if (S.mode === 'u2b' && det === 'bijoy') effective = 'b2u';
+    if (S.mode === 'auto') effective = det === 'unicode' ? 'u2b' : 'b2u';
 
-  if (S.mode === 'auto') {
-    const banner = $('enc-banner');
-    $('enc-label').textContent = det==='unicode'
-      ? 'Unicode Detected → Converting to Bijoy'
-      : 'Bijoy Detected → Converting to Unicode';
-    banner.classList.remove('hidden');
-  } else if (S.mode === 'b2u' && det === 'unicode') {
-    const banner = $('enc-banner');
-    $('enc-label').textContent = 'Unicode Input Detected → Converting to Bijoy';
-    banner.classList.remove('hidden');
-  } else if (S.mode === 'u2b' && det === 'bijoy') {
-    const banner = $('enc-banner');
-    $('enc-label').textContent = 'Bijoy Input Detected → Converting to Unicode';
-    banner.classList.remove('hidden');
-  } else {
-    $('enc-banner').classList.add('hidden');
-  }
+    // Dynamically update labels based on effective conversion mode
+    if (effective === 'u2b') {
+      $('input-label').textContent  = 'Unicode Input';
+      $('output-label').textContent = 'Bijoy Output';
+    } else {
+      $('input-label').textContent  = 'Bijoy Input';
+      $('output-label').textContent = 'Unicode Output';
+    }
 
-  let out;
-  try {
-    out = effective === 'u2b' ? unicodeToBijoy(txt) : bijoyToUnicode(txt);
-  } catch(e) {
-    toast('❌','Conversion error. Check console.'); console.error(e); return;
-  }
+    applyFontMode();
 
-  outp().value = out;
-  updateStats();
-  addHistory({ mode: effective, input: txt.slice(0,200), output: out.slice(0,200), time: new Date() });
+    if (S.mode === 'auto') {
+      const banner = $('enc-banner');
+      $('enc-label').textContent = det==='unicode'
+        ? 'Unicode Detected → Converting to Bijoy'
+        : 'Bijoy Detected → Converting to Unicode';
+      banner.classList.remove('hidden');
+    } else if (S.mode === 'b2u' && det === 'unicode') {
+      const banner = $('enc-banner');
+      $('enc-label').textContent = 'Unicode Input Detected → Converting to Bijoy';
+      banner.classList.remove('hidden');
+    } else if (S.mode === 'u2b' && det === 'bijoy') {
+      const banner = $('enc-banner');
+      $('enc-label').textContent = 'Bijoy Input Detected → Converting to Unicode';
+      banner.classList.remove('hidden');
+    } else {
+      $('enc-banner').classList.add('hidden');
+    }
+
+    let out;
+    try {
+      // Apply personal overrides before engine
+      const overridden = applyPersonalOverrides(txt, effective);
+      out = conv
+        ? await conv.convert(effective, overridden)
+        : (effective === 'u2b' ? unicodeToBijoy(overridden) : bijoyToUnicode(overridden));
+    } catch(e) {
+      toast('❌','Conversion error. Check console.'); console.error(e);
+      if (convertBtn) {
+        convertBtn.textContent = convertBtn.dataset.label || '🔄 Convert';
+        convertBtn.disabled = false;
+      }
+      return;
+    }
+
+    outp().value = out;
+    updateStats();
+    renderWordDiff(txt, out, effective);
+    addHistory({ mode: effective, input: txt.slice(0,200), output: out.slice(0,200), time: new Date() });
+
+    if (convertBtn) {
+      convertBtn.textContent = convertBtn.dataset.label || '🔄 Convert';
+      convertBtn.disabled = false;
+    }
+  };
+
+  runConversion();
 }
 
 window.doConvert = doConvert;
@@ -2366,6 +2446,261 @@ function clearReports() {
   localStorage.removeItem(REPORTS_KEY);
   renderReports();
   toast('🗑️','Reports cleared.');
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PERSONAL OVERRIDE DICTIONARY
+   When a user fixes a broken word, the corrected pair is saved here.
+   Future conversions apply these overrides BEFORE the engine runs.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const OVERRIDES_KEY = 'buc_overrides';
+const OVERRIDES_MAX = 5000;
+
+function loadOverrides() {
+  try { S.overrides = JSON.parse(localStorage.getItem(OVERRIDES_KEY) || '{}'); }
+  catch { S.overrides = {}; }
+  updateOverridesCount();
+}
+
+function saveOverrides() {
+  localStorage.setItem(OVERRIDES_KEY, JSON.stringify(S.overrides));
+  updateOverridesCount();
+}
+
+function updateOverridesCount() {
+  const el = $('over-count');
+  if (!el) return;
+  const n = Object.keys(S.overrides || {}).length;
+  el.textContent = `(${n})`;
+}
+
+/**
+ * Apply personal overrides to the text BEFORE it goes through the engine.
+ * Overrides are stored as { mode: 'b2u', pairs: { inputSubstr: replacement, ... } }.
+ * Longest matches first to avoid partial-replace bugs.
+ */
+function applyPersonalOverrides(text, mode) {
+  if (!S.overrides || !S.overrides[mode]) return text;
+  const pairs = S.overrides[mode];
+  if (!pairs || Object.keys(pairs).length === 0) return text;
+  // Sort keys longest-first so we replace longest patterns first
+  const keys = Object.keys(pairs).sort((a, b) => b.length - a.length);
+  let out = text;
+  for (const k of keys) {
+    if (out.includes(k)) {
+      out = out.split(k).join(pairs[k]);
+    }
+  }
+  return out;
+}
+
+function addOverride(input, expected, mode) {
+  if (!input || !expected) return;
+  if (!S.overrides) S.overrides = {};
+  if (!S.overrides[mode]) S.overrides[mode] = {};
+  S.overrides[mode][input] = expected;
+  // Cap to keep localStorage manageable
+  const keys = Object.keys(S.overrides[mode]);
+  if (keys.length > OVERRIDES_MAX) {
+    keys.slice(OVERRIDES_MAX).forEach(k => delete S.overrides[mode][k]);
+  }
+  saveOverrides();
+}
+
+function deleteOverride(mode, key) {
+  if (S.overrides && S.overrides[mode]) {
+    delete S.overrides[mode][key];
+    saveOverrides();
+    renderOverrides();
+  }
+}
+
+function clearAllOverrides() {
+  if (!S.overrides || Object.keys(S.overrides).length === 0) return;
+  const total = Object.values(S.overrides).reduce((s, m) => s + Object.keys(m).length, 0);
+  if (!confirm(`Clear all ${total} personal overrides? This cannot be undone.`)) return;
+  S.overrides = {};
+  localStorage.removeItem(OVERRIDES_KEY);
+  updateOverridesCount();
+  renderOverrides();
+  toast('🗑️','All overrides cleared.');
+}
+
+function exportOverridesJSON() {
+  if (!S.overrides || Object.keys(S.overrides).length === 0) { toast('⚠️','No overrides to export.'); return; }
+  const payload = {
+    generated: new Date().toISOString(),
+    app: 'Bijoy-Unicode-Converter',
+    version: '1.0',
+    overrides: S.overrides,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  triggerDownload(blob, `bijoy_overrides_${Date.now()}.json`);
+  const total = Object.values(S.overrides).reduce((s, m) => s + Object.keys(m).length, 0);
+  toast('⬇️',`Exported ${total} overrides as JSON.`);
+}
+
+function importOverridesJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        const incoming = data.overrides || data;
+        if (!incoming || typeof incoming !== 'object') throw new Error('Invalid format');
+        if (!S.overrides) S.overrides = {};
+        let added = 0;
+        for (const mode of ['b2u', 'u2b']) {
+          if (incoming[mode] && typeof incoming[mode] === 'object') {
+            if (!S.overrides[mode]) S.overrides[mode] = {};
+            for (const [k, v] of Object.entries(incoming[mode])) {
+              if (typeof k === 'string' && typeof v === 'string' && k && v) {
+                S.overrides[mode][k] = v;
+                added++;
+              }
+            }
+          }
+        }
+        saveOverrides();
+        renderOverrides();
+        toast('✅',`Imported ${added} overrides.`);
+      } catch (err) {
+        toast('❌','Failed to import: ' + err.message);
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+  input.click();
+}
+
+function renderOverrides() {
+  const list = $('over-list');
+  if (!list) return;
+  if (!S.overrides) S.overrides = {};
+  updateOverridesCount();
+
+  const b2u = S.overrides.b2u || {};
+  const u2b = S.overrides.u2b || {};
+  const total = Object.keys(b2u).length + Object.keys(u2b).length;
+  if (total === 0) {
+    list.innerHTML = '<div class="hist-empty">No personal overrides yet. After reporting a broken word, paste the correct output and click "Save as override".</div>';
+    return;
+  }
+
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const sections = [];
+  if (Object.keys(b2u).length) {
+    sections.push(`<div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-secondary);">Bijoy → Unicode (${Object.keys(b2u).length})</div>`);
+    sections.push(Object.entries(b2u).slice(0, 50).map(([k, v]) =>
+      `<div class="hist-item" style="font-family:var(--font-ui);">
+        <span class="hist-badge badge-b2u">B→U</span>
+        <span style="flex:1;font-family:monospace;font-size:11px;">${esc(k)} → ${esc(v)}</span>
+        <button class="btn btn-glass btn-sm" data-mode="b2u" data-key="${esc(k)}" aria-label="Delete">✕</button>
+      </div>`).join(''));
+  }
+  if (Object.keys(u2b).length) {
+    sections.push(`<div style="margin:12px 0 8px;font-size:12px;font-weight:600;color:var(--text-secondary);">Unicode → Bijoy (${Object.keys(u2b).length})</div>`);
+    sections.push(Object.entries(u2b).slice(0, 50).map(([k, v]) =>
+      `<div class="hist-item" style="font-family:var(--font-ui);">
+        <span class="hist-badge badge-u2b">U→B</span>
+        <span style="flex:1;font-family:monospace;font-size:11px;">${esc(k)} → ${esc(v)}</span>
+        <button class="btn btn-glass btn-sm" data-mode="u2b" data-key="${esc(k)}" aria-label="Delete">✕</button>
+      </div>`).join(''));
+  }
+  if (total > 100) {
+    sections.push(`<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:8px;">... and ${total - 100} more (export to see all)</div>`);
+  }
+
+  list.innerHTML = sections.join('');
+  list.querySelectorAll('button[data-mode]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteOverride(btn.dataset.mode, btn.dataset.key);
+    });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   WORD-LEVEL DIFF HIGHLIGHTING
+   Compares input/output words and highlights changes. Helps users see
+   at a glance which words were transformed and might need review.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+function renderWordDiff(input, output, mode) {
+  const panel = $('diff-panel');
+  if (!panel) return;
+
+  // Tokenize into words preserving punctuation/whitespace
+  const tokenize = (text) => {
+    return text.split(/(\s+|[.,!?;:()\[\]{}"'/।॥\-|])/g).filter(t => t !== '');
+  };
+  const inTokens = tokenize(input);
+  const outTokens = tokenize(output);
+
+  // Map: each output word → best matching input word (greedy, longest match)
+  // For simplicity: align by sequence, mark changed words.
+  const maxLen = Math.max(inTokens.length, outTokens.length);
+  const changes = [];
+  let changedCount = 0;
+  let sameCount = 0;
+
+  for (let i = 0; i < maxLen; i++) {
+    const a = inTokens[i] || '';
+    const b = outTokens[i] || '';
+    if (!a && !b) continue;
+    if (a === b) { sameCount++; continue; }
+    if (a && b && a.trim() && b.trim()) {
+      changedCount++;
+      changes.push({ from: a, to: b });
+    } else {
+      // Whitespace/punct-only diffs are noise
+      sameCount++;
+    }
+  }
+
+  if (changes.length === 0) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  // Show only the first ~30 changes to keep panel small
+  const shown = changes.slice(0, 30);
+  const more = changes.length - shown.length;
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const dir = mode === 'b2u' ? 'Bijoy → Unicode' : 'Unicode → Bijoy';
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span class="section-title" style="font-size:13px;">🔍 Word-level diff <span style="color:var(--text-muted);font-weight:400;">(${changedCount} ${changedCount === 1 ? 'word' : 'words'} changed · ${dir})</span></span>
+      <button id="diff-toggle" class="btn btn-glass btn-sm" aria-label="Toggle diff">▾</button>
+    </div>
+    <div id="diff-body" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;">
+      ${shown.map(c =>
+        `<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;font-family:monospace;font-size:11px;align-items:center;padding:4px 8px;background:rgba(247,183,49,0.08);border-left:2px solid #F7B731;border-radius:3px;">
+          <span style="opacity:0.7;text-decoration:line-through;">${esc(c.from)}</span>
+          <span style="color:#F7B731;">→</span>
+          <span>${esc(c.to)}</span>
+        </div>`).join('')}
+      ${more > 0 ? `<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:6px;">+ ${more} more changes (not shown)</div>` : ''}
+    </div>
+  `;
+  panel.classList.remove('hidden');
+
+  const toggleBtn = $('diff-toggle');
+  const body = $('diff-body');
+  if (toggleBtn && body) {
+    toggleBtn.addEventListener('click', () => {
+      const hidden = body.style.display === 'none';
+      body.style.display = hidden ? 'flex' : 'none';
+      toggleBtn.textContent = hidden ? '▾' : '▸';
+    });
+  }
 }
 
 function exportReportsJSON() {
@@ -2615,6 +2950,19 @@ document.addEventListener('DOMContentLoaded', () => {
   setTheme(S.theme);
   loadHistory();
   loadReports();
+  loadOverrides();
+  renderOverrides();
+
+  // Initialize Web Worker for non-blocking conversion
+  try {
+    if (window.ConverterClient) {
+      window.__converter__ = new ConverterClient('./js/converter.worker.js');
+      console.info('Converter worker initialized');
+    }
+  } catch (e) {
+    console.warn('Converter worker init failed, using main thread:', e);
+  }
+
   setMode('b2u');
 
   // Mode tabs
@@ -2677,6 +3025,46 @@ document.addEventListener('DOMContentLoaded', () => {
   $('copy-rep-text').addEventListener('click', copyReportsAsText);
   $('clear-rep-btn').addEventListener('click', clearReports);
 
+  // Personal override dictionary wiring
+  $('save-override-btn').addEventListener('click', () => {
+    const inputEl = $('override-input');
+    const outputEl = $('override-output');
+    if (!inputEl || !outputEl) return;
+    const input = inputEl.value;
+    const expected = outputEl.value;
+    if (!input.trim() || !expected.trim()) {
+      toast('⚠️','Both input and expected output are required.');
+      return;
+    }
+    const mode = getEffectiveMode();
+    addOverride(input, expected, mode);
+    renderOverrides();
+    // Clear the override input fields
+    inputEl.value = '';
+    outputEl.value = '';
+    const lbl = $('override-mode-label');
+    if (lbl) lbl.textContent = '';
+    toast('💾',`Override saved (${mode}). Future conversions will use this fix.`);
+  });
+  $('export-over-json').addEventListener('click', exportOverridesJSON);
+  $('import-over-json').addEventListener('click', importOverridesJSON);
+  $('clear-over-btn').addEventListener('click', clearAllOverrides);
+
+  // When user clicks Report, populate the override-input field
+  if (reportBtn) {
+    reportBtn.addEventListener('click', () => {
+      // After addReport runs, populate the override form
+      setTimeout(() => {
+        const inputEl = $('override-input');
+        const outputEl = $('override-output');
+        const lbl = $('override-mode-label');
+        if (inputEl && inp().value) inputEl.value = inp().value;
+        if (outputEl && outp().value) outputEl.value = outp().value;
+        if (lbl) lbl.textContent = `Mode: ${getEffectiveMode()}`;
+      }, 50);
+    });
+  }
+
   // Initial font mode apply
   applyFontMode();
 
@@ -2684,6 +3072,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCollapsible('samples-toggle','samples-body','buc_samp',true);
   setupCollapsible('hist-toggle','hist-body','buc_hist',false);
   setupCollapsible('rep-toggle','rep-body','buc_rep_open',false);
+  setupCollapsible('over-toggle','over-body','buc_over_open',false);
 
   // Sample chips
   document.querySelectorAll('.sample-chip').forEach(chip => {

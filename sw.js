@@ -3,7 +3,7 @@
  * Offline-first cache strategy for the app shell.
  */
 
-const CACHE_NAME = 'bijoy-unicode-v3';
+const CACHE_NAME = 'bijoy-unicode-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -38,7 +38,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch: cache-first for same-origin, network-first for everything else
+// Fetch: Network-First for HTML/JS (ensures instant deployment updates), Cache-First for static assets (fonts/CSS)
 self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -46,24 +46,32 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
-  if (!isSameOrigin) return; // let the browser handle cross-origin (Google Fonts, etc.)
+  if (!isSameOrigin) return;
 
-  event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(request).then(response => {
-        // Cache successful basic responses for next time
-        if (response && response.status === 200 && response.type === 'basic') {
+  // Network-First for HTML and JavaScript files
+  if (request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('.js')) {
+    event.respondWith(
+      fetch(request).then(response => {
+        if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
         }
         return response;
-      }).catch(() => {
-        // Offline fallback: serve index.html for navigations
-        if (request.mode === 'navigate') {
-          return caches.match('./index.html');
+      }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Cache-First for static assets (fonts, icons, css)
+  event.respondWith(
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+      return fetch(request).then(response => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
         }
+        return response;
       });
     })
   );

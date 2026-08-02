@@ -3185,10 +3185,22 @@ document.addEventListener('DOMContentLoaded', () => {
   initLetterPhysics();
   setupCustomResizers();
 
-  // Register service worker for offline support (PWA)
+  // Register service worker for offline support (PWA) with automatic deployment update reload
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.onupdatefound = () => {
+          const installingWorker = reg.installing;
+          if (installingWorker) {
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                toast('🔄', 'Updated version ready! Reloading...');
+                setTimeout(() => window.location.reload(), 1000);
+              }
+            };
+          }
+        };
+      }).catch(err => {
         console.warn('SW registration failed:', err);
       });
     });

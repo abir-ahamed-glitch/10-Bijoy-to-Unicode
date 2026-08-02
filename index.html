@@ -1433,7 +1433,8 @@ kbd {
 
 <div class="toast-wrap" aria-live="assertive" aria-atomic="true"></div>
 
-<script src="./js/converter-client.js"></script>
+<script src="./js/english_dictionary.js"></script>
+  <script src="./js/converter-client.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════════════════════
    MAPPING TABLES  (Bijoy SutonnyMJ / Bijoy Bahadur ↔ Unicode Bengali)
@@ -1756,11 +1757,12 @@ function isEnglishWord(word) {
   // 4. "No." or "No"
   if (lower === 'no' || lower === 'no.') return true;
 
-  // 5. Check dictionary (base + extra)
+  // 5. Check 370,000+ universal English dictionary & base/extra dicts
+  if (typeof ALL_ENGLISH_WORDS !== 'undefined' && ALL_ENGLISH_WORDS && ALL_ENGLISH_WORDS.has(lower)) return true;
   if (COMMON_ENG.has(lower) || EXTRA_ENG.has(lower)) return true;
 
   const baseStem = lower.replace(/(?:ing|tion|sion|ment|ness|able|ible|ous|ive|ally|ly|ed|er|es|s|d)$/, '');
-  if (baseStem.length >= 2 && !BIJOY_BLACKLIST.has(baseStem) && (COMMON_ENG.has(baseStem) || EXTRA_ENG.has(baseStem))) return true;
+  if (baseStem.length >= 2 && !BIJOY_BLACKLIST.has(baseStem) && ((typeof ALL_ENGLISH_WORDS !== 'undefined' && ALL_ENGLISH_WORDS && ALL_ENGLISH_WORDS.has(baseStem)) || COMMON_ENG.has(baseStem) || EXTRA_ENG.has(baseStem))) return true;
 
   // 6. Real English Acronyms
   const REAL_ENGLISH_ACRONYMS = new Set(['USA','UK','UAE','UN','UNICEF','UNESCO','WHO','BBC','CNN','CEO','CFO','CTO','PDF','HTML','CSS','URL','API','SDK','RAM','CPU','GPU','SMS','VAT','NID','HSC','SSC','JSC','PSC','MP','PM','DC','SP','OC','FB','GB','MB','TB','KB','AM','PM','BC','AD','ID','IQ','IT','AI','UI','UX','WIFI','SIM','PIN','OTP','USD','BDT','HTML5','CSS3']);

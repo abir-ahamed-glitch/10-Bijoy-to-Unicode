@@ -3,13 +3,14 @@
  * Offline-first cache strategy for the app shell.
  */
 
-const CACHE_NAME = 'bijoy-unicode-v2';
+const CACHE_NAME = 'bijoy-unicode-v3';
 const APP_SHELL = [
   './',
   './index.html',
   './css/style.css',
   './fonts/SutonnyMJ.ttf',
   './manifest.json',
+  './js/english_dictionary.js',
   './js/converter-client.js',
   './js/converter.worker.js',
   './js/engine.js',

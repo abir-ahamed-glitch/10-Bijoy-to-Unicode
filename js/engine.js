@@ -6,7 +6,7 @@
 
 // Bijoy → Unicode: multi-char sequences (longest first)
 const B2U_MULTI = [
-  ["we‡`ªvn","বিদ্রোহ"],["‡K‡UI","কেটেও"],["‡cªwZ","প্রতি"],  ["‰`N¨©","দৈর্ঘ্য"],["‰ewPZ¨©","বৈচিত্র্য"],["‡mŠnv`¨©","সৌহার্দ্য"],["EaŸ©","ঊর্ধ্ব"],  ["wMª","গ্রি"],["wM&e","গ্বি"],
+  ["‡Z¨i","ত্যের"],["‡a¨B","ধ্যেই"],["‡Z¨","ত্যে"],["‡a¨","ধ্যে"],  ["we‡`ªvn","বিদ্রোহ"],["‡K‡UI","কেটেও"],["‡cªwZ","প্রতি"],  ["‰`N¨©","দৈর্ঘ্য"],["‰ewPZ¨©","বৈচিত্র্য"],["‡mŠnv`¨©","সৌহার্দ্য"],["EaŸ©","ঊর্ধ্ব"],  ["wMª","গ্রি"],["wM&e","গ্বি"],
   ["‡R¨","জ্যে"],["†R¨","জ্যে"],["‡R¨ô","জ্যেষ্ঠ"],["†R¨ô","জ্যেষ্ঠ"],
   ["š'","ন্থ"],["š‘","ন্থ"],["š’","ন্থ"],["¤b","ম্ব"],["¤^","ম্ব"],["`N","দ্ঘ"],["Ú","ণ্ঠ"],["Û","ণ্ড"],
   ["m^","স্ব"],
@@ -268,7 +268,7 @@ const BIJOY_BLACKLIST = new Set([
   'avgvi', 'avwg', 'evovwj', 'evsjv', 'fjevwm', 'gkwu', 'gkwz', 'gkb', 'gk', 'mvbvi', 'myi', 'rvwz', 'zvgvq', 'mvdv', 'mvb', 'gvi', 'fvjevwm',
   'avi', 'gb', 'ib', 'me', 'be', 'mv', 'dv', 'in', 'am', 'an',
   'is', 'as', 'us', 'or', 'so', 'to', 'do', 'go', 'no', 'vi',
-  'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj', 'li', 'Ii', 'ii', 'II', 'LI', 'lI', 'iv', 'IV', 'Iv', 'iV', 'my', 'My', 'MY', 'by', 'By', 'BY', 'ey', 'Ey', 'EY', 'dy', 'Dy', 'DY', 'hvq', 'Hvq', 'HVQ', 'ly', 'Ly', 'LY', 'ui', 'Ui', 'UI', 'rvbvjv', 'Rvbvjv',
+  'jv', 'ej', 'gv', 'cv', 'kv', 'wv', 'yv', 'xv', 'zv', 'ye', 'xi', 'wi', 'ky', 'rb', 'bg', 'we', 'ab', 'ci', 'rj', 'li', 'Ii', 'ii', 'II', 'LI', 'lI', 'iv', 'IV', 'Iv', 'iV', 'my', 'My', 'MY', 'by', 'By', 'BY', 'ey', 'Ey', 'EY', 'dy', 'Dy', 'DY', 'hvq', 'Hvq', 'HVQ', 'ly', 'Ly', 'LY', 'ui', 'Ui', 'UI', 'rvbvjv', 'Rvbvjv', 'ij', 'rjv', 'Rjv', 'zvi', 'Zvi', 'kij', 'Kij', 'KIJ',
   'gkk', 'dj', 'gk', 'pk', 'kgb', 'i', 'I'
 ]);
 

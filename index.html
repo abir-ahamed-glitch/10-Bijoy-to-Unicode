@@ -1719,7 +1719,7 @@ const BIJOY_BLACKLIST = new Set([
  * Helper to identify if a token contains valid Bijoy character structures
  * or matches BIJOY_BLACKLIST.
  */
-const BIJOY_STRUCTURE_MULTI_KEYS = B2U_MULTI.map(x => x[0]).filter(k => k && k.length >= 2);
+const BIJOY_STRUCTURE_MULTI_KEYS = B2U_MULTI.map(x => x[1]).filter(k => k && k.length >= 2 && /^[A-Za-z0-9\u0080-\uFFFF]+$/.test(k));
 
 function hasBijoyStructure(word) {
   if (!word || word.length === 0) return false;

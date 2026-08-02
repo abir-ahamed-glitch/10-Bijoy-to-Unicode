@@ -587,6 +587,7 @@ kbd {
 #input-text.transparent-mode, #output-text.transparent-mode {
   opacity: 1 !important;
   color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
   caret-color: #7c5ffc !important;
   background: transparent !important;
   pointer-events: auto !important;
@@ -3170,6 +3171,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dualBox) {
       dualBox.scrollTop = inp().scrollTop;
       dualBox.scrollLeft = inp().scrollLeft;
+    }
+  });
+
+  // Synchronize scrolling between #output-text and #output-dual-box
+  outp().addEventListener('scroll', () => {
+    const dualBox = $('output-dual-box');
+    if (dualBox) {
+      dualBox.scrollTop = outp().scrollTop;
+      dualBox.scrollLeft = outp().scrollLeft;
     }
   });
 

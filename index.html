@@ -322,6 +322,12 @@ body {
   background:var(--glass-bg); border-color:var(--glass-border);
   color:var(--text-primary);
 }
+.btn-clear:hover {
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25) !important;
+}
 .btn-glass:hover {
   background:var(--surface-hover); border-color:rgba(255,255,255,0.25);
   transform: none !important;
@@ -1221,6 +1227,7 @@ kbd {
         <div class="panel-actions">
           <button id="paste-btn" class="btn btn-glass btn-sm" aria-label="Paste from clipboard">📋 Paste</button>
           <button id="copy-input-btn" class="btn btn-glass btn-sm" aria-label="Copy input">📄 Copy</button>
+          <button id="clear-input-btn" class="btn btn-glass btn-sm btn-clear" title="Clear all text (Ctrl+Shift+X)" aria-label="Clear all text">🗑️ Clear</button>
           <button id="font-toggle-btn" class="btn btn-glass btn-sm" title="Toggle SutonnyMJ / Raw Font" aria-label="Toggle Font">🔤 SutonnyMJ Font</button>
         </div>
         <span style="font-size:11px;color:var(--text-muted)">Drop .txt files here</span>
@@ -1254,6 +1261,7 @@ kbd {
         <div class="panel-actions">
           <button id="copy-output-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+C" aria-label="Copy output">📋 Copy Output</button>
           <button id="download-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+D" aria-label="Download output">⬇️ Download</button>
+          <button id="clear-output-btn" class="btn btn-glass btn-sm btn-clear" title="Clear all text (Ctrl+Shift+X)" aria-label="Clear all text">🗑️ Clear</button>
           <button id="report-btn" class="btn btn-glass btn-sm" title="Save this conversion as a broken-word report" aria-label="Report broken conversion">⚠️ Report</button>
         </div>
         <span style="font-size:11px;color:var(--text-muted)">Editable box</span>
@@ -2947,8 +2955,12 @@ function swap() {
 
 function clearAll() {
   inp().value=''; outp().value='';
-  $('enc-banner').classList.add('hidden');
-  updateStats(); inp().focus();
+  if ($('enc-banner')) $('enc-banner').classList.add('hidden');
+  updateStats();
+  updateDualFontPreview();
+  renderWordDiff();
+  inp().focus();
+  toast('🗑️', 'Text cleared.');
 }
 
 function setTheme(t) {
@@ -3093,6 +3105,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Buttons
   $('swap-btn').addEventListener('click', swap);
   $('clear-btn').addEventListener('click', clearAll);
+  if ($('clear-input-btn')) $('clear-input-btn').addEventListener('click', clearAll);
+  if ($('clear-output-btn')) $('clear-output-btn').addEventListener('click', clearAll);
   $('paste-btn').addEventListener('click', pasteClip);
   $('copy-input-btn').addEventListener('click', () => copyText(inp().value,'Input'));
   $('font-toggle-btn').addEventListener('click', () => {

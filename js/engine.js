@@ -602,8 +602,8 @@ function bijoyToUnicode(text) {
   return lines.map(bijoyToUnicodeSingleLine).join('\n');
 }
 
-function unicodeToBijoy(text) {
-  if (!text) return '';
+function unicodeToBijoy(text, returnHTML = false) {
+  if (!text) return returnHTML ? { text: '', html: '' } : '';
   // Normalize decomposed nukta combinations (য+nukta -> য়, ড+nukta -> ড়, ঢ+nukta -> ঢ়)
   let r = text.normalize('NFC')
     .replace(/\u09AF\u09BC/g, '\u09DF')
@@ -635,18 +635,56 @@ function unicodeToBijoy(text) {
     r = replAll(r, u, b);
   }
 
-  // Step 5: Single-char mapping
-  r = r.split('').map(c => U2B_SINGLE[c] ?? c).join('');
+  // Step 5: Single-char mapping preserving \uE001 markers
+  let out = '';
+  for (let i = 0; i < r.length; i++) {
+    const ch = r[i];
+    if (ch === '\uE001') {
+      const endIdx = r.indexOf('\uE001', i + 1);
+      if (endIdx !== -1) {
+        out += r.substring(i, endIdx + 1);
+        i = endIdx;
+        continue;
+      }
+    }
+    out += U2B_SINGLE[ch] !== undefined ? U2B_SINGLE[ch] : ch;
+  }
+  r = out;
 
   // Step 6: Special character cleanups
   r = replAll(r, '\u09D7', 'Š');
 
-  // Step 7: Restore English
+  // Build dual-font HTML before restoring English if returnHTML is requested
+  let htmlResult = '';
+  if (returnHTML) {
+    const lines = r.split('\n');
+    const lineHtmls = lines.map(line => {
+      if (!line) return '';
+      const parts = line.split(/(\uE001[\uE100-\uE2FF]\uE001)/);
+      let lHtml = '';
+      parts.forEach(part => {
+        if (!part) return;
+        if (part.charCodeAt(0) === 0xE001 && part.charCodeAt(part.length - 1) === 0xE001) {
+          const idx = part.charCodeAt(1) - 0xE100;
+          const engText = engMap2[idx] || '';
+          const escaped = engText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          lHtml += '<span class="eng-seg">' + escaped + '</span>';
+        } else {
+          const escaped = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          lHtml += '<span class="bijoy-seg">' + escaped + '</span>';
+        }
+      });
+      return lHtml;
+    });
+    htmlResult = lineHtmls.join('<br>');
+  }
+
+  // Step 7: Restore English for raw text
   r = restoreEnglish(r, engMap2);
 
+  if (returnHTML) return { text: r, html: htmlResult };
   return r;
 }
-
 function detectEncoding(text) {
   if (!text.trim()) return 'unknown';
   const uniCnt = (text.match(/[\u0980-\u09FF]/g)||[]).length;

@@ -581,41 +581,63 @@ kbd {
 :focus-visible:not(textarea){outline:2px solid var(--accent);outline-offset:3px}
 .hidden{display:none!important}
   
-/* Intelligent Dual-Font Rendering */
+/* ── Clean Dual-Font Preview Architecture ─────────────────────────── */
 .input-container-rel { position: relative; width: 100%; min-height: 320px; }
-#input-text, #output-text { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 1; transition: opacity 0.2s; }
-#input-text.transparent-mode,
-#output-text.transparent-mode,
-#input-text.transparent-mode:focus,
-#output-text.transparent-mode:focus,
-#input-text.transparent-mode:active,
-#output-text.transparent-mode:active {
-  opacity: 1 !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
-  caret-color: #7c5ffc !important;
-  background: transparent !important;
-  pointer-events: auto !important;
+
+/* Input textarea: positioned normally, full native rendering */
+#input-text { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+
+/* Output container: flex column, preview div on top */
+.output-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  min-height: 200px;
+  max-height: 850px;
 }
-#input-text.transparent-mode::selection,
-#output-text.transparent-mode::selection,
-#input-text.transparent-mode::-moz-selection,
-#output-text.transparent-mode::-moz-selection {
-  background: rgba(124, 95, 252, 0.35) !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
+
+/* Output preview div: the rendered dual-font view */
+.output-preview {
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.8;
+  color: var(--text-primary);
+  font-family: var(--font-bn);
+  font-size: 16px;
+  box-sizing: border-box;
+  cursor: text;
+  user-select: text;
 }
-#input-dual-box, #output-dual-box {
-  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
-  padding: 18px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
-  line-height: 1.8; color: var(--text-primary); pointer-events: none;
+.output-preview:focus { outline: none; }
+.output-preview:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  font-style: italic;
+  pointer-events: none;
 }
+
+/* Hidden output textarea (for copy/download/edit mode) */
+.output-text-hidden {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* Bijoy segment: SutonnyMJ font */
 .bijoy-seg {
   font-family: 'SutonnyMJ', 'SutonnyMJ-Bold', 'Sutonny Bangla OM', 'Sutonny', 'Bijoy', sans-serif !important;
   font-size: 18px !important;
   letter-spacing: 0.3px;
   color: var(--text-primary);
 }
+
+/* English segment: blue badge */
 .eng-seg {
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   font-size: 14.5px !important;
@@ -812,25 +834,8 @@ kbd {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SLEEK DRAG RESIZE HANDLE & DUAL-FONT SYNCED CONTAINER
+   DRAG RESIZE HANDLE
    ═══════════════════════════════════════════════════════════════════════════ */
-.input-container-rel {
-  position: relative;
-  width: 100%;
-  height: 340px;
-  min-height: 200px;
-  max-height: 850px;
-}
-
-#input-text {
-  resize: none !important;
-}
-
-#output-text {
-  resize: none !important;
-  min-height: 200px;
-  max-height: 850px;
-}
 
 .panel-resize-handle {
   height: 20px;
@@ -878,9 +883,7 @@ kbd {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   PERFECT CORNER & BAR RESIZING FOR DUAL-FONT BIJOY INPUT & UNICODE OUTPUT
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Input container: resize handle support ─────────────────────────── */
 .input-container-rel {
   position: relative;
   width: 100%;
@@ -898,21 +901,6 @@ kbd {
   height: 100%;
   resize: none !important;
   z-index: 2;
-}
-
-#input-dual-box, #output-dual-box {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-#output-text {
-  width: 100%;
-  min-height: 320px;
-  max-height: 850px;
-  resize: vertical;
 }
 
 .panel-resize-handle {
@@ -1223,7 +1211,7 @@ kbd {
         </span>
         <span class="panel-stats" id="input-stats" aria-live="polite">0 chars · 0 words</span>
       </div>
-      <div id="input-drop-zone" class="input-container-rel"><div id="input-dual-box" aria-hidden="true"></div>
+      <div id="input-drop-zone" class="input-container-rel">
         <textarea id="input-text" name="input-text"
           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
           placeholder="Paste Bijoy / SutonnyMJ text here…&#10;&#10;Example:  evsjv‡&#96;k  (বাংলাদেশ)&#10;&#10;💡 Tip: Drag &amp; drop a .txt file onto this panel"
@@ -1257,16 +1245,26 @@ kbd {
         </span>
         <span class="panel-stats" id="output-stats" aria-live="polite">0 chars · 0 words</span>
       </div>
-      <div id="output-drop-zone" class="input-container-rel">
-        <div id="output-dual-box" aria-hidden="true"></div>
+      <div id="output-drop-zone" class="output-container">
+        <!-- Preview div: shows dual-font rendered HTML -->
+        <div id="output-preview"
+             class="output-preview"
+             data-placeholder="Converted output will appear here…"
+             aria-label="Converted output preview"
+             aria-live="polite"
+             tabindex="0"></div>
+        <!-- Hidden editable textarea: holds plain text for copy/download/edit -->
         <textarea id="output-text" name="output-text" lang="bn"
-          placeholder="Converted Unicode Bengali will appear here… (Fully editable)"
-          aria-label="Output text" aria-live="polite"></textarea>
+          class="output-text-hidden"
+          placeholder="Converted text will appear here…"
+          aria-label="Output text" aria-live="polite"
+          style="display:none"></textarea>
       </div>
       <div class="panel-footer">
         <div class="panel-actions">
           <button id="copy-output-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+C" aria-label="Copy output">📋 Copy Output</button>
           <button id="download-btn" class="btn btn-glass btn-sm" title="Ctrl+Shift+D" aria-label="Download output">⬇️ Download</button>
+          <button id="edit-output-btn" class="btn btn-glass btn-sm" title="Toggle preview / edit mode" aria-label="Toggle edit mode">✏️ Edit</button>
           <button id="clear-output-btn" class="btn btn-glass btn-sm btn-clear" title="Clear all text (Ctrl+Shift+X)" aria-label="Clear all text">🗑️ Clear</button>
           <button id="report-btn" class="btn btn-glass btn-sm" title="Save this conversion as a broken-word report" aria-label="Report broken conversion">⚠️ Report</button>
         </div>
@@ -2346,22 +2344,61 @@ function renderDualFontHTML(text) {
   return formattedLines.join('<br>');
 }
 
-function updateDualFontPreview() {
-  const inDual = $('input-dual-box');
-  const outDual = $('output-dual-box');
+/**
+ * updateOutputPreview — New Clean Architecture
+ * Renders conversion result directly into #output-preview div.
+ * No overlay hacks. No transparent textarea. No Chrome bugs.
+ */
+function updateOutputPreview() {
+  const preview = $('output-preview');
+  if (!preview) return;
+
   const effMode = getEffectiveMode();
+  const mode    = S.fontMode ?? 0;
+  const outVal  = outp().value;
+
+  // In edit mode the hidden textarea is visible; don't update preview
+  if ($('output-text') && $('output-text').style.display === 'block') return;
 
   if (effMode === 'b2u') {
-    // Bijoy is in input box
-    if (inDual) inDual.innerHTML = renderDualFontHTML(inp().value);
-    if (outDual) outDual.innerHTML = '';
+    // B2U: output is Unicode — just display plain Unicode in system/Bengali font
+    const escaped = outVal.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
+/g,'<br>');
+    preview.innerHTML = escaped || '';
+    if (mode === 1) {
+      preview.style.fontFamily = "var(--font-bijoy)";
+      preview.style.fontSize   = "18px";
+    } else {
+      preview.style.fontFamily = "var(--font-bn)";
+      preview.style.fontSize   = "16px";
+    }
   } else {
-    // Bijoy is in output box — use unicodeToBijoy returnHTML option for 100% flawless preview
-    const res = unicodeToBijoy(inp().value, true);
-    if (outDual) outDual.innerHTML = res.html;
-    if (inDual) inDual.innerHTML = '';
+    // U2B: output is Bijoy ASCII — render dual-font HTML from the source Unicode
+    if (mode === 0) {
+      // Dual-font: Bengali segments in SutonnyMJ, English segments in blue
+      const res = unicodeToBijoy(inp().value, true);
+      preview.innerHTML = res.html || '';
+      preview.style.fontFamily = '';
+      preview.style.fontSize   = '';
+    } else if (mode === 1) {
+      // SutonnyMJ-only: all in Bijoy font
+      const escaped = outVal.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
+/g,'<br>');
+      preview.innerHTML = escaped || '';
+      preview.style.fontFamily = "var(--font-bijoy)";
+      preview.style.fontSize   = "18px";
+    } else {
+      // System font: plain ASCII readable
+      const escaped = outVal.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
+/g,'<br>');
+      preview.innerHTML = escaped || '';
+      preview.style.fontFamily = "var(--font-ui)";
+      preview.style.fontSize   = "14px";
+    }
   }
 }
+// Alias so existing callers still work
+function updateDualFontPreview() { updateOutputPreview(); }
 
 function setMode(m) {
   S.mode = m;
@@ -2454,6 +2491,7 @@ function doConvert() {
 
     outp().value = out;
     updateStats();
+    updateOutputPreview();
     renderWordDiff(txt, out, effective);
     addHistory({ mode: effective, input: txt.slice(0,200), output: out.slice(0,200), time: new Date() });
 
@@ -2513,6 +2551,7 @@ function renderHistory() {
       const h = S.history[+item.dataset.i];
       inp().value  = h.input;
       outp().value = h.output;
+      updateOutputPreview();
       setMode(h.mode);
       updateStats();
       toast('🕑','Restored from history.');
@@ -3035,8 +3074,14 @@ function swap() {
 function clearAll() {
   inp().value=''; outp().value='';
   if ($('enc-banner')) $('enc-banner').classList.add('hidden');
+  // Reset output panel to preview mode
+  const preview  = $('output-preview');
+  const textarea = $('output-text');
+  if (preview)  { preview.innerHTML = ''; preview.style.display = ''; }
+  if (textarea) { textarea.style.display = 'none'; }
+  const editBtn = $('edit-output-btn');
+  if (editBtn) editBtn.textContent = '✏️ Edit';
   updateStats();
-  updateDualFontPreview();
   renderWordDiff();
   inp().focus();
   toast('🗑️', 'Text cleared.');
@@ -3071,61 +3116,43 @@ function getEffectiveMode() {
   return S.mode;
 }
 
+/**
+ * applyFontMode — New Clean Architecture
+ * Controls input textarea font class and output preview rendering mode.
+ * No transparent overlays. No dual-box. No webkit hacks.
+ */
 function applyFontMode() {
-  const mode = S.fontMode ?? 0;
-  const inDual = $('input-dual-box');
-  const outDual = $('output-dual-box');
-  const btn = $('font-toggle-btn');
+  const mode    = S.fontMode ?? 0;
+  const btn     = $('font-toggle-btn');
   const effMode = getEffectiveMode();
 
-  if (effMode === 'u2b') {
-    // Unicode to Bijoy mode: Output box holds Bijoy text
-    inp().classList.remove('transparent-mode', 'bijoy-font');
-    if (inDual) inDual.style.display = 'none';
-
-    if (mode === 0) {
-      // Auto Dual Font mode for Output box
-      outp().classList.add('transparent-mode');
-      outp().classList.remove('bijoy-font');
-      if (outDual) outDual.style.display = 'block';
-      if (btn) btn.textContent = '🔤 Font: Auto (Dual Bijoy + English)';
-    } else if (mode === 1) {
-      // Force SutonnyMJ font on Output box
-      outp().classList.remove('transparent-mode');
-      outp().classList.add('bijoy-font');
-      if (outDual) outDual.style.display = 'none';
-      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Full Bijoy)';
+  // ── Input panel: apply font class directly to textarea ──────────────────
+  inp().classList.remove('transparent-mode');
+  if (effMode === 'b2u') {
+    // Bijoy text is in the input box — display it in SutonnyMJ
+    if (mode === 1) {
+      inp().classList.add('bijoy-font');
+    } else if (mode === 2) {
+      inp().classList.remove('bijoy-font');
     } else {
-      // Force System font on Output box
-      outp().classList.remove('transparent-mode', 'bijoy-font');
-      if (outDual) outDual.style.display = 'none';
-      if (btn) btn.textContent = '🔠 Font: System (English Readable)';
+      // Default (mode 0): show SutonnyMJ in input for B2U
+      inp().classList.add('bijoy-font');
     }
   } else {
-    // Bijoy to Unicode mode: Input box holds Bijoy text
-    outp().classList.remove('transparent-mode', 'bijoy-font');
-    if (outDual) outDual.style.display = 'none';
-
-    if (mode === 0) {
-      // Auto Dual Font mode for Input box
-      inp().classList.add('transparent-mode');
-      inp().classList.remove('bijoy-font');
-      if (inDual) inDual.style.display = 'block';
-      if (btn) btn.textContent = '🔤 Font: Auto (Dual Bijoy + English)';
-    } else if (mode === 1) {
-      // Force SutonnyMJ font on Input box
-      inp().classList.remove('transparent-mode');
-      inp().classList.add('bijoy-font');
-      if (inDual) inDual.style.display = 'none';
-      if (btn) btn.textContent = '🔤 Font: SutonnyMJ (Full Bijoy)';
-    } else {
-      // Force System font on Input box
-      inp().classList.remove('transparent-mode', 'bijoy-font');
-      if (inDual) inDual.style.display = 'none';
-      if (btn) btn.textContent = '🔠 Font: System (English Readable)';
-    }
+    // Unicode text is in the input box — plain system font
+    inp().classList.remove('bijoy-font');
   }
-  updateDualFontPreview();
+
+  // ── Button label ─────────────────────────────────────────────────────────
+  const modeNames = [
+    '🔤 Font: Auto (Dual Bijoy + English)',
+    '🔤 Font: SutonnyMJ (Full Bijoy)',
+    '🔠 Font: System (English Readable)',
+  ];
+  if (btn) btn.textContent = modeNames[mode] || modeNames[0];
+
+  // ── Output panel: update preview div ────────────────────────────────────
+  updateOutputPreview();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -3179,20 +3206,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Synchronize scrolling between #output-text and #output-dual-box
-  outp().addEventListener('scroll', () => {
-    const dualBox = $('output-dual-box');
-    if (dualBox) {
-      dualBox.scrollTop = outp().scrollTop;
-      dualBox.scrollLeft = outp().scrollLeft;
-    }
-  });
+  // Output scroll sync not needed — new preview div architecture
 
   outp().addEventListener('input', updateStats);
 
   // Buttons
   $('swap-btn').addEventListener('click', swap);
   $('clear-btn').addEventListener('click', clearAll);
+
+  // Edit / Preview toggle for output panel
+  if ($('edit-output-btn')) {
+    $('edit-output-btn').addEventListener('click', () => {
+      const preview  = $('output-preview');
+      const textarea = $('output-text');
+      if (!preview || !textarea) return;
+      const editing = textarea.style.display === 'block';
+      if (editing) {
+        // Switch back to preview mode
+        textarea.style.display = 'none';
+        if (preview) preview.style.display = '';
+        $('edit-output-btn').textContent = '✏️ Edit';
+        updateOutputPreview();
+      } else {
+        // Switch to edit mode — show raw textarea
+        if (preview) preview.style.display = 'none';
+        textarea.style.display = 'block';
+        $('edit-output-btn').textContent = '👁️ Preview';
+        textarea.focus();
+      }
+    });
+  }
   if ($('clear-input-btn')) $('clear-input-btn').addEventListener('click', clearAll);
   if ($('clear-output-btn')) $('clear-output-btn').addEventListener('click', clearAll);
   $('paste-btn').addEventListener('click', pasteClip);

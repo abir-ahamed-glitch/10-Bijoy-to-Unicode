@@ -2234,7 +2234,7 @@ function updateStats() {
 
   $('input-stats').textContent  = `${cc(i)} chars · ${wc(i)} words${engBadge}`;
   $('output-stats').textContent = `${cc(o)} chars · ${wc(o)} words`;
-  if (typeof updateDualFontPreview === 'function') updateDualFontPreview();
+  // NOTE: do NOT call updateDualFontPreview here — preview only updates after explicit Convert
 }
 
 /**

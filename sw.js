@@ -3,7 +3,7 @@
  * Offline-first cache strategy for the app shell.
  */
 
-const CACHE_NAME = 'bijoy-unicode-v4';
+const CACHE_NAME = 'bijoy-unicode-v5';
 const APP_SHELL = [
   './',
   './index.html',

@@ -732,3 +732,13 @@ function detectEncoding(text) {
 function wc(t) { return t.trim().split(/\s+/).filter(Boolean).length; }
 function cc(t) { return t.replace(/\s/g,'').length; }
 
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    bijoyToUnicode,
+    unicodeToBijoy,
+    detectEncoding,
+    protectEnglishTokens,
+    restoreEnglish,
+    isEnglishWord
+  };
+}

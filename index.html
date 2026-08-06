@@ -1448,7 +1448,9 @@ kbd {
 <!-- Universal English dictionary (370,000+ words) — deferred so the page renders fast.
      Once loaded, isEnglishWord() automatically uses it via a guard check. -->
 <script src="./js/english_dictionary.js" defer></script>
-  <script src="./js/converter-client.js" defer></script>
+<script src="./js/parser.js"></script>
+<script src="./js/dictionary.js"></script>
+<script src="./js/converter-client.js" defer></script>
 <script>
 /* ════════════════════════════════════════════════════════════════════════════
    MAPPING TABLES  (Bijoy SutonnyMJ / Bijoy Bahadur ↔ Unicode Bengali)
@@ -2008,6 +2010,16 @@ function extractEngBulletproof(text) {
   return { text: r, engMap };
 }
 
+function getDictB2U(word) {
+  if (typeof BijoyDict !== 'undefined' && BijoyDict.lookupB2U) return BijoyDict.lookupB2U(word);
+  return null;
+}
+
+function parseSyllable(word) {
+  if (typeof BijoyParser !== 'undefined' && BijoyParser.parseBijoySyllables) return BijoyParser.parseBijoySyllables(word);
+  return word;
+}
+
 function bijoyToUnicodeSingleLine(line) {
   if (!line) return '';
   let r = line;
@@ -2020,7 +2032,7 @@ function bijoyToUnicodeSingleLine(line) {
     return '\uE004' + idx + '\uE004';
   });
 
-  // Step 2: Multi-Char pre-pass (Longest matches first, e.g. cvÛzwjwc -> পাণ্ডুলিপি, AuZi -> আঁতর, Authorship-‡qi -> Authorship-এর)
+  // Step 2: Multi-Char pre-pass (Longest matches first)
   const multiMap = [];
   for (const [b, u] of B2U_MULTI) {
     if (!b || b === '\u00A9') continue;
@@ -2036,31 +2048,25 @@ function bijoyToUnicodeSingleLine(line) {
   const { text: cleanR, engMap } = extractEngBulletproof(r);
   r = cleanR;
 
-  // Step 1a: SutonnyMJ normalization
-  r = r.replace(/&,/g, '~');
-  const bijoyCons = '[K-Z_`a-z\u00b2\u00b0\u00b1\u00b3\u00b5\u00b6\u00b7\u00b8\u00bb\u00bc\u00bd\u00be\u00c0\u00c1\u00c2\u00c3\u00c4\u00c5\u00c6\u00c7\u00c8\u00c9\u00ca\u00cb\u00cc\u00ce\u00cf\u00d7\u00d8\u00d9\u00da\u00db\u00dc\u00de\u00df\u00e0\u00e1\u00e2\u00e3\u00e4\u00e5\u00e7\u00e9\u00ea\u00eb\u00ec\u00ed\u00ee\u00ef\u00f0\u00f1\u00f2\u00f3\u00f4\u00f5\u00f6\u00f7\u00f8\u00f9\u00fa\u00fb\u00fc\u00fd\u00fe\u00af\02c6\00af\2014\00af\2018\00af\00bf\00af\2039\00af\00fa\00af\00a7\00afc\00afb\00afl\00af\00f8]';
-  const bijoyVowelKars = '[vwxyz~\u00e6\201e\2021\2020\2030\02c6\0160u]';
-  r = r.replace(new RegExp(`(${bijoyCons})(?<!${bijoyVowelKars}),(?=[A-Za-z0-9])`, 'g'), '$1~');
-  r = r.replace(/([A-Za-z0-9_`~\u00e6\201e\2021\2020\2030\02c6\u0080-\u00FF])uv/g, '$1vu');
-  r = r.replace(/\u201A/g, '\u09C2').replace(/\u201E/g, '\u09C3');
-  r = r.replace(/\u2021v/g, '\u09CB').replace(/\u2020v/g, '\u09CB');
+  // Step 1: Tokenize by spaces and formatting delimiters
+  const tokens = r.split(/(\uE001[\uE100-\uE2FF]\uE001|\uE002[\uE200-\uE2FF]\uE002|\uE004[0-9]+\uE004|\s+|[.,!?;:()\[\]])/);
+  r = tokens.map(token => {
+    if (!token) return '';
+    if (token.startsWith('\uE001') || token.startsWith('\uE002') || token.startsWith('\uE004')) return token;
+    if (/^\s+$/.test(token) || /^[.,!?;:()\[\]]$/.test(token)) return token;
 
-  // Step 1b: Reph pre-pass
-  const rephRx = new RegExp(`([\u2021\u2020w\u2030])?(${bijoyCons})\u00a9`, 'g');
-  r = r.replace(rephRx, (_, v, c) => '\u00a9' + (v || '') + c);
+    // 1. Check Dictionary Lookup First (O(1) exact word)
+    const dictResult = getDictB2U(token);
+    if (dictResult) return dictResult;
 
-  // Step 3: Single-char
-  r = r.split('').map(c => B2U_SINGLE[c] ?? c).join('');
+    // 2. State-Machine Syllable Parser for unknown words
+    return parseSyllable(token);
+  }).join('');
 
-  // Step 4: Reorder left-side vowels using STRICT dynamicCons
-  const dynamicCons = '(?:[ক-হৎড়ঢ়য়]|\\uE002[\\uE200-\\uE2FF]\\uE002)';
-  const dynamicCluster = `${dynamicCons}(?:${BN_HAS}${dynamicCons})*`;
-  r = r.replace(new RegExp(`(${LEFT_V})(${dynamicCluster})`,'g'), (_, v, cl) => cl + v);
-
-  // Step 5: NFC
+  // Step 5: NFC normalization
   r = r.normalize('NFC');
 
-  // Step 6: Cleanup
+  // Step 6: Cleanup double halants
   r = r.replace(/\u09CD\u09CD/g,'\u09CD')
        .replace(/\u09CD([\u09BE-\u09CC])/g, '$1')
        .replace(/\u09CD(?=\s|$)/g,'');
@@ -2070,16 +2076,17 @@ function bijoyToUnicodeSingleLine(line) {
 
   // Restore English words
   r = r.replace(/\uE000([০-৯0-9]+)\uE000/g, (_, dStr) => engMap[parseInt(toAsciiDigits(dStr), 10)] || '');
+  r = r.replace(/\uE001([\uE100-\uE2FF])\uE001/g, (_, c) => engMap[c.charCodeAt(0) - 0xE100] || '');
 
   // Restore protected pre-existing Unicode blocks
   r = r.replace(/\uE004([০-৯0-9]+)\uE004/g, (_, dStr) => uniBlocks[parseInt(toAsciiDigits(dStr), 10)] || '');
 
   // Final spelling fixes
   r = r.replace(/অাঁ/g, 'আঁ').replace(/অঁা/g, 'আঁ').replace(/আাঁ/g, 'আঁ');
-  // r = r.replace(/([ািীুূৃৄোৌ])্(?=[ক-হ])/g, '$1');
 
   return r;
 }
+
 
 function bijoyToUnicode(text) {
   if (!text) return '';

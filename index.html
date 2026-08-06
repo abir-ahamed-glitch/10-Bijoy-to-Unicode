@@ -1445,8 +1445,10 @@ kbd {
 
 <div class="toast-wrap" aria-live="assertive" aria-atomic="true"></div>
 
-<script src="./js/english_dictionary.js"></script>
-  <script src="./js/converter-client.js"></script>
+<!-- Universal English dictionary (370,000+ words) — deferred so the page renders fast.
+     Once loaded, isEnglishWord() automatically uses it via a guard check. -->
+<script src="./js/english_dictionary.js" defer></script>
+  <script src="./js/converter-client.js" defer></script>
 <script>
 /* ════════════════════════════════════════════════════════════════════════════
    MAPPING TABLES  (Bijoy SutonnyMJ / Bijoy Bahadur ↔ Unicode Bengali)
@@ -1595,7 +1597,10 @@ const B2U_MULTI = [
   ["þ","হ্ম"],["n¬","হ্ল"],["ü","হৃ"],
   // Reph & ra/ya phala
   ["©","র্"],["ª","্র"],["Ö","্র"],["«","্র"],["¨","্য"],
-  ["…","ৃ"],["&","্"],
+  ["…","ৃ"],
+  // NOTE: "&" is intentionally NOT here — it's a single char handled by B2U_SINGLE["&"] = "্".
+  // Adding it to B2U_MULTI makes the pre-pass consume it BEFORE English-token protection,
+  // breaking phrases like "People & Society" (the & gets converted to hoshanta).
 
   // Screenplay-specific fixes v18
   ["Av‡›`vj‡b", "আন্দোলনে"],   // আন্দোলনে

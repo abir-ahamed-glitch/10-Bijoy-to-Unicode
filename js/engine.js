@@ -146,7 +146,10 @@ const B2U_MULTI = [
   ["þ","হ্ম"],["n¬","হ্ল"],["ü","হৃ"],
   // Reph & ra/ya phala
   ["©","র্"],["ª","্র"],["Ö","্র"],["«","্র"],["¨","্য"],
-  ["…","ৃ"],["&","্"],
+  ["…","ৃ"],
+  // NOTE: "&" is intentionally NOT here — it's a single char handled by B2U_SINGLE["&"] = "্".
+  // Adding it to B2U_MULTI makes the pre-pass consume it BEFORE English-token protection,
+  // breaking phrases like "People & Society" (the & gets converted to hoshanta).
 
   // Screenplay-specific fixes v18
   ["Av‡›`vj‡b", "আন্দোলনে"],   // আন্দোলনে

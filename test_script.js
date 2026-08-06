@@ -643,6 +643,13 @@ function bijoyToUnicode(text) {
 
 function unicodeToBijoy(text, returnHTML = false) {
   if (!text) return returnHTML ? { text: '', html: '' } : '';
+  // Normalize smart quotes, ellipsis & dashes to safe ASCII punctuation
+  // Prevents SutonnyMJ font glyph clashes (“="চ্চ", ”="চ্চ", ‘="স্থ", …="থাক")
+  text = text.normalize('NFC')
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/…/g, '...')
+    .replace(/[–—]/g, '-');
   // Normalize decomposed nukta combinations (য+nukta -> য়, ড+nukta -> ড়, ঢ+nukta -> ঢ়)
   let r = text.normalize('NFC')
     .replace(/\u09AF\u09BC/g, '\u09DF')
